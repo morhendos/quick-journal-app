@@ -1,6 +1,22 @@
 import type { Metadata } from 'next';
 import { Providers } from '@/components/providers';
+import { Playfair_Display, Lora } from 'next/font/google';
 import './globals.css';
+
+// Initialize fonts with subsets and weights
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-playfair',
+  display: 'swap',
+});
+
+const lora = Lora({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-lora',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Daily Journal - A Place for Reflection',
@@ -13,13 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html 
+      lang="en" 
+      suppressHydrationWarning
+      className={`${playfair.variable} ${lora.variable}`}
+    >
       <body>
         <Providers>{children}</Providers>
       </body>
