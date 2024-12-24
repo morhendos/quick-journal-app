@@ -5,9 +5,6 @@ import { JournalEntry } from '@/types/journal';
 import { getEntries } from '@/lib/storage';
 import { EntryDisplay } from '@/components/journal/EntryDisplay';
 
-/**
- * Displays a list of all journal entries in chronological order
- */
 export function JournalEntryList() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -28,7 +25,11 @@ export function JournalEntryList() {
   return (
     <div className="space-y-6 max-h-[600px] overflow-y-auto pr-2">
       {entries.map((entry, index) => (
-        <div key={entry.id} style={{ animationDelay: `${index * 0.1}s` }}>
+        <div 
+          key={entry.id} 
+          style={{ animationDelay: `${index * 0.1}s` }}
+          className="animate-slide-in"
+        >
           <EntryDisplay entry={entry} />
         </div>
       ))}
@@ -36,17 +37,14 @@ export function JournalEntryList() {
   );
 }
 
-/**
- * Displayed when there are no journal entries yet
- */
 function EmptyState() {
   return (
-    <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-      <div className="inline-block p-3 bg-gray-100 rounded-full mb-4">
+    <div className="text-center py-12 border-2 border-dashed border-accent/20 rounded-lg">
+      <div className="inline-block p-3 bg-accent/5 rounded-full mb-4">
         <span className="text-2xl">📝</span>
       </div>
-      <p className="text-gray-600 font-medium mb-1">Your Journal Awaits</p>
-      <p className="text-sm text-gray-500">Start your journaling journey today!</p>
+      <p className="text-ink font-medium mb-1 journal-heading">Your Journal Awaits</p>
+      <p className="text-muted text-sm journal-text">Begin your journey of reflection today</p>
     </div>
   );
 }
