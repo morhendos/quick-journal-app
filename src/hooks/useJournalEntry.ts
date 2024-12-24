@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { JournalEntryFormData } from '@/types/journal';
-import { getTodayEntry } from '@/lib/storage';
-import { useJournalStore } from '@/hooks/useJournalStore';
+import { getTodayEntry, saveEntry } from '@/lib/storage';
 
 /**
  * Custom hook for managing journal entry state and operations
@@ -11,7 +10,6 @@ export function useJournalEntry() {
   const [enjoyment, setEnjoyment] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const addOrUpdateEntry = useJournalStore(state => state.addOrUpdateEntry);
 
   // Load today's entry if it exists
   useEffect(() => {
@@ -32,7 +30,7 @@ export function useJournalEntry() {
       enjoyment
     };
 
-    addOrUpdateEntry(entryData);
+    saveEntry(entryData);
     setSubmitted(true);
     setIsEditing(false);
   };
