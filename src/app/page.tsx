@@ -10,12 +10,12 @@ export default function Home() {
         <PageHeader />
 
         <div className="grid gap-8 lg:grid-cols-2 mb-20">
-          <Section title="Today's Entry">
-            <JournalEntryForm />
-          </Section>
-
           <Section title="Previous Entries">
             <JournalEntryList />
+          </Section>
+
+          <Section title="Today's Entry">
+            <JournalEntryForm />
           </Section>
         </div>
 
