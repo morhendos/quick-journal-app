@@ -1,13 +1,25 @@
-import { JournalEntry } from '@/types';
+import { JournalEntry, JournalEntryFormData } from '@/types/journal';
 
+/**
+ * Checks if the code is running in the browser environment
+ */
 const isClient = typeof window !== 'undefined';
 
-export const saveEntry = (entry: Omit<JournalEntry, 'id'>) => {
+/**
+ * Key used for storing journal entries in localStorage
+ */
+const STORAGE_KEY = 'journal_entries';
+
+/**
+ * Saves or updates a journal entry
+ * If an entry exists for the given date, it will be updated
+ * Otherwise, a new entry will be created
+ */
+export const saveEntry = (entry: JournalEntryFormData): JournalEntry | undefined => {
   if (!isClient) return;
 
   const entries = getEntries();
-  const today = new Date().toISOString().split('T')[0];
-  const existingEntryIndex = entries.findIndex(e => e.date === today);
+  const existingEntryIndex = entries.findIndex(e => e.date === entry.date);
 
   if (existingEntryIndex !== -1) {
     // Update existing entry
@@ -16,26 +28,37 @@ export const saveEntry = (entry: Omit<JournalEntry, 'id'>) => {
       ...entries[existingEntryIndex],
       ...entry
     };
-    window.localStorage.setItem('journal_entries', JSON.stringify(updatedEntries));
+    persistEntries(updatedEntries);
     return updatedEntries[existingEntryIndex];
   } else {
     // Create new entry
-    const newEntry = {
+    const newEntry: JournalEntry = {
       ...entry,
-      id: Date.now().toString(),
+      id: generateId(),
     };
-    window.localStorage.setItem('journal_entries', JSON.stringify([...entries, newEntry]));
+    persistEntries([...entries, newEntry]);
     return newEntry;
   }
 };
 
+/**
+ * Retrieves all journal entries from localStorage
+ */
 export const getEntries = (): JournalEntry[] => {
   if (!isClient) return [];
 
-  const entries = window.localStorage.getItem('journal_entries');
-  return entries ? JSON.parse(entries) : [];
+  try {
+    const entries = window.localStorage.getItem(STORAGE_KEY);
+    return entries ? JSON.parse(entries) : [];
+  } catch (error) {
+    console.error('Error retrieving entries:', error);
+    return [];
+  }
 };
 
+/**
+ * Gets the entry for the current day if it exists
+ */
 export const getTodayEntry = (): JournalEntry | undefined => {
   if (!isClient) return undefined;
 
@@ -44,6 +67,29 @@ export const getTodayEntry = (): JournalEntry | undefined => {
   return entries.find(entry => entry.date === today);
 };
 
+/**
+ * Checks if an entry exists for today
+ */
 export const hasEntryForToday = (): boolean => {
   return !!getTodayEntry();
 };
+
+/**
+ * Persists entries to localStorage
+ */
+function persistEntries(entries: JournalEntry[]): void {
+  if (!isClient) return;
+
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  } catch (error) {
+    console.error('Error saving entries:', error);
+  }
+}
+
+/**
+ * Generates a unique ID for new entries
+ */
+function generateId(): string {
+  return Date.now().toString();
+}
