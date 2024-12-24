@@ -6,13 +6,27 @@ export const saveEntry = (entry: Omit<JournalEntry, 'id'>) => {
   if (!isClient) return;
 
   const entries = getEntries();
-  const newEntry = {
-    ...entry,
-    id: Date.now().toString(),
-  };
-  
-  window.localStorage.setItem('journal_entries', JSON.stringify([...entries, newEntry]));
-  return newEntry;
+  const today = new Date().toISOString().split('T')[0];
+  const existingEntryIndex = entries.findIndex(e => e.date === today);
+
+  if (existingEntryIndex !== -1) {
+    // Update existing entry
+    const updatedEntries = [...entries];
+    updatedEntries[existingEntryIndex] = {
+      ...entries[existingEntryIndex],
+      ...entry
+    };
+    window.localStorage.setItem('journal_entries', JSON.stringify(updatedEntries));
+    return updatedEntries[existingEntryIndex];
+  } else {
+    // Create new entry
+    const newEntry = {
+      ...entry,
+      id: Date.now().toString(),
+    };
+    window.localStorage.setItem('journal_entries', JSON.stringify([...entries, newEntry]));
+    return newEntry;
+  }
 };
 
 export const getEntries = (): JournalEntry[] => {
@@ -22,10 +36,14 @@ export const getEntries = (): JournalEntry[] => {
   return entries ? JSON.parse(entries) : [];
 };
 
-export const hasEntryForToday = (): boolean => {
-  if (!isClient) return false;
+export const getTodayEntry = (): JournalEntry | undefined => {
+  if (!isClient) return undefined;
 
   const today = new Date().toISOString().split('T')[0];
   const entries = getEntries();
-  return entries.some(entry => entry.date === today);
+  return entries.find(entry => entry.date === today);
+};
+
+export const hasEntryForToday = (): boolean => {
+  return !!getTodayEntry();
 };
