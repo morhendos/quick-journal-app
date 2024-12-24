@@ -4,10 +4,15 @@ import { useEffect, useState } from 'react';
 import { JournalEntry } from '@/types/journal';
 import { getEntries } from '@/lib/storage';
 import { EntryDisplay } from '@/components/journal/EntryDisplay';
+import { WeeklyGroupedView } from '@/components/journal/WeeklyGroupedView';
+import { ViewToggle } from '@/components/ViewToggle';
 import { BookOpen } from 'lucide-react';
+
+type ViewType = 'chronological' | 'weekly';
 
 export function JournalEntryList() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [view, setView] = useState<ViewType>('chronological');
 
   // Update entries whenever local storage changes
   useEffect(() => {
@@ -54,16 +59,26 @@ export function JournalEntryList() {
   }
 
   return (
-    <div className="space-y-6 max-h-[600px] overflow-y-auto pr-2">
-      {entries.map((entry, index) => (
-        <div 
-          key={entry.id} 
-          style={{ animationDelay: `${index * 0.1}s` }}
-          className="animate-slide-in"
-        >
-          <EntryDisplay entry={entry} />
-        </div>
-      ))}
+    <div>
+      <ViewToggle view={view} onViewChange={setView} />
+      
+      <div className="max-h-[600px] overflow-y-auto pr-2">
+        {view === 'chronological' ? (
+          <div className="space-y-6">
+            {entries.map((entry, index) => (
+              <div 
+                key={entry.id} 
+                style={{ animationDelay: `${index * 0.1}s` }}
+                className="animate-slide-in"
+              >
+                <EntryDisplay entry={entry} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <WeeklyGroupedView entries={entries} />
+        )}
+      </div>
     </div>
   );
 }
