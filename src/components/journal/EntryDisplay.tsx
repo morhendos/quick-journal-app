@@ -1,57 +1,24 @@
 import { JournalEntryDisplayProps } from '@/types/journal';
 
-/**
- * Displays a single journal entry with learning and enjoyment sections
- */
 export function EntryDisplay({ entry, isToday, onEdit }: JournalEntryDisplayProps) {
-  const containerClasses = isToday
-    ? 'bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-6 animate-fade-in shadow-inner'
-    : 'hover-lift rounded-xl border border-gray-100 overflow-hidden animate-slide-in';
-
-  const headerContent = isToday ? (
-    <div className="text-center mb-6">
-      <div className="inline-block p-3 bg-emerald-100 rounded-full mb-3">
-        <span className="text-2xl">✨</span>
-      </div>
-      <h3 className="text-xl font-semibold text-emerald-900 mb-2">Today's Reflections</h3>
-      <p className="text-emerald-700 text-sm">Your thoughts have been captured.</p>
-    </div>
-  ) : (
-    <div className="bg-gray-50 px-5 py-3 border-b border-gray-100">
-      <time className="text-sm font-medium text-gray-500">
-        {new Date(entry.date).toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        })}
-      </time>
-    </div>
-  );
-
   return (
-    <div className={containerClasses}>
-      {headerContent}
+    <div className={`
+      paper-texture bg-paper rounded-lg p-6 transition-all duration-200
+      ${isToday ? 'journal-shadow' : 'border border-accent/20 hover:journal-shadow'}
+    `}>
+      <EntryHeader date={entry.date} isToday={isToday} />
       
-      <div className={`space-y-4 ${isToday ? 'mb-6' : 'p-5 bg-white'}`}>
-        <Section
-          title="Learning"
-          content={entry.learning}
-          icon="💡"
-          isToday={isToday}
-        />
-        <Section
-          title="Enjoyment"
-          content={entry.enjoyment}
-          icon="⭐"
-          isToday={isToday}
-        />
+      <div className="space-y-6 my-6">
+        <Section title="Learning" icon="💡" content={entry.learning} />
+        <Section title="Joy" icon="✨" content={entry.enjoyment} />
       </div>
 
       {isToday && onEdit && (
         <button
           onClick={onEdit}
-          className="w-full bg-emerald-600 text-white py-3 px-6 rounded-lg hover:bg-emerald-700 focus-ring transition-all duration-200 flex items-center justify-center gap-2 group"
+          className="w-full bg-accent/10 text-accent hover:bg-accent/20
+            py-3 px-6 rounded-md transition-all duration-200
+            flex items-center justify-center gap-2 group journal-text"
         >
           <span className="group-hover:scale-105 transition-transform">✏️</span>
           Edit Entry
@@ -61,31 +28,37 @@ export function EntryDisplay({ entry, isToday, onEdit }: JournalEntryDisplayProp
   );
 }
 
-type SectionProps = {
-  title: string;
-  content: string;
-  icon: string;
-  isToday?: boolean;
-};
-
-/**
- * Renders a section of the journal entry (either learning or enjoyment)
- */
-function Section({ title, content, icon, isToday }: SectionProps) {
-  const containerClass = isToday ? 'bg-white bg-opacity-50 rounded-lg p-4' : '';
-  const titleClass = isToday 
-    ? 'text-sm font-medium text-emerald-800 mb-2 flex items-center'
-    : 'text-sm font-medium text-gray-900 flex items-center mb-2';
-  const contentClass = isToday 
-    ? 'text-emerald-900 whitespace-pre-wrap'
-    : 'text-gray-600 whitespace-pre-wrap';
+function EntryHeader({ date, isToday }: { date: string; isToday?: boolean }) {
+  if (isToday) {
+    return (
+      <div className="text-center mb-6">
+        <h3 className="journal-heading text-xl font-semibold text-ink mb-1 transition-colors">
+          Today's Page
+        </h3>
+        <p className="text-muted text-sm journal-text transition-colors">
+          {new Date().toLocaleDateString('en-US', { dateStyle: 'full' })}
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className={containerClass}>
-      <h4 className={titleClass}>
-        <span className="mr-2">{icon}</span> {title}
+    <time className="block text-center text-muted text-sm mb-6 journal-text transition-colors">
+      {new Date(date).toLocaleDateString('en-US', { dateStyle: 'full' })}
+    </time>
+  );
+}
+
+function Section({ title, icon, content }: { title: string; icon: string; content: string }) {
+  return (
+    <div className="space-y-2">
+      <h4 className="flex items-center gap-2 text-sm font-medium text-ink/80 journal-text transition-colors">
+        <span>{icon}</span>
+        {title}
       </h4>
-      <p className={contentClass}>{content}</p>
+      <p className="text-ink/90 whitespace-pre-wrap pl-7 journal-text leading-relaxed transition-colors">
+        {content}
+      </p>
     </div>
   );
 }

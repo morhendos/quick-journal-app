@@ -19,7 +19,19 @@ export function JournalEntryList() {
   if (!mounted) return null;
 
   if (entries.length === 0) {
-    return <EmptyState />;
+    return (
+      <div className="text-center py-12 border-2 border-dashed border-accent/20 rounded-lg transition-colors">
+        <div className="inline-block p-3 bg-accent/5 rounded-full mb-4">
+          <span className="text-2xl">📝</span>
+        </div>
+        <p className="text-ink font-medium mb-1 journal-heading transition-colors">
+          Your Journal Awaits
+        </p>
+        <p className="text-muted text-sm journal-text transition-colors">
+          Begin your journey of reflection today
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -33,18 +45,6 @@ export function JournalEntryList() {
           <EntryDisplay entry={entry} />
         </div>
       ))}
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="text-center py-12 border-2 border-dashed border-accent/20 rounded-lg">
-      <div className="inline-block p-3 bg-accent/5 rounded-full mb-4">
-        <span className="text-2xl">📝</span>
-      </div>
-      <p className="text-ink font-medium mb-1 journal-heading">Your Journal Awaits</p>
-      <p className="text-muted text-sm journal-text">Begin your journey of reflection today</p>
     </div>
   );
 }

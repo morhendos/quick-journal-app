@@ -3,12 +3,9 @@ import { JournalEntryList } from '@/components/JournalEntryList';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
-/**
- * Main page component that renders the journal application
- */
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-background transition-colors duration-200">
       <main className="container mx-auto px-4 py-12 max-w-6xl relative">
         <PageHeader />
 
@@ -30,8 +27,8 @@ export default function Home() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="paper-texture bg-paper rounded-lg p-8 journal-shadow">
-      <h2 className="journal-heading text-2xl font-semibold text-ink mb-8 text-center">
+    <div className="paper-texture bg-paper rounded-lg p-8 journal-shadow transition-colors duration-200">
+      <h2 className="journal-heading text-2xl font-semibold text-ink mb-8 text-center transition-colors">
         {title}
       </h2>
       {children}
