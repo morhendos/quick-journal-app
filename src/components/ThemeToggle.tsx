@@ -16,23 +16,18 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="fixed bottom-6 right-6 p-4 rounded-lg
-        paper-texture bg-paper journal-shadow
-        hover:scale-105 transition-all duration-200
-        flex items-center gap-2 text-ink journal-text"
+      className="fixed bottom-8 right-8 px-6 py-3 rounded-lg
+        bg-paper paper-texture shadow-lg border border-accent/20
+        hover:scale-105 active:scale-95 transition-all duration-200
+        flex items-center gap-3 text-ink/90 journal-text"
       aria-label="Toggle theme"
     >
-      {theme === 'dark' ? (
-        <>
-          <span className="text-xl">☀️</span>
-          <span className="mr-1">Light Mode</span>
-        </>
-      ) : (
-        <>
-          <span className="text-xl">🌙</span>
-          <span className="mr-1">Dark Mode</span>
-        </>
-      )}
+      <span className="text-2xl">
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </span>
+      <span className="font-medium">
+        {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+      </span>
     </button>
   );
 }
