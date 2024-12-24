@@ -1,1 +1,21 @@
-aW1wb3J0IHsgSW50ZXIgfSBmcm9tICduZXh0L2ZvbnQvZ29vZ2xlJzsKaW1wb3J0ICcuL2dsb2JhbHMuY3NzJzsKCmNvbnN0IGludGVyID0gSW50ZXIoeyBzdWJzZXRzOiBbJ2xhdGluJ10gfSk7CgpleHBvcnQgY29uc3QgbWV0YWRhdGEgPSB7CiAgdGl0bGU6ICdRdWljayBKb3VybmFsJywKICBkZXNjcmlwdGlvbjogJ0EgbW9kZXJuIGpvdXJuYWxpbmcgYXBwbGljYXRpb24gZm9jdXNlZCBvbiBxdWljayBlbnRyaWVzIGFuZCBkYXRhIGluc2lnaHRzLicsCn07CgpleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBSb290TGF5b3V0KHsKICBjaGlsZHJlbiwKfToge2NoaWxkcmVuOiBSZWFjdC5SZWFjdE5vZGV9KSB7CiAgcmV0dXJuICgKICAgIDxodG1sIGxhbmc9ImVuIj4KICAgICAgPGJvZHkgY2xhc3NOYW1lPXtpbnRlci5jbGFzc05hbWV9PntjaGlsZHJlbn08L2JvZHk+CiAgICA8L2h0bWw+CiAgKTsKfQ==
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'Quick Journal',
+  description: 'A simple journaling app',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
+    </html>
+  );
+}
