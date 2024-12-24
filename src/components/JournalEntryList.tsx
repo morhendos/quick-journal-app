@@ -1,20 +1,41 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { JournalEntry } from '@/types/journal';
+import { getEntries } from '@/lib/storage';
 import { EntryDisplay } from '@/components/journal/EntryDisplay';
-import { useJournalStore } from '@/hooks/useJournalStore';
 import { BookOpen } from 'lucide-react';
 
 export function JournalEntryList() {
-  const [mounted, setMounted] = useState(false);
-  const { entries, loadEntries } = useJournalStore();
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
 
+  // Update entries whenever local storage changes
   useEffect(() => {
-    setMounted(true);
+    // Initial load
     loadEntries();
-  }, [loadEntries]);
 
-  if (!mounted) return null;
+    // Set up storage event listener
+    const handleStorageChange = () => {
+      loadEntries();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Poll for changes every second (as backup)
+    const interval = setInterval(loadEntries, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const loadEntries = () => {
+    const newEntries = getEntries().sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    setEntries(newEntries);
+  };
 
   if (entries.length === 0) {
     return (
