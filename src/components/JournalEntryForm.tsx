@@ -1,12 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { saveEntry, hasEntryForToday } from '@/lib/storage';
 
 export function JournalEntryForm() {
   const [learning, setLearning] = useState('');
   const [enjoyment, setEnjoyment] = useState('');
-  const [submitted, setSubmitted] = useState(hasEntryForToday());
+  const [submitted, setSubmitted] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setSubmitted(hasEntryForToday());
+  }, []);
+
+  // Don't render anything until after mounting to prevent hydration mismatch
+  if (!mounted) {
+    return null;
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

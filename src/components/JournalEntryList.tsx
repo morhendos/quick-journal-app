@@ -6,12 +6,19 @@ import { getEntries } from '@/lib/storage';
 
 export function JournalEntryList() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     setEntries(getEntries().sort((a, b) => 
       new Date(b.date).getTime() - new Date(a.date).getTime()
     ));
   }, []);
+
+  // Don't render anything until after mounting to prevent hydration mismatch
+  if (!mounted) {
+    return null;
+  }
 
   if (entries.length === 0) {
     return (
