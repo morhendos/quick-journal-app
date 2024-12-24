@@ -20,10 +20,7 @@ export function JournalEntryForm() {
     }
   }, []);
 
-  // Don't render anything until after mounting to prevent hydration mismatch
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,58 +37,66 @@ export function JournalEntryForm() {
 
   if (submitted && !isEditing) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-        <div className="text-center mb-4">
-          <h3 className="text-lg font-medium text-green-800 mb-2">✨ Today's Entry</h3>
-          <p className="text-green-700">You've completed today's reflection.</p>
+      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-6 animate-fade-in shadow-inner">
+        <div className="text-center mb-6">
+          <div className="inline-block p-3 bg-emerald-100 rounded-full mb-3">
+            <span className="text-2xl">✨</span>
+          </div>
+          <h3 className="text-xl font-semibold text-emerald-900 mb-2">Today's Reflections</h3>
+          <p className="text-emerald-700 text-sm">Your thoughts have been captured.</p>
         </div>
         
-        <div className="space-y-4 mb-4">
-          <div>
-            <h4 className="text-sm font-medium text-green-800">Learning:</h4>
-            <p className="text-green-700 mt-1">{learning}</p>
+        <div className="space-y-6 mb-6">
+          <div className="bg-white bg-opacity-50 rounded-lg p-4">
+            <h4 className="text-sm font-medium text-emerald-800 mb-2 flex items-center">
+              <span className="mr-2">💡</span> Learning
+            </h4>
+            <p className="text-emerald-900 whitespace-pre-wrap">{learning}</p>
           </div>
-          <div>
-            <h4 className="text-sm font-medium text-green-800">Enjoyment:</h4>
-            <p className="text-green-700 mt-1">{enjoyment}</p>
+          <div className="bg-white bg-opacity-50 rounded-lg p-4">
+            <h4 className="text-sm font-medium text-emerald-800 mb-2 flex items-center">
+              <span className="mr-2">🌟</span> Enjoyment
+            </h4>
+            <p className="text-emerald-900 whitespace-pre-wrap">{enjoyment}</p>
           </div>
         </div>
 
         <button
           onClick={() => setIsEditing(true)}
-          className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
+          className="w-full bg-emerald-600 text-white py-3 px-6 rounded-lg hover:bg-emerald-700 focus-ring transition-all duration-200 flex items-center justify-center gap-2 group"
         >
-          Edit Today's Entry
+          <span className="group-hover:scale-105 transition-transform">✏️</span>
+          Edit Entry
         </button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          What did you learn today?
+        <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+          <span className="mr-2">💡</span> What did you learn today?
         </label>
         <textarea
           value={learning}
           onChange={(e) => setLearning(e.target.value)}
           required
           placeholder="Share something new you learned today..."
-          className="w-full min-h-[120px] p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full min-h-[120px] p-4 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white bg-opacity-70 backdrop-blur-sm"
         />
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          What did you enjoy today?
+        <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+          <span className="mr-2">🌟</span> What did you enjoy today?
         </label>
         <textarea
           value={enjoyment}
           onChange={(e) => setEnjoyment(e.target.value)}
           required
           placeholder="Share something that brought you joy today..."
-          className="w-full min-h-[120px] p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full min-h-[120px] p-4 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white bg-opacity-70 backdrop-blur-sm"
         />
       </div>
 
@@ -107,15 +112,19 @@ export function JournalEntryForm() {
               }
               setIsEditing(false);
             }}
-            className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
+            className="flex-1 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 focus-ring transition-all duration-200 flex items-center justify-center gap-2 group"
           >
+            <span className="group-hover:scale-105 transition-transform">❌</span>
             Cancel
           </button>
         )}
         <button 
           type="submit"
-          className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+          className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 focus-ring transition-all duration-200 flex items-center justify-center gap-2 group"
         >
+          <span className="group-hover:scale-105 transition-transform">
+            {isEditing ? '✨' : '📝'}
+          </span>
           {isEditing ? 'Save Changes' : 'Save Entry'}
         </button>
       </div>
