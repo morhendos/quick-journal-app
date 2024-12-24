@@ -13,12 +13,13 @@
   }
 
   :root[class~="dark"] {
-    --background: 215 30% 12%;
-    --paper: 215 25% 15%;
-    --foreground: 40 15% 90%;
-    --muted: 40 10% 65%;
-    --accent: 25 70% 60%;
-    --ink: 215 30% 75%;
+    /* Warmer, more sophisticated dark mode */
+    --background: 222 28% 10%;    /* Deeper, richer navy */
+    --paper: 222 24% 13%;         /* Slightly warmer dark background */
+    --foreground: 38 20% 95%;     /* Warmer white for better readability */
+    --muted: 38 15% 60%;          /* Warmer muted text */
+    --accent: 32 90% 65%;         /* Warmer, golden accent */
+    --ink: 222 25% 85%;           /* Softer text color */
   }
 }
 
@@ -51,6 +52,7 @@ body {
   background-repeat: repeat;
 }
 
+/* Enhanced shadows for dark mode */
 .journal-shadow {
   box-shadow: 
     0 1px 2px rgba(0, 0, 0, 0.03),
@@ -61,13 +63,13 @@ body {
 
 .dark .journal-shadow {
   box-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.2),
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    0 4px 8px rgba(0, 0, 0, 0.2),
-    0 8px 16px rgba(0, 0, 0, 0.2);
+    0 1px 1px rgba(0, 0, 0, 0.3),
+    0 2px 2px rgba(0, 0, 0, 0.3),
+    0 4px 4px rgba(0, 0, 0, 0.3),
+    0 8px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - warmer colors for dark mode */
 .dark ::-webkit-scrollbar {
   width: 6px;
 }
@@ -77,8 +79,12 @@ body {
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted));
+  background: hsl(var(--accent) / 0.3);
   border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent) / 0.4);
 }
 
 /* Typography - added font-feature-settings for more elegance */
@@ -99,6 +105,10 @@ body {
 .journal-button {
   @apply rounded-md transition-all duration-200 font-medium;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.dark .journal-button {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .journal-button:hover {
