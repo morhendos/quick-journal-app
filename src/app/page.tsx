@@ -1,6 +1,7 @@
 import { JournalEntryForm } from '@/components/JournalEntryForm';
 import { JournalEntryList } from '@/components/JournalEntryList';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 /**
  * Main page component that renders the journal application
@@ -8,51 +9,29 @@ import { PageHeader } from '@/components/layout/PageHeader';
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <main className="container mx-auto px-4 py-12 max-w-6xl">
+      <main className="container mx-auto px-4 py-12 max-w-6xl relative">
         <PageHeader />
 
-        <div className="grid gap-8 lg:grid-cols-2">
-          <Section 
-            title="Today's Entry"
-            icon="✏️"
-            iconBg="bg-blue-100"
-            iconColor="text-blue-600"
-          >
+        <div className="grid gap-8 lg:grid-cols-2 mb-20">
+          <Section title="Today's Entry">
             <JournalEntryForm />
           </Section>
 
-          <Section 
-            title="Previous Entries"
-            icon="📚"
-            iconBg="bg-purple-100"
-            iconColor="text-purple-600"
-          >
+          <Section title="Previous Entries">
             <JournalEntryList />
           </Section>
         </div>
+
+        <ThemeToggle />
       </main>
     </div>
   );
 }
 
-type SectionProps = {
-  title: string;
-  icon: string;
-  iconBg: string;
-  iconColor: string;
-  children: React.ReactNode;
-};
-
-/**
- * Section component for main content areas
- */
-function Section({ title, icon, iconBg, iconColor, children }: SectionProps) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="glass-effect rounded-2xl shadow-xl p-8 animate-fade-in">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-8 flex items-center">
-        <span className={`${iconBg} ${iconColor} p-2 rounded-lg mr-3`}>
-          {icon}
-        </span>
+    <div className="paper-texture bg-paper rounded-lg p-8 journal-shadow">
+      <h2 className="journal-heading text-2xl font-semibold text-ink mb-8 text-center">
         {title}
       </h2>
       {children}
