@@ -1,4 +1,5 @@
 import { JournalEntryDisplayProps } from '@/types/journal';
+import { BookOpen, Sparkles, Edit } from 'lucide-react';
 
 export function EntryDisplay({ entry, isToday, onEdit }: JournalEntryDisplayProps) {
   return (
@@ -9,19 +10,27 @@ export function EntryDisplay({ entry, isToday, onEdit }: JournalEntryDisplayProp
       <EntryHeader date={entry.date} isToday={isToday} />
       
       <div className="space-y-6 my-6">
-        <Section title="Learning" icon="💡" content={entry.learning} />
-        <Section title="Joy" icon="✨" content={entry.enjoyment} />
+        <Section 
+          title="Learning" 
+          icon={<BookOpen size={18} className="text-accent" strokeWidth={1.5} />} 
+          content={entry.learning} 
+        />
+        <Section 
+          title="Joy" 
+          icon={<Sparkles size={18} className="text-accent" strokeWidth={1.5} />} 
+          content={entry.enjoyment} 
+        />
       </div>
 
       {isToday && onEdit && (
         <button
           onClick={onEdit}
-          className="w-full bg-accent/10 text-accent hover:bg-accent/20
+          className="w-full bg-accent/10 text-accent hover:bg-accent/15
             py-3 px-6 rounded-md transition-all duration-200
-            flex items-center justify-center gap-2 group journal-text"
+            flex items-center justify-center gap-2 group journal-text journal-button"
         >
-          <span className="group-hover:scale-105 transition-transform">✏️</span>
-          Edit Entry
+          <Edit size={18} className="group-hover:scale-105 transition-transform" strokeWidth={1.5} />
+          <span>Edit Entry</span>
         </button>
       )}
     </div>
@@ -49,11 +58,11 @@ function EntryHeader({ date, isToday }: { date: string; isToday?: boolean }) {
   );
 }
 
-function Section({ title, icon, content }: { title: string; icon: string; content: string }) {
+function Section({ title, icon, content }: { title: string; icon: React.ReactNode; content: string }) {
   return (
     <div className="space-y-2">
-      <h4 className="flex items-center gap-2 text-sm font-medium text-ink/80 journal-text transition-colors">
-        <span>{icon}</span>
+      <h4 className="flex items-center gap-2.5 text-sm font-medium text-ink/90 journal-text transition-colors">
+        {icon}
         {title}
       </h4>
       <p className="text-ink/90 whitespace-pre-wrap pl-7 journal-text leading-relaxed transition-colors">
