@@ -12,7 +12,7 @@ type ViewType = 'chronological' | 'weekly';
 
 export function JournalEntryList() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [view, setView] = useState<ViewType>('chronological');
+  const [view, setView] = useState<ViewType>('weekly'); // Changed default to 'weekly'
 
   // Update entries whenever local storage changes
   useEffect(() => {
