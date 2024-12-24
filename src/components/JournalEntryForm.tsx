@@ -1,29 +1,30 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 
 export function JournalEntryForm() {
   const [entry, setEntry] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement entry submission
+    // TODO: Implement MongoDB integration
     setEntry('');
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Textarea
+      <textarea
         value={entry}
         onChange={(e) => setEntry(e.target.value)}
         placeholder="Write your journal entry..."
-        className="min-h-[200px]"
+        className="w-full min-h-[200px] p-2 border rounded"
       />
-      <Button type="submit" className="w-full">
+      <button 
+        type="submit" 
+        className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+      >
         Save Entry
-      </Button>
+      </button>
     </form>
   );
 }
