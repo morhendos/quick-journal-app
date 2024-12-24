@@ -7,7 +7,7 @@ export function EntryDisplay({ entry, isToday, onEdit }: JournalEntryDisplayProp
       paper-texture bg-paper rounded-lg p-6 transition-all duration-200
       ${isToday ? 'journal-shadow' : 'border border-accent/20 hover:journal-shadow'}
     `}>
-      <EntryHeader date={entry.date} isToday={isToday} />
+      <EntryHeader date={entry.date} />
       
       <div className="space-y-6 my-6">
         <Section 
@@ -37,20 +37,7 @@ export function EntryDisplay({ entry, isToday, onEdit }: JournalEntryDisplayProp
   );
 }
 
-function EntryHeader({ date, isToday }: { date: string; isToday?: boolean }) {
-  if (isToday) {
-    return (
-      <div className="text-center mb-6">
-        <h3 className="journal-heading text-xl font-semibold text-ink mb-1 transition-colors">
-          Today's Page
-        </h3>
-        <p className="text-muted text-sm journal-text transition-colors">
-          {new Date().toLocaleDateString('en-US', { dateStyle: 'full' })}
-        </p>
-      </div>
-    );
-  }
-
+function EntryHeader({ date }: { date: string }) {
   return (
     <time className="block text-center text-muted text-sm mb-6 journal-text transition-colors">
       {new Date(date).toLocaleDateString('en-US', { dateStyle: 'full' })}
