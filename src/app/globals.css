@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --background: 35 30% 95%;
+    --paper: 35 30% 98%;
+    --foreground: 35 30% 10%;
+    --muted: 35 20% 40%;
+    --accent: 35 60% 40%;
+    --ink: 220 40% 30%;
+  }
+
+  :root[class~="dark"] {
+    --background: 35 30% 10%;
+    --paper: 35 20% 15%;
+    --foreground: 35 30% 90%;
+    --muted: 35 20% 60%;
+    --accent: 35 60% 60%;
+    --ink: 220 40% 70%;
+  }
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -20,36 +45,45 @@
   animation: slideIn 0.3s ease-out;
 }
 
+/* Paper texture */
+.paper-texture {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+.journal-shadow {
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    0 4px 8px rgba(0, 0, 0, 0.05),
+    0 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+.dark .journal-shadow {
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
 /* Custom scrollbar */
-::-webkit-scrollbar {
+.dark ::-webkit-scrollbar {
   width: 6px;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 8px;
+.dark ::-webkit-scrollbar-track {
+  background: hsl(var(--background));
 }
 
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 8px;
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 3px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+/* Typography */
+.journal-heading {
+  font-family: 'Playfair Display', serif;
 }
 
-/* Focus styles */
-.focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white;
-}
-
-/* Card hover effect */
-.hover-lift {
-  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-}
-
-/* Glass effect */
-.glass-effect {
-  @apply bg-white bg-opacity-70 backdrop-blur-lg;
+.journal-text {
+  font-family: 'Lora', serif;
 }
