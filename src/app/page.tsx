@@ -3,20 +3,28 @@
 import { JournalEntryForm } from '@/components/JournalEntryForm';
 import { JournalEntryList } from '@/components/JournalEntryList';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { useState } from 'react';
 
 export default function Home() {
+  // Simple counter to force re-render of child components
+  const [updateCounter, setUpdateCounter] = useState(0);
+
+  const handleEntriesUpdate = () => {
+    setUpdateCounter(prev => prev + 1);
+  };
+
   return (
     <div className="min-h-screen bg-background transition-colors duration-200">
       <main className="container mx-auto px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative">
-        <PageHeader />
+        <PageHeader onEntriesUpdate={handleEntriesUpdate} />
 
         <div className="grid gap-6 lg:gap-8 lg:grid-cols-2">
           <Section title="Today's Entry" className="order-1 lg:order-2">
-            <JournalEntryForm />
+            <JournalEntryForm key={updateCounter} />
           </Section>
 
           <Section title="Previous Entries" className="order-2 lg:order-1">
-            <JournalEntryList />
+            <JournalEntryList key={updateCounter} />
           </Section>
         </div>
       </main>
