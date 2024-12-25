@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { exportJournalEntries, importJournalEntries } from '@/lib/exportImport';
 import { JournalEntry } from '@/types/journal';
+import { Download, Upload } from 'lucide-react';
 
 interface ExportImportProps {
   onImportSuccess: (entries: JournalEntry[]) => void;
@@ -42,18 +43,38 @@ const ExportImport: React.FC<ExportImportProps> = ({ onImportSuccess, onError })
   };
 
   return (
-    <div className="flex gap-4 mb-6">
+    <div className="flex gap-2">
       <button
         onClick={handleExport}
-        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        className="
+          p-2
+          rounded-lg
+          bg-paper paper-texture journal-shadow 
+          border border-accent/20
+          hover:scale-102 active:scale-98 
+          transition-all duration-200
+          flex items-center justify-center
+          text-ink/90
+        "
+        aria-label="Export journal entries"
       >
-        Export Journal
+        <Download size={20} className="text-accent" strokeWidth={1.5} />
       </button>
       <button
         onClick={handleImportClick}
-        className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+        className="
+          p-2
+          rounded-lg
+          bg-paper paper-texture journal-shadow 
+          border border-accent/20
+          hover:scale-102 active:scale-98 
+          transition-all duration-200
+          flex items-center justify-center
+          text-ink/90
+        "
+        aria-label="Import journal entries"
       >
-        Import Journal
+        <Upload size={20} className="text-accent" strokeWidth={1.5} />
       </button>
       <input
         type="file"
