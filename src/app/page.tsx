@@ -37,7 +37,7 @@ export default function Home() {
           onError={handleError}
         />
 
-        <div className="grid gap-6 lg:gap-8 lg:grid-cols-2 mb-16">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-2">
           <Section title="Today's Entry" className="order-1 lg:order-2">
             <JournalEntryForm />
           </Section>
