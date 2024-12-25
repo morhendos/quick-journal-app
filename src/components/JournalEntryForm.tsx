@@ -12,6 +12,7 @@ export function JournalEntryForm() {
     enjoyment,
     setEnjoyment,
     submitted,
+    setSubmitted,
     isEditing,
     handleSubmit,
     handleEdit,
