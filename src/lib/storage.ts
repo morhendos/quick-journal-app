@@ -1,5 +1,4 @@
 import { JournalEntry, JournalEntryFormData } from '@/types/journal';
-import { sampleEntries } from './sampleData';
 
 /**
  * Checks if the code is running in the browser environment
@@ -44,22 +43,13 @@ export const saveEntry = (entry: JournalEntryFormData): JournalEntry | undefined
 
 /**
  * Retrieves all journal entries from localStorage
- * If no entries exist and includeDemo is true, returns sample entries
  */
-export const getEntries = (includeDemo: boolean = true): JournalEntry[] => {
+export const getEntries = (): JournalEntry[] => {
   if (!isClient) return [];
 
   try {
     const entriesJson = window.localStorage.getItem(STORAGE_KEY);
-    const entries = entriesJson ? JSON.parse(entriesJson) : [];
-    
-    // If no entries exist and includeDemo is true, provide sample entries
-    if (entries.length === 0 && includeDemo) {
-      persistEntries(sampleEntries);
-      return sampleEntries;
-    }
-    
-    return entries;
+    return entriesJson ? JSON.parse(entriesJson) : [];
   } catch (error) {
     console.error('Error retrieving entries:', error);
     return [];
