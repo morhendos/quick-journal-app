@@ -4,6 +4,8 @@ import { useJournalEntry } from '@/hooks/useJournalEntry';
 import { EntryDisplay } from '@/components/journal/EntryDisplay';
 import { getTodayEntry } from '@/lib/storage';
 import { BookOpen, Sparkles, Save, X, Edit } from 'lucide-react';
+import { useJournalStore } from '@/hooks/useJournalStore';
+import { useEffect } from 'react';
 
 export function JournalEntryForm() {
   const {
@@ -12,11 +14,25 @@ export function JournalEntryForm() {
     enjoyment,
     setEnjoyment,
     submitted,
+    setSubmitted,
     isEditing,
     handleSubmit,
     handleEdit,
     handleCancel
   } = useJournalEntry();
+
+  // Subscribe to journal entries updates
+  const entries = useJournalStore(state => state.entries);
+
+  // Update form when entries change (e.g., after import)
+  useEffect(() => {
+    const todayEntry = getTodayEntry();
+    if (todayEntry) {
+      setLearning(todayEntry.learning);
+      setEnjoyment(todayEntry.enjoyment);
+      setSubmitted(true);
+    }
+  }, [entries, setLearning, setEnjoyment, setSubmitted]);
 
   if (submitted && !isEditing) {
     const todayEntry = getTodayEntry();
