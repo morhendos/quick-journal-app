@@ -6,11 +6,11 @@ export function PageHeader() {
   return (
     <div className="mb-16 animate-fade-in">
       <div className="flex justify-between items-center mb-8">
-        <div className="flex-1"></div> {/* Spacer */}
-        <h1 className="journal-heading text-5xl font-bold text-ink tracking-tight flex-grow text-center">
+        <div className="w-32"></div> {/* Spacer with fixed width */}
+        <h1 className="journal-heading text-4xl sm:text-5xl font-bold text-ink tracking-tight">
           Daily Journal
         </h1>
-        <div className="flex-1 flex justify-end">
+        <div className="w-32 flex justify-end"> {/* Fixed width container for theme toggle */}
           <ThemeToggle />
         </div>
       </div>
