@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useRef } from 'react';
 import { exportJournalEntries, importJournalEntries } from '@/lib/exportImport';
 import { JournalEntry } from '@/types/journal';
