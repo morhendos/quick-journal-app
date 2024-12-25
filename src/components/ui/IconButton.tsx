@@ -3,12 +3,32 @@
 import { LucideIcon } from 'lucide-react';
 import { ComponentProps } from 'react';
 
+/**
+ * Props for the IconButton component
+ * @interface IconButtonProps
+ * @extends {ComponentProps<'button'>} - Inherits all HTML button props
+ */
 interface IconButtonProps extends ComponentProps<'button'> {
+  /** Lucide icon component to render */
   icon: LucideIcon;
+  /** Size of the icon in pixels */
   size?: number;
+  /** Stroke width of the icon */
   strokeWidth?: number;
 }
 
+/**
+ * A reusable button component that displays an icon with consistent styling
+ * @component
+ * @example
+ * ```tsx
+ * <IconButton
+ *   icon={Download}
+ *   onClick={handleClick}
+ *   aria-label="Download file"
+ * />
+ * ```
+ */
 export function IconButton({ 
   icon: Icon,
   size = 20,

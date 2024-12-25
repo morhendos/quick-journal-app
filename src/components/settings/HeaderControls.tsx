@@ -8,6 +8,18 @@ import { useEffect, useState, useRef } from 'react';
 import { IconButton } from '../ui/IconButton';
 import { exportJournalEntries, importJournalEntries } from '@/lib/exportImport';
 
+/**
+ * HeaderControls component handles the app's main control functions:
+ * - Theme switching (light/dark)
+ * - Journal data export
+ * - Journal data import
+ * 
+ * @component
+ * @example
+ * ```tsx
+ * <HeaderControls />
+ * ```
+ */
 export function HeaderControls() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -20,7 +32,10 @@ export function HeaderControls() {
     setMounted(true);
   }, []);
 
-  // Import/Export handlers
+  /**
+   * Handles the export journal functionality
+   * Shows success/error toast notifications
+   */
   const handleExport = async () => {
     try {
       await exportJournalEntries();
@@ -39,10 +54,17 @@ export function HeaderControls() {
     }
   };
 
+  /**
+   * Triggers the file input click when import button is clicked
+   */
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
 
+  /**
+   * Handles the file selection and import process
+   * Shows success/error toast notifications
+   */
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
