@@ -1,41 +1,36 @@
 # Daily Journal App
 
-A simple, beautiful journaling application that helps users track their daily learnings and enjoyable moments.
+A modern, minimalist journaling application that helps users track their daily learnings and enjoyable moments. Focus on what matters with a clean interface and intuitive data management.
 
 ## Features
 
-- Daily journal entries with focus on learning and enjoyment
-- Clean, modern UI with animations and responsive design
-- Local storage persistence
-- Data export and import functionality
-- Dark/light theme support
+### Core Functionality
+- Daily journal entries with learning and enjoyment sections
 - Edit functionality for today's entry
-- Chronological entry list
+- Chronological entry list with weekly view
+- Local storage for data persistence
+
+### Data Management
+- Export journal to JSON with metadata
+- Import entries with smart merging
+- Data validation and error handling
+
+### User Experience
+- Clean, modern UI with animations
+- Dark/light theme support
+- Responsive design for all devices
+- Consistent paper-like styling
 
 ## Tech Stack
 
-- Next.js 14
-- TypeScript
-- Tailwind CSS
-- Lucide Icons
-- Local Storage for data persistence
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **Storage**: Local Storage (MongoDB planned)
+- **Component Library**: Custom components with shadcn/ui influences
 
-## Project Structure
-
-```
-└── src/
-    ├── app/              # Next.js app router files
-    ├── components/       # React components
-    │   ├── journal/     # Journal-specific components
-    │   ├── settings/    # Settings and controls
-    │   ├── layout/      # Layout components
-    │   └── ui/          # Shared UI components
-    ├── hooks/           # Custom React hooks
-    ├── lib/             # Utility functions and services
-    └── types/           # TypeScript type definitions
-```
-
-## Development
+## Getting Started
 
 1. Clone the repository:
 ```bash
@@ -53,14 +48,22 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-## Code Organization
+## Project Structure
 
-- **Components**: Each component is self-contained with its own styles and logic
-- **Types**: Strong TypeScript typing for better development experience
-- **Utilities**: Shared functions for data management
-- **Storage**: Local storage service with import/export capabilities
+```
+src/
+├── app/              # Next.js app router files
+├── components/       # React components
+│   ├── journal/     # Journal components
+│   ├── settings/    # Settings components
+│   ├── layout/      # Layout components
+│   └── ui/          # Shared UI components
+├── hooks/           # Custom React hooks
+├── lib/             # Utilities
+└── types/           # TypeScript types
+```
 
 ## Data Management
 
@@ -73,28 +76,57 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
     {
       "id": "1703505600000",
       "date": "2024-12-25",
-      "learning": "...",
-      "enjoyment": "..."
+      "learning": "What I learned today...",
+      "enjoyment": "What brought me joy..."
     }
   ]
 }
 ```
 
-### Local Storage
-- Key: `journal_entries`
-- Format: Array of JournalEntry objects
-- Sorted by date in descending order
+### Import Features
+- Validates data structure and content
+- Merges with existing entries
+- Newer entries take precedence
+- Supports both current and legacy formats
+
+## Development Guidelines
+
+### Component Development
+1. Use 'use client' directive for client components
+2. Follow existing style patterns
+3. Include proper TypeScript types
+4. Add JSDoc documentation
+
+### Styling Guidelines
+1. Use Tailwind utility classes
+2. Follow the paper-like design system
+3. Ensure dark mode compatibility
+4. Maintain responsive design
 
 ## Contributing
 
-1. Create a feature branch
-2. Make your changes
-3. Submit a pull request
+1. Create a feature branch:
+```bash
+git checkout -b feature/your-feature-name
+```
 
-## Future Enhancements
+2. Make your changes and commit:
+```bash
+git commit -m "Description of changes"
+```
 
-- MongoDB integration for data persistence
+3. Push and create a pull request
+
+## Planned Features
+
+- MongoDB integration
 - User authentication
 - Rich text editor
 - Search and filtering
 - Tags and categories
+- Data analytics
+- Export to different formats
+
+## License
+
+MIT License - See LICENSE file for details
