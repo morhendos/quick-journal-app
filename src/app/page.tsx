@@ -1,9 +1,12 @@
+'use client';
+
 import { JournalEntryForm } from '@/components/JournalEntryForm';
 import { JournalEntryList } from '@/components/JournalEntryList';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import ExportImport from '@/components/journal/ExportImport';
 import { useToast } from '@/components/ui/use-toast';
+import { JournalEntry } from '@/types/journal';
 
 export default function Home() {
   const { toast } = useToast();
