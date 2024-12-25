@@ -6,13 +6,14 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState, useRef } from 'react';
 import { IconButton } from '../ui/IconButton';
 import { exportJournalEntries, importJournalEntries } from '@/lib/exportImport';
-import { useJournalStore } from '@/hooks/useJournalStore';
-import { getEntries } from '@/lib/storage';
 
-export function HeaderControls() {
+interface HeaderControlsProps {
+  onEntriesUpdate?: () => void;
+}
+
+export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const updateEntries = useJournalStore(state => state.updateEntries);
 
   // Theme handling
   const { theme, setTheme } = useTheme();
@@ -51,7 +52,7 @@ export function HeaderControls() {
 
     try {
       const entries = await importJournalEntries(file);
-      updateEntries(getEntries()); // Update store with latest entries
+      onEntriesUpdate?.(); // Notify parent about the update
       toast({
         title: 'Import Successful',
         description: `Successfully imported ${entries.length} journal entries.`,
