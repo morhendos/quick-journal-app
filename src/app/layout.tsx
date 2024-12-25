@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Providers } from '@/components/providers';
 import { Playfair_Display, Lora } from 'next/font/google';
+import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 // Initialize fonts with subsets and weights
@@ -35,7 +36,10 @@ export default function RootLayout({
       className={`${playfair.variable} ${lora.variable}`}
     >
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

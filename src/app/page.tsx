@@ -1,7 +1,8 @@
+'use client';
+
 import { JournalEntryForm } from '@/components/JournalEntryForm';
 import { JournalEntryList } from '@/components/JournalEntryList';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function Home() {
   return (
@@ -9,7 +10,7 @@ export default function Home() {
       <main className="container mx-auto px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative">
         <PageHeader />
 
-        <div className="grid gap-6 lg:gap-8 lg:grid-cols-2 mb-16">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-2">
           <Section title="Today's Entry" className="order-1 lg:order-2">
             <JournalEntryForm />
           </Section>
@@ -18,8 +19,6 @@ export default function Home() {
             <JournalEntryList />
           </Section>
         </div>
-
-        <ThemeToggle />
       </main>
     </div>
   );
