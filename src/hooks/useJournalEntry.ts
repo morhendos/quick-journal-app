@@ -62,6 +62,7 @@ export function useJournalEntry() {
     enjoyment,
     setEnjoyment,
     submitted,
+    setSubmitted,
     isEditing,
     handleSubmit,
     handleEdit,
