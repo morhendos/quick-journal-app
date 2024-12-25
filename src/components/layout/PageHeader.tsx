@@ -2,7 +2,11 @@
 
 import { HeaderControls } from '../settings/HeaderControls';
 
-export function PageHeader() {
+interface PageHeaderProps {
+  onEntriesUpdate?: () => void;
+}
+
+export function PageHeader({ onEntriesUpdate }: PageHeaderProps) {
   return (
     <div className="mb-16 animate-fade-in">
       <div className="flex justify-between items-center mb-8">
@@ -11,7 +15,7 @@ export function PageHeader() {
           Daily Journal
         </h1>
         <div className="w-32"> {/* Container for header controls */}
-          <HeaderControls />
+          <HeaderControls onEntriesUpdate={onEntriesUpdate} />
         </div>
       </div>
       <p className="text-muted text-lg max-w-2xl mx-auto journal-text leading-relaxed text-center">
