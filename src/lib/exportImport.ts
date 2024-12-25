@@ -50,6 +50,22 @@ export const exportJournalEntries = (): void => {
 };
 
 /**
+ * Type guard to check if an object is a valid JournalEntry
+ */
+function isValidJournalEntry(entry: any): entry is JournalEntry {
+  return (
+    typeof entry === 'object' &&
+    entry !== null &&
+    typeof entry.id === 'string' &&
+    typeof entry.date === 'string' &&
+    typeof entry.learning === 'string' &&
+    typeof entry.enjoyment === 'string' &&
+    // Validate date format (YYYY-MM-DD)
+    /^\d{4}-\d{2}-\d{2}$/.test(entry.date)
+  );
+}
+
+/**
  * Imports journal entries from a JSON file
  * @param file File object containing journal entries
  * @returns Promise<JournalEntry[]>
@@ -57,20 +73,36 @@ export const exportJournalEntries = (): void => {
 export const importJournalEntries = async (file: File): Promise<JournalEntry[]> => {
   try {
     const text = await file.text();
-    const importData: ExportData = JSON.parse(text);
+    let importData: ExportData;
 
-    // Basic validation
-    if (!importData.version || !importData.entries || !Array.isArray(importData.entries)) {
-      throw new Error('Invalid import file format');
+    try {
+      importData = JSON.parse(text);
+    } catch (e) {
+      console.error('Error parsing JSON:', e);
+      throw new Error('Invalid JSON format');
+    }
+
+    // Basic structure validation
+    if (!importData || typeof importData !== 'object') {
+      throw new Error('Invalid import file format: not an object');
+    }
+
+    // If it's a direct array of entries (old format), wrap it
+    if (Array.isArray(importData)) {
+      importData = {
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
+        entries: importData
+      };
+    }
+
+    // Validate structure
+    if (!importData.entries || !Array.isArray(importData.entries)) {
+      throw new Error('Invalid import file format: no entries array');
     }
 
     // Validate each entry
-    const validEntries = importData.entries.every(entry => 
-      typeof entry.id === 'string' &&
-      typeof entry.date === 'string' &&
-      typeof entry.content === 'string'
-    );
-
+    const validEntries = importData.entries.every(isValidJournalEntry);
     if (!validEntries) {
       throw new Error('Invalid entry format in import file');
     }
@@ -97,6 +129,6 @@ export const importJournalEntries = async (file: File): Promise<JournalEntry[]> 
     return mergedEntries;
   } catch (error) {
     console.error('Error importing journal entries:', error);
-    throw new Error('Failed to import journal entries');
+    throw error instanceof Error ? error : new Error('Failed to import journal entries');
   }
 };
