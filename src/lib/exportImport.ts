@@ -8,41 +8,69 @@ interface ExportData {
   entries: JournalEntry[];
 }
 
+type ValidationError = 'INVALID_JSON' | 'INVALID_FORMAT' | 'INVALID_ENTRIES';
+
+class JournalImportError extends Error {
+  constructor(type: ValidationError) {
+    const messages = {
+      INVALID_JSON: 'The file contains invalid JSON data',
+      INVALID_FORMAT: 'The file format is not recognized',
+      INVALID_ENTRIES: 'The journal entries are not in the correct format'
+    };
+    super(messages[type]);
+    this.name = 'JournalImportError';
+  }
+}
+
+/**
+ * Type guard to check if an object is a valid JournalEntry
+ */
+function isValidJournalEntry(entry: unknown): entry is JournalEntry {
+  return (
+    typeof entry === 'object' &&
+    entry !== null &&
+    typeof (entry as JournalEntry).id === 'string' &&
+    typeof (entry as JournalEntry).date === 'string' &&
+    typeof (entry as JournalEntry).learning === 'string' &&
+    typeof (entry as JournalEntry).enjoyment === 'string' &&
+    // Validate date format (YYYY-MM-DD)
+    /^\d{4}-\d{2}-\d{2}$/.test((entry as JournalEntry).date)
+  );
+}
+
+/**
+ * Creates a download link and triggers the download
+ */
+function triggerDownload(data: string, filename: string) {
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 /**
  * Exports journal entries to a JSON file
- * @returns void
+ * @throws Error if export fails
  */
 export const exportJournalEntries = (): void => {
   try {
-    // Get entries from localStorage
     const entriesJson = localStorage.getItem(JOURNAL_STORAGE_KEY);
-    const entries = entriesJson ? JSON.parse(entriesJson) : [];
+    const entries: JournalEntry[] = entriesJson ? JSON.parse(entriesJson) : [];
 
-    // Create export data structure
     const exportData: ExportData = {
       version: '1.0.0',
       timestamp: new Date().toISOString(),
       entries
     };
 
-    // Convert to Blob
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-      type: 'application/json'
-    });
-
-    // Create download link
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `journal_export_${new Date().toISOString().split('T')[0]}.json`;
-
-    // Trigger download
-    document.body.appendChild(link);
-    link.click();
-
-    // Cleanup
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const filename = `journal_export_${new Date().toISOString().split('T')[0]}.json`;
+    triggerDownload(JSON.stringify(exportData, null, 2), filename);
   } catch (error) {
     console.error('Error exporting journal entries:', error);
     throw new Error('Failed to export journal entries');
@@ -50,25 +78,9 @@ export const exportJournalEntries = (): void => {
 };
 
 /**
- * Type guard to check if an object is a valid JournalEntry
- */
-function isValidJournalEntry(entry: any): entry is JournalEntry {
-  return (
-    typeof entry === 'object' &&
-    entry !== null &&
-    typeof entry.id === 'string' &&
-    typeof entry.date === 'string' &&
-    typeof entry.learning === 'string' &&
-    typeof entry.enjoyment === 'string' &&
-    // Validate date format (YYYY-MM-DD)
-    /^\d{4}-\d{2}-\d{2}$/.test(entry.date)
-  );
-}
-
-/**
  * Imports journal entries from a JSON file
- * @param file File object containing journal entries
- * @returns Promise<JournalEntry[]>
+ * @throws JournalImportError for validation errors
+ * @throws Error for other errors
  */
 export const importJournalEntries = async (file: File): Promise<JournalEntry[]> => {
   try {
@@ -77,17 +89,11 @@ export const importJournalEntries = async (file: File): Promise<JournalEntry[]> 
 
     try {
       importData = JSON.parse(text);
-    } catch (e) {
-      console.error('Error parsing JSON:', e);
-      throw new Error('Invalid JSON format');
+    } catch {
+      throw new JournalImportError('INVALID_JSON');
     }
 
-    // Basic structure validation
-    if (!importData || typeof importData !== 'object') {
-      throw new Error('Invalid import file format: not an object');
-    }
-
-    // If it's a direct array of entries (old format), wrap it
+    // Handle direct array format (legacy support)
     if (Array.isArray(importData)) {
       importData = {
         version: '1.0.0',
@@ -97,14 +103,13 @@ export const importJournalEntries = async (file: File): Promise<JournalEntry[]> 
     }
 
     // Validate structure
-    if (!importData.entries || !Array.isArray(importData.entries)) {
-      throw new Error('Invalid import file format: no entries array');
+    if (!importData || typeof importData !== 'object' || !Array.isArray(importData.entries)) {
+      throw new JournalImportError('INVALID_FORMAT');
     }
 
-    // Validate each entry
-    const validEntries = importData.entries.every(isValidJournalEntry);
-    if (!validEntries) {
-      throw new Error('Invalid entry format in import file');
+    // Validate entries
+    if (!importData.entries.every(isValidJournalEntry)) {
+      throw new JournalImportError('INVALID_ENTRIES');
     }
 
     // Merge with existing entries
@@ -129,6 +134,6 @@ export const importJournalEntries = async (file: File): Promise<JournalEntry[]> 
     return mergedEntries;
   } catch (error) {
     console.error('Error importing journal entries:', error);
-    throw error instanceof Error ? error : new Error('Failed to import journal entries');
+    throw error;
   }
 };
