@@ -1,6 +1,7 @@
-import { type NextRequest } from 'next/server'
-import { handler } from '@/lib/auth/config'
+import { authConfig } from '@/lib/auth/config'
+import NextAuth from 'next-auth'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
-  return await handler(request)
-}
+const handler = NextAuth(authConfig)
+
+export const GET = handler.providers
