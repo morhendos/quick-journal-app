@@ -1,1 +1,1 @@
-export { GET } from 'src/lib/auth/config';
+export { GET } from '@/lib/auth/config';
