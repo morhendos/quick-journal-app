@@ -1,11 +1,11 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 export default function LoginPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -16,22 +16,21 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget);
+      const email = formData.get('email') as string;
+      const password = formData.get('password') as string;
+      
+      const callbackUrl = searchParams?.get('callbackUrl') || '/';
       const result = await signIn('credentials', {
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-        redirect: false,
-        callbackUrl: '/'
+        email,
+        password,
+        callbackUrl,
       });
 
       if (result?.error) {
         setError('Invalid credentials');
-      } else if (result?.ok) {
-        router.push('/');
-        router.refresh();
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError('An error occurred during sign in');
+      setError('Login failed');
     } finally {
       setIsLoading(false);
     }
