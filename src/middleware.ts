@@ -1,1 +1,41 @@
-aW1wb3J0IHsgZ2V0VG9rZW4gfSBmcm9tICduZXh0LWF1dGgvand0JwppbXBvcnQgeyBOZXh0UmVzcG9uc2UgfSBmcm9tICduZXh0L3NlcnZlcicKaW1wb3J0IHR5cGUgeyBOZXh0UmVxdWVzdCB9IGZyb20gJ25leHQvc2VydmVyJwoKZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIG1pZGRsZXdhcmUocmVxdWVzdDogTmV4dFJlcXVlc3QpIHsKICBjb25zdCB7IHBhdGhuYW1lIH0gPSByZXF1ZXN0Lm5leHRVcmwKICAKICAvLyBDaGVjayBpZiB0aGlzIGlzIGFuIGF1dGhlbnRpY2F0aW9uIHJvdXRlCiAgY29uc3QgaXNBdXRoUm91dGUgPSBwYXRobmFtZS5zdGFydHNXaXRoKCcvbG9naW4nKSB8fCBwYXRobmFtZS5zdGFydHNXaXRoKCcvYXV0aCcpCiAgCiAgLy8gR2V0IHRoZSB0b2tlbgogIGNvbnN0IHRva2VuID0gYXdhaXQgZ2V0VG9rZW4oewogICAgcmVxOiByZXF1ZXN0LAogICAgc2VjcmV0OiBwcm9jZXNzLmVudi5ORVhUQVVUSF9TRUNSRVQsCiAgfSkKCiAgLy8gUmVkaXJlY3QgdG8gbG9naW4gaWYgYWNjZXNzaW5nIHByb3RlY3RlZCByb3V0ZSB3aXRob3V0IHRva2VuCiAgaWYgKCF0b2tlbiAmJiAhaXNBdXRoUm91dGUpIHsKICAgIGNvbnN0IHVybCA9IG5ldyBVUkwoJy9sb2dpbicsIHJlcXVlc3QudXJsKQogICAgdXJsLnNlYXJjaFBhcmFtcy5zZXQoJ2NhbGxiYWNrVXJsJywgcGF0aG5hbWUpCiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLnJlZGlyZWN0KHVybCkKICB9CgogIC8vIFJlZGlyZWN0IHRvIGhvbWUgaWYgYWNjZXNzaW5nIGF1dGggcm91dGVzIHdpdGggdmFsaWQgdG9rZW4KICBpZiAodG9rZW4gJiYgaXNBdXRoUm91dGUpIHsKICAgIHJldHVybiBOZXh0UmVzcG9uc2UucmVkaXJlY3QobmV3IFVSTCgnLycsIHJlcXVlc3QudXJsKSkKICB9CgogIHJldHVybiBOZXh0UmVzcG9uc2UubmV4dCgpCn0KCi8vIENvbmZpZ3VyZSBwcm90ZWN0ZWQgcm91dGVzCmV4cG9ydCBjb25zdCBjb25maWcgPSB7CiAgbWF0Y2hlcjogWwogICAgJy8nLAogICAgJy9sb2dpbicsCiAgICAnL2F1dGgvOnBhdGgqJywKICAgICcvKCg/IWFwaXxfbmV4dC9zdGF0aWN8X25leHQvaW1hZ2V8ZmF2aWNvbi5pY28pLiopJywKICBdLAp9
+import { getToken } from 'next-auth/jwt'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  
+  // Check if this is an authentication route
+  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/auth')
+  
+  // Get the token
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  })
+
+  // Redirect to login if accessing protected route without token
+  if (!token && !isAuthRoute) {
+    const url = new URL('/login', request.url)
+    url.searchParams.set('callbackUrl', pathname)
+    return NextResponse.redirect(url)
+  }
+
+  // Redirect to home if accessing auth routes with valid token
+  if (token && isAuthRoute) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  return NextResponse.next()
+}
+
+// Configure protected routes
+export const config = {
+  matcher: [
+    '/',
+    '/login',
+    '/auth/:path*',
+    // Protect all routes except api, static files, images
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+}
