@@ -1,9 +1,10 @@
+import { type NextRequest } from 'next/server'
 import { auth } from '@/lib/auth/config'
 
-export async function GET(request: Request) {
+export const GET = async (request: NextRequest) => {
   return await auth(request)
 }
 
-export async function POST(request: Request) {
+export const POST = async (request: NextRequest) => {
   return await auth(request)
 }
