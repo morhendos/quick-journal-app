@@ -12,65 +12,56 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Debug logs for session state
   useEffect(() => {
     console.log('🔑 Session state:', {
-      session: session,
-      status: status,
-      callbackUrl: callbackUrl
+      session,
+      status,
+      callbackUrl
     })
   }, [session, status, callbackUrl])
-
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (session && status === 'authenticated') {
-      console.log('✅ Already authenticated, redirecting to:', callbackUrl)
-      router.push(callbackUrl)
-    }
-  }, [session, status, callbackUrl, router])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
-    
-    const formData = new FormData(e.currentTarget)
-    const email = formData.get('email')
-    const password = formData.get('password')
-
-    console.log('🔐 Login attempt with:', { email, callbackUrl })
 
     try {
+      const formData = new FormData(e.currentTarget)
+      const email = formData.get('email')
+      const password = formData.get('password')
+
+      console.log('🔐 Login attempt:', { email })
+
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false,
-        callbackUrl
+        redirect: false
       })
 
-      console.log('📦 Full sign in result:', JSON.stringify(result, null, 2))
+      console.log('📦 Auth result:', result)
 
       if (result?.error) {
-        console.error('❌ Sign in error:', result.error)
+        console.error('❌ Auth error:', result.error)
         setError(result.error)
-        setIsLoading(false)
         return
       }
 
       if (result?.ok) {
-        console.log('✅ Sign in successful, refreshing session...')
+        console.log('✅ Auth successful, refreshing...')
         router.refresh()
-        console.log('✅ Redirecting to:', callbackUrl)
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        console.log('➡️ Redirecting to:', callbackUrl)
         router.push(callbackUrl)
+        router.refresh()
       }
     } catch (error) {
-      console.error('❌ Sign in exception:', error)
+      console.error('💥 Unexpected error:', error)
       setError('An unexpected error occurred')
+    } finally {
       setIsLoading(false)
     }
   }
 
-  // Show loading state while checking session
   if (status === 'loading') {
     return (
       <div className="flex min-h-screen items-center justify-center">
