@@ -12,7 +12,7 @@ export const authConfig = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Please provide both email and password')
+          return null
         }
 
         if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
@@ -23,7 +23,7 @@ export const authConfig = {
           }
         }
         
-        throw new Error('Invalid credentials')
+        return null
       }
     })
   ],
@@ -48,11 +48,14 @@ export const authConfig = {
       return session
     },
     async redirect({ url, baseUrl }) {
-      // Always redirect to the base URL (prevent open redirects)
+      // Handle relative URLs
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      // Handle full URLs that match base
       if (url.startsWith(baseUrl)) return url
       return baseUrl
     }
-  }
+  },
+  debug: process.env.NODE_ENV === 'development'
 } satisfies AuthConfig
 
-export const handler = NextAuth(authConfig)
+export const { auth: handler, signIn, signOut } = NextAuth(authConfig)
