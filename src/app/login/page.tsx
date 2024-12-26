@@ -15,24 +15,35 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
     setError('')
-
+    
     const formData = new FormData(e.currentTarget)
+    const email = formData.get('email')
+    const password = formData.get('password')
+
+    console.log('Attempting login with:', { email, password })
 
     try {
+      console.log('Calling signIn...')
       const res = await signIn('credentials', {
-        email: formData.get('email'),
-        password: formData.get('password'),
+        email,
+        password,
         redirect: false,
       })
+      
+      console.log('SignIn response:', res)
 
       if (res?.error) {
+        console.log('Got error:', res.error)
         setError(res.error)
         setIsLoading(false)
         return
       }
 
-      router.push(callbackUrl)
-      router.refresh()
+      if (res?.ok) {
+        console.log('Login successful, redirecting to:', callbackUrl)
+        router.push(callbackUrl)
+        router.refresh()
+      }
       
     } catch (error) {
       console.error('Sign in error:', error)
