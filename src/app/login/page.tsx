@@ -6,22 +6,24 @@ import { useState } from 'react'
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl')
-  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(searchParams.get('error') || '')
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
+    setError('')
+
+    const formData = new FormData(e.currentTarget)
 
     try {
-      const formData = new FormData(e.currentTarget)
       await signIn('credentials', {
         email: formData.get('email'),
         password: formData.get('password'),
-        callbackUrl: callbackUrl || '/',
+        callbackUrl: '/',
       })
     } catch (error) {
+      console.error('Sign in error:', error)
       setError('An error occurred during sign in')
     } finally {
       setIsLoading(false)
