@@ -16,27 +16,30 @@ export default function LoginPage() {
     setError('')
 
     const formData = new FormData(e.currentTarget)
-    const email = formData.get('email')
-    const password = formData.get('password')
 
     try {
-      const res = await signIn('credentials', {
-        email,
-        password,
-        redirect: false
+      const result = await signIn('credentials', {
+        email: formData.get('email'),
+        password: formData.get('password'),
+        callbackUrl: '/',
+        redirect: false,
       })
 
-      if (!res?.ok) {
-        setError(res?.error || 'Invalid credentials')
+      if (result?.error) {
+        setError(result.error)
         return
       }
 
-      const callbackUrl = searchParams.get('callbackUrl')
-      router.push(callbackUrl || '/')
+      if (result?.url) {
+        router.push(result.url)
+      } else {
+        router.push('/')
+      }
       router.refresh()
       
     } catch (error) {
-      setError('Something went wrong')
+      console.error('Sign in error:', error)
+      setError('An error occurred during sign in')
     } finally {
       setIsLoading(false)
     }
@@ -67,6 +70,7 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 required
+                defaultValue="user@example.com"
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               />
             </div>
@@ -80,6 +84,7 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 required
+                defaultValue="password123"
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               />
             </div>
