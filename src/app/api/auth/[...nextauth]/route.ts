@@ -1,3 +1,3 @@
-import { auth } from '@/lib/auth/config'
+import { auth } from '@/lib/auth/auth'
 
 export const { GET, POST } = auth
