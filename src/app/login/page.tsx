@@ -1,10 +1,12 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 export default function LoginPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/'
   const [error, setError] = useState(searchParams.get('error') || '')
@@ -32,7 +34,8 @@ export default function LoginPage() {
       
       if (!result?.error && result?.ok) {
         console.log('Sign in successful, redirecting to:', callbackUrl)
-        window.location.href = callbackUrl
+        router.push(callbackUrl)
+        router.refresh()
       } else {
         console.error('Sign in failed:', result?.error)
         setError(result?.error || 'An error occurred during sign in')
