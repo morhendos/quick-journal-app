@@ -1,9 +1,18 @@
-import { withAuth } from "next-auth/middleware";
+import { auth } from "./lib/auth/config";
 
-export default withAuth({
-  pages: {
-    signIn: "/login",
-  },
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+  const isOnLoginPage = req.nextUrl.pathname === "/login";
+
+  // If user is not logged in and trying to access protected routes
+  if (!isLoggedIn && !isOnLoginPage) {
+    return Response.redirect(new URL("/login", req.url));
+  }
+
+  // If user is logged in and trying to access login page
+  if (isLoggedIn && isOnLoginPage) {
+    return Response.redirect(new URL("/", req.url));
+  }
 });
 
 export const config = {
@@ -14,8 +23,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - login (login page)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|login).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
