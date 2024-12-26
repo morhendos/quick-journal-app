@@ -1,8 +1,7 @@
 import NextAuth from 'next-auth'
-import type { NextAuthConfig } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-export const authConfig = {
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -31,18 +30,18 @@ export const authConfig = {
     signIn: '/login'
   },
   callbacks: {
-    async jwt({ token, user }) {
+    jwt({ token, user }) {
       if (user) {
         token.user = user
       }
       return token
     },
-    async session({ session, token }) {
+    session({ session, token }) {
       session.user = token.user as any
       return session
-    },
-    async redirect({ url, baseUrl }) {
-      return url.startsWith(baseUrl) ? url : baseUrl
     }
   },
-} satisfies NextAuthConfig
+  secret: process.env.NEXTAUTH_SECRET
+}
+
+export default NextAuth(authOptions)
