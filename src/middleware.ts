@@ -1,17 +1,11 @@
-import { auth } from '@/lib/auth/config'
 import { NextResponse } from 'next/server'
+import NextAuth from 'next-auth'
+import { authConfig } from '@/lib/auth/config'
 
-export default auth((req) => {
-  const isAuthenticated = !!req.auth
-  const isOnLoginPage = req.nextUrl.pathname === '/login'
-
-  if (isAuthenticated && isOnLoginPage) {
-    return NextResponse.redirect(new URL('/', req.url))
-  }
-
-  return null
-})
+export const middleware = NextAuth(authConfig).auth
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 }
