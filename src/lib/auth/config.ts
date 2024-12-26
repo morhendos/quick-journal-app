@@ -12,7 +12,7 @@ export const authConfig = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          throw new Error('Please provide both email and password')
         }
 
         if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
@@ -23,13 +23,14 @@ export const authConfig = {
           }
         }
         
-        return null
+        throw new Error('Invalid credentials')
       }
     })
   ],
   pages: {
     signIn: '/login',
-    signOut: '/login'
+    signOut: '/login',
+    error: '/login' // Redirect back to login page with error
   },
   session: { 
     strategy: 'jwt',
