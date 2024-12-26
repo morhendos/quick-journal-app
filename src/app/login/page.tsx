@@ -21,30 +21,40 @@ export default function LoginPage() {
     const email = formData.get('email')
     const password = formData.get('password')
 
-    console.log('Login attempt with:', { email, callbackUrl })
+    console.log('🔑 Login attempt:', { email, callbackUrl })
 
     try {
-      const result = await signIn('credentials', {
+      // Try direct redirect first
+      await signIn('credentials', {
         email,
         password,
         callbackUrl,
+        redirect: true
+      })
+
+      // If we get here, redirect didn't work, try manual redirect
+      console.log('⚠️ Direct redirect failed, trying manual redirect')
+      const result = await signIn('credentials', {
+        email,
+        password,
         redirect: false
       })
-      console.log('Sign in result:', result)
+      
+      console.log('📤 Sign in result:', result)
       
       if (!result?.error && result?.ok) {
-        console.log('Sign in successful, redirecting to:', callbackUrl)
+        console.log('✅ Sign in successful, manual redirect to:', callbackUrl)
         router.push(callbackUrl)
         router.refresh()
       } else {
-        console.error('Sign in failed:', result?.error)
+        console.error('❌ Sign in failed:', result?.error)
         setError(result?.error || 'An error occurred during sign in')
         setIsLoading(false)
       }
 
     } catch (error) {
-      console.error('Sign in error:', error)
-      setError('An error occurred during sign in')
+      console.error('❌ Sign in error:', error)
+      setError('An unexpected error occurred')
       setIsLoading(false)
     }
   }
