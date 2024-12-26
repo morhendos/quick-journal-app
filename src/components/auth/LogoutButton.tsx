@@ -1,14 +1,27 @@
-'use client';
+'use client'
 
-import { signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
-export default function LogoutButton() {
+export function LogoutButton() {
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    try {
+      await signOut({ redirect: false })
+      router.push('/login')
+      router.refresh()
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }
+
   return (
     <button
-      onClick={() => signOut({ callbackUrl: '/login' })}
-      className="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+      onClick={handleSignOut}
+      className="text-sm font-semibold text-gray-700 hover:text-gray-900"
     >
-      Log out
+      Sign Out
     </button>
-  );
+  )
 }
