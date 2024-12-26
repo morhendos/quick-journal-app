@@ -1,24 +1,15 @@
 'use client'
 
-import { signIn, useSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 export default function LoginPage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/'
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    console.log('🔑 Session state:', {
-      session,
-      status,
-      callbackUrl
-    })
-  }, [session, status, callbackUrl])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -30,44 +21,34 @@ export default function LoginPage() {
       const email = formData.get('email')
       const password = formData.get('password')
 
-      console.log('🔐 Login attempt:', { email })
-
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false
+        redirect: false,
+        callbackUrl
       })
 
-      console.log('📦 Auth result:', result)
+      if (!result) {
+        throw new Error('Authentication response is missing')
+      }
 
-      if (result?.error) {
-        console.error('❌ Auth error:', result.error)
+      if (result.error) {
         setError(result.error)
         return
       }
 
-      if (result?.ok) {
-        console.log('✅ Auth successful, refreshing...')
-        router.refresh()
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        console.log('➡️ Redirecting to:', callbackUrl)
+      // Successful login
+      if (result.url) {
+        router.push(result.url)
+      } else {
         router.push(callbackUrl)
-        router.refresh()
       }
     } catch (error) {
-      console.error('💥 Unexpected error:', error)
-      setError('An unexpected error occurred')
+      console.error('Authentication error:', error)
+      setError('An unexpected error occurred. Please try again.')
     } finally {
       setIsLoading(false)
     }
-  }
-
-  if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    )
   }
 
   return (
@@ -95,6 +76,7 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 required
+                autoComplete="email"
                 defaultValue="user@example.com"
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               />
@@ -107,9 +89,10 @@ export default function LoginPage() {
               <input
                 id="password"
                 name="password"
-                required
-                defaultValue="password123"
                 type="password"
+                required
+                autoComplete="current-password"
+                defaultValue="password123"
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               />
             </div>
