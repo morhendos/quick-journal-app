@@ -7,7 +7,7 @@ import { useState } from 'react'
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [error, setError] = useState('')
+  const [error, setError] = useState(searchParams.get('error') || '')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -16,21 +16,25 @@ export default function LoginPage() {
     setError('')
 
     const formData = new FormData(e.currentTarget)
+    const email = formData.get('email')
+    const password = formData.get('password')
 
     try {
       const res = await signIn('credentials', {
-        email: formData.get('email'),
-        password: formData.get('password'),
+        email,
+        password,
         redirect: false
       })
 
-      if (res?.error) {
-        setError('Invalid credentials')
+      if (!res?.ok) {
+        setError(res?.error || 'Invalid credentials')
         return
       }
 
-      router.push(searchParams.get('callbackUrl') || '/')
+      const callbackUrl = searchParams.get('callbackUrl')
+      router.push(callbackUrl || '/')
       router.refresh()
+      
     } catch (error) {
       setError('Something went wrong')
     } finally {
