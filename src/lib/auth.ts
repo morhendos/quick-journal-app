@@ -1,9 +1,15 @@
 import type { AuthOptions, Session, User } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { NextResponse } from 'next/server'
 
-function log(message: string, data?: any) {
-  console.log(`[AUTH] ${message}`, data ? JSON.stringify(data, null, 2) : '')
+// Improved logging with request ID for tracing
+const createLogger = () => {
+  const requestId = Math.random().toString(36).substring(7)
+  return {
+    info: (message: string, data?: any) => 
+      console.log(`[AUTH ${requestId}] ℹ️ ${message}`, data ? JSON.stringify(data) : ''),
+    error: (message: string, data?: any) => 
+      console.error(`[AUTH ${requestId}] ❌ ${message}`, data ? JSON.stringify(data) : '')
+  }
 }
 
 export const authOptions: AuthOptions = {
@@ -15,70 +21,80 @@ export const authOptions: AuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials, req) {
-        log('⚡️ Starting authorize')
+      async authorize(credentials) {
+        const log = createLogger()
+        log.info('Starting authorization')
+
+        if (!credentials?.email || !credentials?.password) {
+          log.error('Missing credentials')
+          return null
+        }
+
         try {
-          log('👉 Checking credentials:', { email: credentials?.email })
-
-          if (!credentials?.email || !credentials?.password) {
-            log('❌ Missing credentials')
-            return NextResponse.json(
-              { error: 'Email and password required' },
-              { status: 401 }
-            )
-          }
-
+          // TODO: Replace with actual user validation
           if (credentials.email === 'user@example.com' && 
               credentials.password === 'password123') {
             const user = { 
               id: '1', 
-              name: 'Test User',
-              email: credentials.email 
+              email: credentials.email,
+              name: 'Test User'
             }
-            log('✅ User authenticated:', user)
+            log.info('User authenticated successfully', { email: user.email })
             return user
           }
 
-          log('❌ Invalid credentials')
+          log.error('Invalid credentials', { email: credentials.email })
           return null
+
         } catch (error) {
-          log('💥 Auth error:', error)
-          throw error
+          log.error('Authentication error', error)
+          return null
         }
       }
     })
   ],
   callbacks: {
-    async signIn({ user, account, profile, credentials }) {
-      log('🎫 signIn callback:', { user, account, profile })
-      return true
-    },
-    async jwt({ token, user }) {
-      log('🔐 JWT callback:', { token, user })
+    async jwt({ token, user, account }) {
+      const log = createLogger()
+      log.info('JWT callback', { userId: user?.id })
+
       if (user) {
         token.id = user.id
         token.email = user.email
       }
-      log('📤 Returning token:', token)
+
       return token
     },
-    async session({ session, token }) {
-      log('🔑 Session callback:', { session, token })
-      if (session?.user) {
-        (session.user as User & { id: string }).id = token.id as string
+    async session({ session, token }): Promise<Session> {
+      const log = createLogger()
+      log.info('Session callback', { userId: token.id })
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id as string
+        }
       }
-      log('📤 Returning session:', session)
-      return session
     }
   },
   pages: {
     signIn: '/login',
     error: '/auth/error',
   },
-  debug: true,
+  debug: process.env.NODE_ENV === 'development',
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  secret: process.env.NEXTAUTH_SECRET
+  secret: process.env.NEXTAUTH_SECRET,
+}
+
+// Type augmentation for better TypeScript support
+declare module 'next-auth' {
+  interface Session {
+    user: User & {
+      id: string
+    }
+  }
 }
