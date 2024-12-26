@@ -1,8 +1,7 @@
-import NextAuth from 'next-auth'
+import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { AuthOptions } from 'next-auth'
 
-export const authConfig: AuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -31,19 +30,20 @@ export const authConfig: AuthOptions = {
     signIn: '/login',
     error: '/auth/error'
   },
+  session: {
+    strategy: 'jwt'
+  },
   callbacks: {
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
         token.user = user
       }
       return token
     },
-    session({ session, token }) {
+    async session({ session, token }) {
       session.user = token.user as any
       return session
     }
   },
   secret: process.env.NEXTAUTH_SECRET
 }
-
-export default authConfig
