@@ -1,9 +1,7 @@
-import { type NextRequest } from 'next/server'
-import { redirect } from 'next/navigation'
+import { authConfig } from '@/lib/auth/config'
+import NextAuth from 'next-auth'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const error = searchParams.get('error')
-  
-  return redirect(`/login?error=${error || 'Unknown error'}`)
-}
+const handler = NextAuth(authConfig)
+
+export const GET = handler.error
