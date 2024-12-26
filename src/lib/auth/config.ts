@@ -17,7 +17,7 @@ export const { auth, signIn, signOut } = NextAuth({
         const parsedCredentials = loginSchema.safeParse(credentials);
 
         if (!parsedCredentials.success) {
-          return null;
+          throw new Error('Invalid credentials format');
         }
 
         const { email, password } = parsedCredentials.data;
@@ -38,6 +38,7 @@ export const { auth, signIn, signOut } = NextAuth({
   ],
   pages: {
     signIn: "/login",
+    error: '/api/auth/error',
   },
   callbacks: {
     jwt: async ({ token, user }) => {
@@ -53,5 +54,8 @@ export const { auth, signIn, signOut } = NextAuth({
       }
       return session;
     },
+  },
+  session: {
+    strategy: "jwt",
   },
 });
