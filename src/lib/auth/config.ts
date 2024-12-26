@@ -1,33 +1,47 @@
-import CredentialsProvider from 'next-auth/providers/credentials'
+import NextAuth from 'next-auth'
 import type { NextAuthConfig } from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
 
-export const authConfig = {
+export const config = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { type: 'email' },
-        password: { type: 'password' }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
         if (credentials?.email === 'user@example.com' && credentials?.password === 'password123') {
-          return { id: '1', email: credentials.email, name: 'Test User' }
+          return { 
+            id: '1', 
+            name: 'Test User',
+            email: credentials.email 
+          }
         }
         return null
       }
     })
   ],
+  session: { strategy: 'jwt' },
   pages: {
     signIn: '/login'
   },
   callbacks: {
-    jwt({ token, user }) {
-      if (user) token.id = user.id
-      return token
-    },
-    session({ session, token }) {
-      if (session.user) session.user.id = token.id
-      return session
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user
+      const isOnLogin = nextUrl.pathname.startsWith('/login')
+      
+      if (isLoggedIn && isOnLogin) {
+        return Response.redirect(new URL('/', nextUrl))
+      }
+      
+      if (!isLoggedIn && !isOnLogin) {
+        return Response.redirect(new URL('/login', nextUrl))
+      }
+      
+      return true
     }
   }
 } satisfies NextAuthConfig
+
+export const { auth, signIn, signOut } = NextAuth(config)
