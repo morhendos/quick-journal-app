@@ -1,4 +1,5 @@
 import NextAuth from 'next-auth';
+import type { NextAuthConfig } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 export const config = {
@@ -30,6 +31,11 @@ export const config = {
   pages: {
     signIn: '/login',
   },
+  callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      return true; // Implement your logic
+    }
+  },
   session: { strategy: 'jwt' },
   cookies: {
     sessionToken: {
@@ -42,7 +48,6 @@ export const config = {
       }
     }
   }
-};
+} satisfies NextAuthConfig;
 
-const handler = NextAuth(config);
-export { handler as auth };
+export const { auth, handlers: { GET, POST } } = NextAuth(config);
