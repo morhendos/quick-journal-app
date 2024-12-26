@@ -1,25 +1,64 @@
 'use client'
 
-import { signIn } from 'next-auth/react'
-import { useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { signIn, useSession } from 'next-auth/react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 export default function LoginPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl')
   const [isLoading, setIsLoading] = useState(false)
+
+  // Debug logs
+  useEffect(() => {
+    console.log('Current session:', session)
+    console.log('Auth status:', status)
+  }, [session, status])
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (session && status === 'authenticated') {
+      console.log('User is authenticated, redirecting to:', callbackUrl || '/')
+      router.push(callbackUrl || '/')
+    }
+  }, [session, status, callbackUrl, router])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
     
     const formData = new FormData(e.currentTarget)
-    await signIn('credentials', {
-      email: formData.get('email'),
-      password: formData.get('password'),
-      redirect: true,
-      callbackUrl: callbackUrl || '/'
-    })
+    const email = formData.get('email')
+    const password = formData.get('password')
+
+    try {
+      console.log('Attempting sign in with:', { email, callbackUrl })
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: callbackUrl || '/'
+      })
+      console.log('Sign in result:', result)
+
+      if (result?.error) {
+        console.error('Sign in error:', result.error)
+      } else if (result?.ok) {
+        console.log('Sign in successful')
+        router.push(callbackUrl || '/')
+      }
+    } catch (error) {
+      console.error('Sign in exception:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Show loading state if checking auth
+  if (status === 'loading') {
+    return <div>Loading...</div>
   }
 
   return (
