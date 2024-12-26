@@ -1,4 +1,4 @@
-import { type AuthOptions } from 'next-auth'
+import type { AuthOptions, Session, User } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
 export const authOptions: AuthOptions = {
@@ -39,10 +39,10 @@ export const authOptions: AuthOptions = {
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }): Promise<Session> {
       console.log('🔑 Session callback:', { session, token })
       if (session?.user) {
-        session.user.id = token.id
+        (session.user as User & { id: string }).id = token.id as string
       }
       return session
     }
