@@ -1,46 +1,30 @@
-'use client';
+'use client'
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation'
 
 export default function AuthError() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  const searchParams = useSearchParams()
+  const error = searchParams.get('error')
 
-  useEffect(() => {
-    // If there's no error, redirect to login
-    if (!error) {
-      router.replace('/login');
-    }
-  }, [error, router]);
+  const errorMessages: Record<string, string> = {
+    'CredentialsSignin': 'Invalid email or password',
+    'Default': 'An error occurred during authentication'
+  }
 
-  const getErrorMessage = (error: string) => {
-    switch (error) {
-      case 'CredentialsSignin':
-        return 'Invalid email or password';
-      case 'AccessDenied':
-        return 'Access denied. You do not have permission to access this resource.';
-      default:
-        return 'An error occurred during authentication';
-    }
-  };
-
-  if (!error) return null;
+  const errorMessage = error ? errorMessages[error] || errorMessages.Default : errorMessages.Default
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-      <div className="rounded-lg bg-white dark:bg-gray-800 p-8 shadow-lg text-center max-w-md w-full mx-4">
-        <h1 className="mb-4 text-2xl font-bold text-red-600 dark:text-red-400">Authentication Error</h1>
-        <p className="text-gray-600 dark:text-gray-300 mb-6">{getErrorMessage(error)}</p>
-        <button
-          onClick={() => router.push('/login')}
-          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors"
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="rounded-lg bg-white p-8 shadow-lg">
+        <h1 className="mb-4 text-xl font-bold text-red-600">Authentication Error</h1>
+        <p className="text-gray-600">{errorMessage}</p>
+        <button 
+          onClick={() => window.location.href = '/login'}
+          className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
         >
           Return to Login
         </button>
       </div>
     </div>
-  );
+  )
 }
