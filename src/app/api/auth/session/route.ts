@@ -1,0 +1,1 @@
+export { GET } from 'src/lib/auth/config';
