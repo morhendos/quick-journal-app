@@ -15,7 +15,6 @@ export const config = {
           return null;
         }
 
-        // This is where you would typically validate against a database
         if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
           return {
             id: '1',
@@ -32,22 +31,20 @@ export const config = {
     signIn: '/login',
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      return true; // Implement your logic
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id;
+      }
+      return token;
     }
   },
-  session: { strategy: 'jwt' },
-  cookies: {
-    sessionToken: {
-      name: 'next-auth.session-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production'
-      }
-    }
-  }
+  session: { strategy: 'jwt' }
 } satisfies NextAuthConfig;
 
 export const { auth, handlers: { GET, POST } } = NextAuth(config);
