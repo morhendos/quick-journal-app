@@ -1,5 +1,6 @@
 import type { AuthOptions, Session, User } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { NextResponse } from 'next/server'
 
 function log(message: string, data?: any) {
   console.log(`[AUTH] ${message}`, data ? JSON.stringify(data, null, 2) : '')
@@ -15,47 +16,58 @@ export const authOptions: AuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials, req) {
-        log('👉 authorize() called with credentials:', credentials)
-        log('👉 authorize() request:', { url: req?.url, method: req?.method })
+        log('⚡️ Starting authorize')
+        try {
+          log('👉 Checking credentials:', { email: credentials?.email })
 
-        if (!credentials?.email || !credentials?.password) {
-          log('❌ Missing credentials')
-          throw new Error('Email and password required')
-        }
-
-        if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
-          const user = { 
-            id: '1', 
-            name: 'Test User',
-            email: credentials.email 
+          if (!credentials?.email || !credentials?.password) {
+            log('❌ Missing credentials')
+            return NextResponse.json(
+              { error: 'Email and password required' },
+              { status: 401 }
+            )
           }
-          log('✅ Valid credentials, returning user:', user)
-          return user
-        }
 
-        log('❌ Invalid credentials')
-        throw new Error('Invalid credentials')
+          if (credentials.email === 'user@example.com' && 
+              credentials.password === 'password123') {
+            const user = { 
+              id: '1', 
+              name: 'Test User',
+              email: credentials.email 
+            }
+            log('✅ User authenticated:', user)
+            return user
+          }
+
+          log('❌ Invalid credentials')
+          return null
+        } catch (error) {
+          log('💥 Auth error:', error)
+          throw error
+        }
       }
     })
   ],
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      log('🎫 signIn() callback:', { user, account, profile, email, credentials })
+    async signIn({ user, account, profile, credentials }) {
+      log('🎫 signIn callback:', { user, account, profile })
       return true
     },
-    async jwt({ token, user, account, profile }) {
-      log('🎭 jwt() callback:', { token, user, account, profile })
+    async jwt({ token, user }) {
+      log('🔐 JWT callback:', { token, user })
       if (user) {
         token.id = user.id
         token.email = user.email
       }
+      log('📤 Returning token:', token)
       return token
     },
-    async session({ session, token, user }): Promise<Session> {
-      log('🔑 session() callback:', { session, token, user })
+    async session({ session, token }) {
+      log('🔑 Session callback:', { session, token })
       if (session?.user) {
         (session.user as User & { id: string }).id = token.id as string
       }
+      log('📤 Returning session:', session)
       return session
     }
   },
