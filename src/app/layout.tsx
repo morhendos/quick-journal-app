@@ -1,20 +1,20 @@
+import { SessionProvider } from 'next-auth/react'
 import type { Metadata } from 'next'
-import { headers } from 'next/headers'
 import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Quick Journal App',
-  description: 'Simple journaling app',
+  description: 'Simple journaling app'
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <SessionProvider>
+          {children}
+        </SessionProvider>
+      </body>
     </html>
   )
 }
