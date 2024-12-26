@@ -18,49 +18,59 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-      console.log('Attempting sign in:', {
-        email: formData.get('email'),
-        callbackUrl
+      const email = formData.get('email') as string
+      const password = formData.get('password') as string
+
+      // Step 1: Get CSRF token
+      const csrfResponse = await fetch('/api/auth/csrf')
+      const { csrfToken } = await csrfResponse.json()
+      console.log('CSRF Response:', {
+        status: csrfResponse.status,
+        headers: Object.fromEntries(csrfResponse.headers.entries()),
+        csrfToken
       })
 
-      const response = await signIn('credentials', {
-        email: formData.get('email'),
-        password: formData.get('password'),
-        callbackUrl: callbackUrl,
-        redirect: false
-      })
-
-      console.log('Auth response:', response)
-
-      if (!response) {
-        throw new Error('No authentication response')
-      }
-
-      if (response.error) {
-        setError(response.error)
-        return
-      }
-
-      // After successful login, make a POST request to /api/auth/callback/credentials
+      // Step 2: Submit credentials
       const callbackResponse = await fetch('/api/auth/callback/credentials', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-          email: formData.get('email') as string,
-          password: formData.get('password') as string,
-          csrfToken: await fetch('/api/auth/csrf').then(r => r.json()).then(data => data.csrfToken),
-          callbackUrl: callbackUrl,
+          email,
+          password,
+          csrfToken,
+          callbackUrl,
           json: 'true'
         })
       })
 
-      console.log('Callback response:', callbackResponse)
+      const callbackData = await callbackResponse.json()
+      console.log('Callback Response:', {
+        status: callbackResponse.status,
+        headers: Object.fromEntries(callbackResponse.headers.entries()),
+        cookies: document.cookie,
+        data: callbackData
+      })
 
-      if (callbackResponse.ok) {
-        router.push(callbackUrl)
-        router.refresh()
+      if (callbackResponse.ok && !callbackData.error) {
+        // Step 3: Verify session
+        const sessionResponse = await fetch('/api/auth/session')
+        const sessionData = await sessionResponse.json()
+        console.log('Session Response:', {
+          status: sessionResponse.status,
+          headers: Object.fromEntries(sessionResponse.headers.entries()),
+          data: sessionData
+        })
+
+        if (sessionData.user) {
+          router.push(callbackUrl)
+          router.refresh()
+        } else {
+          setError('Session not established')
+        }
+      } else {
+        setError(callbackData.error || 'Authentication failed')
       }
 
     } catch (error) {
