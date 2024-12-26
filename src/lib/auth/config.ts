@@ -2,7 +2,7 @@ import NextAuth from 'next-auth'
 import type { NextAuthConfig } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-export const authOptions: NextAuthConfig = {
+export const authConfig: NextAuthConfig = {
   providers: [
     CredentialsProvider({
       credentials: {
@@ -23,4 +23,4 @@ export const authOptions: NextAuthConfig = {
   session: { strategy: 'jwt' }
 }
 
-export const { auth, signIn, signOut, handlers } = NextAuth(authOptions)
+export const auth = NextAuth(authConfig)
