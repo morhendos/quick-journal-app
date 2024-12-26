@@ -25,8 +25,7 @@ export default function LoginPage() {
       await signIn('credentials', {
         email,
         password,
-        redirect: true,
-        callbackUrl: '/'
+        redirect: true
       })
     } catch (error) {
       console.error('Sign in error:', error)
