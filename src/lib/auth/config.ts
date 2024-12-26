@@ -45,8 +45,14 @@ export const config = {
       return session;
     },
   },
-  session: { strategy: 'jwt' },
-  trustHost: true
+  session: { 
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  debug: process.env.NODE_ENV === 'development',
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
-export const { auth, signIn, signOut } = NextAuth(config);
+const { auth, signIn, signOut, handlers: { GET, POST } } = NextAuth(config);
+
+export { auth, signIn, signOut, GET, POST };
