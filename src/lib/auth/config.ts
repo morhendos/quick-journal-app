@@ -1,13 +1,13 @@
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
-export const { auth, signIn, signOut } = NextAuth({
+export const config = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -15,11 +15,11 @@ export const { auth, signIn, signOut } = NextAuth({
         }
 
         // This is where you would typically validate against a database
-        if (credentials.email === "user@example.com" && credentials.password === "password123") {
+        if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
           return {
-            id: "1",
+            id: '1',
             email: credentials.email,
-            name: "Test User"
+            name: 'Test User'
           };
         }
 
@@ -28,8 +28,25 @@ export const { auth, signIn, signOut } = NextAuth({
     })
   ],
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
-  session: { strategy: "jwt" },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
+  session: { strategy: 'jwt' },
   trustHost: true
-});
+};
+
+export const { auth, signIn, signOut } = NextAuth(config);
