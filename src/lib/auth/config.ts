@@ -1,5 +1,5 @@
 import NextAuth from 'next-auth'
-import type { AuthConfig } from 'next-auth'
+import type { NextAuthConfig } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
 export const authConfig = {
@@ -28,13 +28,7 @@ export const authConfig = {
     })
   ],
   pages: {
-    signIn: '/login',
-    signOut: '/login',
-    error: '/login'
-  },
-  session: { 
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    signIn: '/login'
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -48,14 +42,7 @@ export const authConfig = {
       return session
     },
     async redirect({ url, baseUrl }) {
-      // Handle relative URLs
-      if (url.startsWith('/')) return `${baseUrl}${url}`
-      // Handle full URLs that match base
-      if (url.startsWith(baseUrl)) return url
-      return baseUrl
+      return url.startsWith(baseUrl) ? url : baseUrl
     }
   },
-  debug: process.env.NODE_ENV === 'development'
-} satisfies AuthConfig
-
-export const { auth: handler, signIn, signOut } = NextAuth(authConfig)
+} satisfies NextAuthConfig
