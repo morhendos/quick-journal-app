@@ -6,30 +6,20 @@ import { useState } from 'react'
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
-  const [error, setError] = useState(searchParams.get('error') || '')
+  const callbackUrl = searchParams.get('callbackUrl')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    setError('')
     
     const formData = new FormData(e.currentTarget)
-    const email = formData.get('email')
-    const password = formData.get('password')
-
-    try {
-      await signIn('credentials', {
-        email,
-        password,
-        redirect: true,
-        callbackUrl: '/'
-      })
-    } catch (error) {
-      console.error('Sign in error:', error)
-      setError('An unexpected error occurred')
-      setIsLoading(false)
-    }
+    await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
+      redirect: true,
+      callbackUrl: callbackUrl || '/'
+    })
   }
 
   return (
@@ -41,12 +31,6 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
-
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
