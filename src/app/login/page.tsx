@@ -1,14 +1,11 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 export default function LoginPage() {
-  const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/'
   const [error, setError] = useState(searchParams.get('error') || '')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -21,39 +18,15 @@ export default function LoginPage() {
     const email = formData.get('email')
     const password = formData.get('password')
 
-    console.log('🔑 Login attempt:', { email, callbackUrl })
-
     try {
-      // Try direct redirect first
       await signIn('credentials', {
         email,
         password,
-        callbackUrl,
-        redirect: true
+        redirect: true,
+        callbackUrl: '/'
       })
-
-      // If we get here, redirect didn't work, try manual redirect
-      console.log('⚠️ Direct redirect failed, trying manual redirect')
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false
-      })
-      
-      console.log('📤 Sign in result:', result)
-      
-      if (!result?.error && result?.ok) {
-        console.log('✅ Sign in successful, manual redirect to:', callbackUrl)
-        router.push(callbackUrl)
-        router.refresh()
-      } else {
-        console.error('❌ Sign in failed:', result?.error)
-        setError(result?.error || 'An error occurred during sign in')
-        setIsLoading(false)
-      }
-
     } catch (error) {
-      console.error('❌ Sign in error:', error)
+      console.error('Sign in error:', error)
       setError('An unexpected error occurred')
       setIsLoading(false)
     }
