@@ -1,16 +1,8 @@
 import NextAuth from 'next-auth';
-import type { DefaultSession, NextAuthConfig } from 'next-auth';
+import type { NextAuthConfig } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-declare module 'next-auth' {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-    } & DefaultSession['user'];
-  }
-}
-
-export const config = {
+export const authConfig = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -19,40 +11,28 @@ export const config = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
+        if (credentials?.email === 'user@example.com' && credentials?.password === 'password123') {
+          return { id: '1', email: credentials.email, name: 'Test User' };
         }
-
-        if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
-          return {
-            id: '1',
-            email: credentials.email,
-            name: 'Test User'
-          };
-        }
-
         return null;
       }
     })
   ],
   pages: {
-    signIn: '/login',
+    signIn: '/login'
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
+      if (user) token.id = user.id;
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-      }
+      if (session.user) session.user.id = token.id as string;
       return session;
     }
-  },
-  session: { strategy: 'jwt' }
+  }
 } satisfies NextAuthConfig;
 
-export const { auth, handlers: { GET, POST } } = NextAuth(config);
+export const { auth, handlers } = NextAuth(authConfig);
+
+export const { GET: authGET, POST: authPOST } = handlers;
