@@ -1,61 +1,35 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import { z } from "zod";
-
-// Login form schema
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-});
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const { auth, signIn, signOut } = NextAuth({
   providers: [
-    Credentials({
-      // Add credentials provider
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
       async authorize(credentials) {
-        // Validate the credentials
-        const parsedCredentials = loginSchema.safeParse(credentials);
-
-        if (!parsedCredentials.success) {
-          throw new Error('Invalid credentials format');
+        if (!credentials?.email || !credentials?.password) {
+          return null;
         }
 
-        const { email, password } = parsedCredentials.data;
-
-        // TODO: Replace this with your actual authentication logic
-        // This is just an example
-        if (email === "user@example.com" && password === "password123") {
+        // This is where you would typically validate against a database
+        if (credentials.email === "user@example.com" && credentials.password === "password123") {
           return {
             id: "1",
-            email: email,
-            name: "Test User",
+            email: credentials.email,
+            name: "Test User"
           };
         }
 
         return null;
-      },
-    }),
+      }
+    })
   ],
   pages: {
     signIn: "/login",
-    error: '/api/auth/error',
   },
-  callbacks: {
-    jwt: async ({ token, user }) => {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-      }
-      return token;
-    },
-    session: async ({ session, token }) => {
-      if (token) {
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
-  },
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
+  trustHost: true
 });
