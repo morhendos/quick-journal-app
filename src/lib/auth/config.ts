@@ -28,7 +28,12 @@ export const authConfig = {
     })
   ],
   pages: {
-    signIn: '/login'
+    signIn: '/login',
+    signOut: '/login'
+  },
+  session: { 
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -41,8 +46,7 @@ export const authConfig = {
       session.user = token.user as any
       return session
     }
-  },
-  session: { strategy: 'jwt' }
+  }
 } satisfies AuthConfig
 
-export const { handlers, auth, signIn, signOut } = NextAuth({ ...authConfig })
+export const handler = NextAuth(authConfig)

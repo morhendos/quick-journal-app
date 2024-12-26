@@ -1,19 +1,17 @@
 'use client'
 
 import { signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 
 export default function LogoutButton() {
-  const router = useRouter()
-
   const handleSignOut = async () => {
     try {
-      await signOut({ redirect: true, callbackUrl: '/login' })
+      await signOut({ 
+        callbackUrl: '/login',
+        redirect: true
+      })
     } catch (error) {
       console.error('Error signing out:', error)
-      // Fallback redirect
-      router.push('/login')
-      router.refresh()
+      window.location.href = '/login'
     }
   }
 
