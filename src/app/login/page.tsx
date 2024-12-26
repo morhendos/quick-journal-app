@@ -6,6 +6,7 @@ import { useState } from 'react'
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/'
   const [error, setError] = useState(searchParams.get('error') || '')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -18,15 +19,21 @@ export default function LoginPage() {
     const email = formData.get('email')
     const password = formData.get('password')
 
-    console.log('Attempting login with:', { email, password })
-
     try {
-      console.log('Calling signIn...')
-      await signIn('credentials', {
+      const result = await signIn('credentials', {
         email,
         password,
-        redirect: true
+        callbackUrl,
+        redirect: false
       })
+
+      if (!result?.ok) {
+        setError('Invalid credentials')
+        setIsLoading(false)
+        return
+      }
+
+      window.location.href = callbackUrl
     } catch (error) {
       console.error('Sign in error:', error)
       setError('An error occurred during sign in')
@@ -71,9 +78,9 @@ export default function LoginPage() {
               <input
                 id="password"
                 name="password"
-                type="password"
                 required
                 defaultValue="password123"
+                type="password"
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               />
             </div>
