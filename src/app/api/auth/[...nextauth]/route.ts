@@ -1,3 +1,9 @@
-import { handlers } from '@/lib/auth/config'
+import { auth } from '@/lib/auth/config'
 
-export const { GET, POST } = handlers
+export async function GET(request: Request) {
+  return await auth(request)
+}
+
+export async function POST(request: Request) {
+  return await auth(request)
+}
