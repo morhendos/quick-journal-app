@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-export const authConfig = {
+const authConfig = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -27,7 +27,8 @@ export const authConfig = {
     })
   ],
   pages: {
-    signIn: '/login'
+    signIn: '/login',
+    error: '/auth/error'
   },
   callbacks: {
     jwt({ token, user }) {
@@ -45,6 +46,5 @@ export const authConfig = {
 }
 
 const handler = NextAuth(authConfig)
-
-export { handler as auth, authConfig }
+export { handler as auth }
 export default handler
