@@ -8,6 +8,7 @@ export default function LoginPage() {
   const searchParams = useSearchParams()
   const [error, setError] = useState(searchParams.get('error') || '')
   const [isLoading, setIsLoading] = useState(false)
+  const callbackUrl = searchParams.get('callbackUrl') || '/'
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -17,15 +18,15 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget)
 
     try {
-      await signIn('credentials', {
+      const result = await signIn('credentials', {
         email: formData.get('email'),
         password: formData.get('password'),
-        callbackUrl: '/',
+        redirect: true,
+        callbackUrl
       })
     } catch (error) {
       console.error('Sign in error:', error)
       setError('An error occurred during sign in')
-    } finally {
       setIsLoading(false)
     }
   }
