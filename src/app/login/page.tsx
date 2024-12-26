@@ -1,64 +1,54 @@
 'use client'
 
-import { signIn, useSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 export default function LoginPage() {
-  const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl')
+  const callbackUrl = searchParams.get('callbackUrl') || '/'
   const [isLoading, setIsLoading] = useState(false)
-
-  // Debug logs
-  useEffect(() => {
-    console.log('Current session:', session)
-    console.log('Auth status:', status)
-  }, [session, status])
-
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (session && status === 'authenticated') {
-      console.log('User is authenticated, redirecting to:', callbackUrl || '/')
-      router.push(callbackUrl || '/')
-    }
-  }, [session, status, callbackUrl, router])
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
+    setError('')
     
     const formData = new FormData(e.currentTarget)
     const email = formData.get('email')
     const password = formData.get('password')
 
+    console.log('🔐 Login attempt with:', { email, callbackUrl })
+
     try {
-      console.log('Attempting sign in with:', { email, callbackUrl })
       const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
-        callbackUrl: callbackUrl || '/'
+        callbackUrl
       })
-      console.log('Sign in result:', result)
+
+      console.log('📦 Full sign in result:', JSON.stringify(result, null, 2))
 
       if (result?.error) {
-        console.error('Sign in error:', result.error)
-      } else if (result?.ok) {
-        console.log('Sign in successful')
-        router.push(callbackUrl || '/')
+        console.error('❌ Sign in error:', result.error)
+        setError(result.error)
+        setIsLoading(false)
+        return
+      }
+
+      if (result?.ok) {
+        console.log('✅ Sign in successful, redirecting to:', callbackUrl)
+        router.push(callbackUrl)
+        router.refresh()
       }
     } catch (error) {
-      console.error('Sign in exception:', error)
-    } finally {
+      console.error('❌ Sign in exception:', error)
+      setError('An unexpected error occurred')
       setIsLoading(false)
     }
-  }
-
-  // Show loading state if checking auth
-  if (status === 'loading') {
-    return <div>Loading...</div>
   }
 
   return (
@@ -70,6 +60,12 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          {error && (
+            <div className="rounded-md bg-red-50 p-4">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
