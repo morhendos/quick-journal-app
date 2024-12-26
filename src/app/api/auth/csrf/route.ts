@@ -1,7 +1,7 @@
-import { NextRequest } from 'next/server'
-import NextAuth from 'next-auth'
-import { authConfig } from '@/lib/auth/config'
+import { NextRequest, NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
-const handler = NextAuth(authConfig)
-
-export { handler as GET, handler as POST }
+export async function GET(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  return NextResponse.json({ csrfToken: token?.['csrf-token'] ?? '' })
+}
