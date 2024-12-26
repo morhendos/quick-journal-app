@@ -1,11 +1,10 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
-import { useSearchParams, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 export default function LoginPage() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState(searchParams.get('error') || '')
   const [isLoading, setIsLoading] = useState(false)
@@ -27,7 +26,7 @@ export default function LoginPage() {
       const res = await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        redirect: false
       })
       
       console.log('SignIn response:', res)
@@ -41,8 +40,7 @@ export default function LoginPage() {
 
       if (res?.ok) {
         console.log('Login successful, redirecting to:', callbackUrl)
-        router.push(callbackUrl)
-        router.refresh()
+        window.location.href = callbackUrl
       }
       
     } catch (error) {
