@@ -1,45 +1,43 @@
-import type { AuthOptions, Session, User } from 'next-auth'
+import { NextAuthConfig, type Session, type User } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-const credentialsProvider = CredentialsProvider({
-  id: 'credentials',
-  name: 'Credentials',
-  credentials: {
-    email: { label: 'Email', type: 'email' },
-    password: { label: 'Password', type: 'password' }
-  },
-  async authorize(credentials) {
-    console.log('Starting authorization attempt')
-    
-    if (!credentials?.email || !credentials?.password) {
-      console.log('Missing credentials')
-      return null
-    }
-
-    try {
-      if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
-        const user = { 
-          id: '1', 
-          email: credentials.email,
-          name: 'Test User'
+export const authOptions: NextAuthConfig = {
+  providers: [
+    CredentialsProvider({
+      id: 'credentials',
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
+      },
+      async authorize(credentials) {
+        console.log('Starting authorization attempt')
+        
+        if (!credentials?.email || !credentials?.password) {
+          console.log('Missing credentials')
+          return null
         }
-        console.log('Auth successful, returning user:', user)
-        return user
+
+        try {
+          if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
+            const user = { 
+              id: '1', 
+              email: credentials.email,
+              name: 'Test User'
+            }
+            console.log('Auth successful, returning user:', user)
+            return user
+          }
+          
+          console.log('Invalid credentials')
+          return null
+        } catch (error) {
+          console.log('Auth error:', error)
+          return null
+        }
       }
-      
-      console.log('Invalid credentials')
-      return null
-    } catch (error) {
-      console.log('Auth error:', error)
-      return null
-    }
-  }
-})
-
-console.log('Auth configuration loaded', { provider: credentialsProvider })
-
-export const authOptions: AuthOptions = {
-  providers: [credentialsProvider],
+    })
+  ],
   callbacks: {
     async signIn({ user, account, profile }) {
       console.log('SignIn callback:', { user, account, profile })
@@ -71,8 +69,7 @@ export const authOptions: AuthOptions = {
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  secret: process.env.NEXTAUTH_SECRET,
+  }
 }
 
 declare module 'next-auth' {
