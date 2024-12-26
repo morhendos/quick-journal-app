@@ -11,24 +11,47 @@ export const authOptions: AuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        console.log('Authorize called with:', credentials)
+
         if (!credentials?.email || !credentials?.password) {
-          return null
+          throw new Error('Email and password required')
         }
 
         if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
+          console.log('Credentials valid, returning user')
           return { 
             id: '1', 
             name: 'Test User',
             email: credentials.email 
           }
         }
-        return null
+
+        console.log('Invalid credentials')
+        throw new Error('Invalid credentials')
       }
     })
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      console.log('JWT callback:', { token, user })
+      if (user) {
+        token.id = user.id
+        token.email = user.email
+      }
+      return token
+    },
+    async session({ session, token }) {
+      console.log('Session callback:', { session, token })
+      if (session?.user) {
+        session.user.id = token.id
+      }
+      return session
+    }
+  },
   pages: {
     signIn: '/login',
   },
+  debug: true,
   session: {
     strategy: 'jwt',
   },
