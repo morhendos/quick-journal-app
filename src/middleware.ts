@@ -1,5 +1,5 @@
+import { authConfig } from '@/lib/auth/config'
 import NextAuth from 'next-auth'
-import { config as authConfig } from '@/lib/auth/config'
 
 export const middleware = NextAuth(authConfig).auth
 

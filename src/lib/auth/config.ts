@@ -1,7 +1,8 @@
-import { NextAuthConfig } from 'next-auth'
+import NextAuth from 'next-auth'
+import type { AuthConfig } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-export const config = {
+export const authConfig = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -11,7 +12,7 @@ export const config = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Missing credentials')
+          return null
         }
 
         if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
@@ -22,45 +23,26 @@ export const config = {
           }
         }
         
-        throw new Error('Invalid credentials')
+        return null
       }
     })
   ],
   pages: {
-    signIn: '/login',
-    error: '/auth/error'
+    signIn: '/login'
   },
   callbacks: {
-    jwt: async ({ token, user }) => {
+    async jwt({ token, user }) {
       if (user) {
         token.user = user
       }
       return token
     },
-    session: async ({ session, token }) => {
+    async session({ session, token }) {
       session.user = token.user as any
       return session
-    },
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user
-      const isOnLogin = nextUrl.pathname.startsWith('/login')
-      
-      if (isLoggedIn && isOnLogin) {
-        return Response.redirect(new URL('/', nextUrl))
-      }
-      
-      if (!isLoggedIn && !isOnLogin) {
-        return Response.redirect(new URL('/login', nextUrl))
-      }
-      
-      return true
     }
   },
-  session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60 // 24 hours
-  }
-} satisfies NextAuthConfig
+  session: { strategy: 'jwt' }
+} satisfies AuthConfig
 
-export const { auth, signIn, signOut } = NextAuth(config)
+export const { handlers, auth, signIn, signOut } = NextAuth({ ...authConfig })
