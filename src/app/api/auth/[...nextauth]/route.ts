@@ -11,6 +11,8 @@ export const authOptions: AuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        console.log('authorize called with:', credentials)
+
         if (!credentials?.email || !credentials?.password) {
           return null
         }
@@ -27,13 +29,38 @@ export const authOptions: AuthOptions = {
       }
     })
   ],
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
   pages: {
     signIn: '/login',
   },
-  session: {
-    strategy: 'jwt',
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  secret: process.env.NEXTAUTH_SECRET
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: true
+      }
+    },
+    csrfToken: {
+      name: 'next-auth.csrf-token',
+      options: {
+        httpOnly: false,
+        sameSite: 'lax',
+        path: '/',
+        secure: false
+      }
+    }
+  },
+  debug: process.env.NODE_ENV === 'development',
 }
 
 const handler = NextAuth(authOptions)
