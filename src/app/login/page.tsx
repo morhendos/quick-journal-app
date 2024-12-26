@@ -7,6 +7,7 @@ import { useState } from 'react'
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/'
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -20,19 +21,40 @@ export default function LoginPage() {
       const email = formData.get('email')
       const password = formData.get('password')
 
-      console.log('Submitting credentials:', { email })
+      // Get CSRF token
+      const csrfResponse = await fetch('/api/auth/csrf')
+      const { csrfToken } = await csrfResponse.json()
+      console.log('CSRF token response:', { csrfToken, status: csrfResponse.status })
+      console.log('Current cookies:', document.cookie)
 
-      // Direct sign in attempt
-      await signIn('credentials', {
+      const result = await signIn('credentials', {
         email,
         password,
-        redirect: true,
-        callbackUrl: '/'
+        csrfToken,
+        redirect: false,
+        callbackUrl
       })
+
+      console.log('Auth result:', result)
+      console.log('Cookies after auth:', document.cookie)
+
+      if (!result) {
+        throw new Error('No authentication response')
+      }
+
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+
+      // Successful login
+      router.push(callbackUrl)
+      router.refresh()
 
     } catch (error) {
       console.error('Login error:', error)
       setError('An unexpected error occurred')
+    } finally {
       setIsLoading(false)
     }
   }
