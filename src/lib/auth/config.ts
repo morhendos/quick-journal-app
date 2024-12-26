@@ -1,23 +1,24 @@
-import Credentials from 'next-auth/providers/credentials'
+import CredentialsProvider from 'next-auth/providers/credentials'
 import type { NextAuthConfig } from 'next-auth'
 
 export const authConfig = {
-  providers: [Credentials({
-    async authorize(credentials) {
-      if (!credentials?.email || !credentials?.password) {
-        throw new Error('Missing credentials')
+  providers: [
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { type: 'email' },
+        password: { type: 'password' }
+      },
+      async authorize(credentials) {
+        if (credentials?.email === 'user@example.com' && credentials?.password === 'password123') {
+          return { id: '1', email: credentials.email, name: 'Test User' }
+        }
+        return null
       }
-
-      if (credentials.email === 'user@example.com' && credentials.password === 'password123') {
-        return { id: '1', email: credentials.email, name: 'Test User' }
-      }
-
-      throw new Error('Invalid credentials')
-    }
-  })],
+    })
+  ],
   pages: {
-    signIn: '/login',
-    error: '/login'
+    signIn: '/login'
   },
   callbacks: {
     jwt({ token, user }) {
