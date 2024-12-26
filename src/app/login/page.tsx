@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -15,23 +17,21 @@ export default function LoginPage() {
     setError(null);
 
     const formData = new FormData(event.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
+    
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
+      const res = await signIn('credentials', {
+        email: formData.get('email'),
+        password: formData.get('password'),
         redirect: false,
+        callbackUrl,
       });
 
-      if (result?.error) {
-        setError('Invalid credentials');
-        return;
+      if (!res?.error) {
+        router.push(callbackUrl);
+        router.refresh();
+      } else {
+        setError('Invalid email or password');
       }
-
-      router.push('/'); // Redirect to home page after successful login
-      router.refresh(); // Refresh the page to update the session
     } catch (error) {
       setError('An error occurred. Please try again.');
     } finally {
@@ -80,7 +80,9 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
+            <div className="text-red-500 text-sm text-center bg-red-50 dark:bg-red-900/20 p-2 rounded">
+              {error}
+            </div>
           )}
 
           <div>
