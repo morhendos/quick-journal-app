@@ -18,36 +18,36 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-      console.log('Attempting sign in with:', {
-        email: formData.get('email'),
-        callbackUrl
+      const email = formData.get('email')
+      const password = formData.get('password')
+
+      console.log('Attempting sign in:', { email, callbackUrl })
+
+      const response = await signIn('credentials', {
+        email,
+        password,
+        callbackUrl,
+        redirect: false
       })
 
-      const result = await signIn('credentials', {
-        email: formData.get('email'),
-        password: formData.get('password'),
-        redirect: false,
-        callbackUrl
-      })
+      console.log('Auth response:', response)
 
-      console.log('Full sign in result:', JSON.stringify(result, null, 2))
-      
-      if (!result) {
-        throw new Error('Authentication response is missing')
+      if (!response) {
+        throw new Error('No authentication response')
       }
 
-      if (result.error) {
-        setError(result.error)
+      if (response.error) {
+        setError(response.error)
         return
       }
 
-      if (result.url) {
-        router.push(result.url)
-      }
+      // Successful login
+      router.push(callbackUrl)
+      router.refresh()
 
     } catch (error) {
-      console.error('Authentication error:', error)
-      setError('An unexpected error occurred. Please try again.')
+      console.error('Login error:', error)
+      setError('An unexpected error occurred')
     } finally {
       setIsLoading(false)
     }
