@@ -2,13 +2,12 @@
 
 import { signIn } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
   const [error, setError] = useState(searchParams.get('error') || '')
   const [isLoading, setIsLoading] = useState(false)
-  const callbackUrl = searchParams.get('callbackUrl') || '/'
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -23,26 +22,12 @@ export default function LoginPage() {
 
     try {
       console.log('Calling signIn...')
-      const res = await signIn('credentials', {
+      await signIn('credentials', {
         email,
         password,
-        redirect: false
+        redirect: true,
+        callbackUrl: '/'
       })
-      
-      console.log('SignIn response:', res)
-
-      if (res?.error) {
-        console.log('Got error:', res.error)
-        setError(res.error)
-        setIsLoading(false)
-        return
-      }
-
-      if (res?.ok) {
-        console.log('Login successful, redirecting to:', callbackUrl)
-        window.location.href = callbackUrl
-      }
-      
     } catch (error) {
       console.error('Sign in error:', error)
       setError('An error occurred during sign in')
