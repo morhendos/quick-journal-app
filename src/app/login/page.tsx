@@ -1,10 +1,11 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function LoginPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState(searchParams.get('error') || '')
   const [isLoading, setIsLoading] = useState(false)
@@ -18,12 +19,21 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget)
 
     try {
-      const result = await signIn('credentials', {
+      const res = await signIn('credentials', {
         email: formData.get('email'),
         password: formData.get('password'),
-        redirect: true,
-        callbackUrl
+        redirect: false,
       })
+
+      if (res?.error) {
+        setError(res.error)
+        setIsLoading(false)
+        return
+      }
+
+      router.push(callbackUrl)
+      router.refresh()
+      
     } catch (error) {
       console.error('Sign in error:', error)
       setError('An error occurred during sign in')
