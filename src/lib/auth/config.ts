@@ -30,29 +30,19 @@ export const config = {
   pages: {
     signIn: '/login',
   },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
+  session: { strategy: 'jwt' },
+  cookies: {
+    sessionToken: {
+      name: 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
       }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
-  },
-  session: { 
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  debug: process.env.NODE_ENV === 'development',
-  secret: process.env.NEXTAUTH_SECRET,
+    }
+  }
 };
 
-const { auth, signIn, signOut, handlers: { GET, POST } } = NextAuth(config);
-
-export { auth, signIn, signOut, GET, POST };
+const handler = NextAuth(config);
+export { handler as auth };
