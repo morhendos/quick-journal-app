@@ -21,7 +21,6 @@ export const authOptions: NextAuthOptions = {
             email: credentials.email 
           }
         }
-        
         return null
       }
     })
@@ -31,17 +30,14 @@ export const authOptions: NextAuthOptions = {
     error: '/auth/error'
   },
   session: {
-    strategy: 'jwt'
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.user = user
-      }
-      return token
-    },
     async session({ session, token }) {
-      session.user = token.user as any
+      if (session?.user) {
+        session.user.id = token.sub
+      }
       return session
     }
   },
