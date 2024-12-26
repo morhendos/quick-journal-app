@@ -7,7 +7,6 @@ import { useState } from 'react'
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/'
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -18,47 +17,22 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-      const email = formData.get('email') as string
-      const password = formData.get('password') as string
+      const email = formData.get('email')
+      const password = formData.get('password')
 
-      // Get CSRF token
-      const csrfResponse = await fetch('/api/auth/csrf')
-      console.log('Raw CSRF response:', csrfResponse)
-      
-      const csrfData = await csrfResponse.text()
-      console.log('CSRF response text:', csrfData)
-      
-      const csrfJson = JSON.parse(csrfData)
-      console.log('CSRF parsed data:', csrfJson)
+      console.log('Submitting credentials:', { email })
 
-      // Submit credentials
-      const result = await signIn('credentials', {
+      // Direct sign in attempt
+      await signIn('credentials', {
         email,
         password,
-        csrfToken: csrfJson.csrfToken,
-        redirect: false,
-        callbackUrl
+        redirect: true,
+        callbackUrl: '/'
       })
-
-      console.log('Auth result:', result)
-
-      if (!result) {
-        throw new Error('No authentication response')
-      }
-
-      if (result.error) {
-        setError(result.error)
-        return
-      }
-
-      // Successful login
-      router.push(callbackUrl)
-      router.refresh()
 
     } catch (error) {
       console.error('Login error:', error)
       setError('An unexpected error occurred')
-    } finally {
       setIsLoading(false)
     }
   }
