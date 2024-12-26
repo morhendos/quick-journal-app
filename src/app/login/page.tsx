@@ -18,15 +18,15 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-      const email = formData.get('email')
-      const password = formData.get('password')
-
-      console.log('Attempting sign in:', { email, callbackUrl })
+      console.log('Attempting sign in:', {
+        email: formData.get('email'),
+        callbackUrl
+      })
 
       const response = await signIn('credentials', {
-        email,
-        password,
-        callbackUrl,
+        email: formData.get('email'),
+        password: formData.get('password'),
+        callbackUrl: callbackUrl,
         redirect: false
       })
 
@@ -41,9 +41,27 @@ export default function LoginPage() {
         return
       }
 
-      // Successful login
-      router.push(callbackUrl)
-      router.refresh()
+      // After successful login, make a POST request to /api/auth/callback/credentials
+      const callbackResponse = await fetch('/api/auth/callback/credentials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          email: formData.get('email') as string,
+          password: formData.get('password') as string,
+          csrfToken: await fetch('/api/auth/csrf').then(r => r.json()).then(data => data.csrfToken),
+          callbackUrl: callbackUrl,
+          json: 'true'
+        })
+      })
+
+      console.log('Callback response:', callbackResponse)
+
+      if (callbackResponse.ok) {
+        router.push(callbackUrl)
+        router.refresh()
+      }
 
     } catch (error) {
       console.error('Login error:', error)
