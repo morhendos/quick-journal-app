@@ -23,4 +23,4 @@ export const authConfig: NextAuthConfig = {
   session: { strategy: 'jwt' }
 }
 
-export const auth = NextAuth(authConfig)
+export const { auth } = NextAuth(authConfig)

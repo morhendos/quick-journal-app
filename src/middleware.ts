@@ -1,19 +1,20 @@
-import { auth } from '@/lib/auth/middleware'
 import { NextResponse } from 'next/server'
+import { auth } from '@/lib/auth/config'
 
-export async function middleware(request) {
-  const session = await auth()
+export default auth((req) => {
+  const isLoggedIn = !!req.auth
+  const isOnLoginPage = req.nextUrl.pathname === '/login'
 
-  if (!session && request.nextUrl.pathname !== '/login') {
-    return NextResponse.redirect(new URL('/login', request.url))
+  if (isLoggedIn && isOnLoginPage) {
+    return NextResponse.redirect(new URL('/', req.url))
   }
 
-  if (session && request.nextUrl.pathname === '/login') {
-    return NextResponse.redirect(new URL('/', request.url))
+  if (!isLoggedIn && !isOnLoginPage) {
+    return NextResponse.redirect(new URL('/login', req.url))
   }
 
   return NextResponse.next()
-}
+})
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
