@@ -8,11 +8,12 @@ export default function LogoutButton() {
 
   const handleSignOut = async () => {
     try {
-      await signOut({ redirect: false })
-      router.push('/login')
-      router.refresh()
+      await signOut({ redirect: true, callbackUrl: '/login' })
     } catch (error) {
       console.error('Error signing out:', error)
+      // Fallback redirect
+      router.push('/login')
+      router.refresh()
     }
   }
 
@@ -21,7 +22,7 @@ export default function LogoutButton() {
       onClick={handleSignOut}
       className="text-sm font-semibold text-gray-700 hover:text-gray-900"
     >
-      Sign Out
+      Log out
     </button>
   )
 }
