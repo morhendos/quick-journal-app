@@ -1,15 +1,33 @@
 'use client'
 
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/'
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Debug logs for session state
+  useEffect(() => {
+    console.log('🔑 Session state:', {
+      session: session,
+      status: status,
+      callbackUrl: callbackUrl
+    })
+  }, [session, status, callbackUrl])
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (session && status === 'authenticated') {
+      console.log('✅ Already authenticated, redirecting to:', callbackUrl)
+      router.push(callbackUrl)
+    }
+  }, [session, status, callbackUrl, router])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -40,15 +58,25 @@ export default function LoginPage() {
       }
 
       if (result?.ok) {
-        console.log('✅ Sign in successful, redirecting to:', callbackUrl)
-        router.push(callbackUrl)
+        console.log('✅ Sign in successful, refreshing session...')
         router.refresh()
+        console.log('✅ Redirecting to:', callbackUrl)
+        router.push(callbackUrl)
       }
     } catch (error) {
       console.error('❌ Sign in exception:', error)
       setError('An unexpected error occurred')
       setIsLoading(false)
     }
+  }
+
+  // Show loading state while checking session
+  if (status === 'loading') {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
   }
 
   return (
