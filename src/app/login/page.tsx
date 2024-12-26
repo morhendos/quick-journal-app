@@ -21,18 +21,21 @@ export default function LoginPage() {
       const email = formData.get('email') as string
       const password = formData.get('password') as string
 
-      // First get the CSRF token
+      // Get CSRF token
       const csrfResponse = await fetch('/api/auth/csrf')
-      console.log('CSRF response:', csrfResponse)
-      const { csrfToken } = await csrfResponse.json()
-      console.log('Got CSRF token:', csrfToken)
+      console.log('Raw CSRF response:', csrfResponse)
+      
+      const csrfData = await csrfResponse.text()
+      console.log('CSRF response text:', csrfData)
+      
+      const csrfJson = JSON.parse(csrfData)
+      console.log('CSRF parsed data:', csrfJson)
 
-      console.log('Attempting sign in:', { email, csrfToken })
-
+      // Submit credentials
       const result = await signIn('credentials', {
         email,
         password,
-        csrfToken,
+        csrfToken: csrfJson.csrfToken,
         redirect: false,
         callbackUrl
       })
