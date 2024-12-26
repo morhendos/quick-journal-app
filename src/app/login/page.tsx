@@ -21,26 +21,12 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email: formData.get('email'),
         password: formData.get('password'),
-        callbackUrl: '/',
-        redirect: false,
+        redirect: true,
+        callbackUrl: '/'
       })
-
-      if (result?.error) {
-        setError(result.error)
-        return
-      }
-
-      if (result?.url) {
-        router.push(result.url)
-      } else {
-        router.push('/')
-      }
-      router.refresh()
-      
     } catch (error) {
       console.error('Sign in error:', error)
       setError('An error occurred during sign in')
-    } finally {
       setIsLoading(false)
     }
   }
