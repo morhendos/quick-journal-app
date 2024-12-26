@@ -6,6 +6,7 @@ export const authOptions: AuthOptions = {
     CredentialsProvider({
       id: 'credentials',
       name: 'Credentials',
+      type: 'credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
@@ -39,6 +40,10 @@ export const authOptions: AuthOptions = {
     })
   ],
   callbacks: {
+    async signIn({ user, account, profile, credentials }) {
+      console.log('SignIn callback:', { user, account, profile });
+      return true;
+    },
     async jwt({ token, user }) {
       console.log('JWT Callback - Input:', { token, user });
       if (user) {
