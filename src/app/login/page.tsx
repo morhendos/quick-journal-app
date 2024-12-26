@@ -20,20 +20,12 @@ export default function LoginPage() {
     const password = formData.get('password')
 
     try {
-      const result = await signIn('credentials', {
+      await signIn('credentials', {
         email,
         password,
         callbackUrl,
-        redirect: false
+        redirect: true
       })
-
-      if (!result?.ok) {
-        setError('Invalid credentials')
-        setIsLoading(false)
-        return
-      }
-
-      window.location.href = callbackUrl
     } catch (error) {
       console.error('Sign in error:', error)
       setError('An error occurred during sign in')
