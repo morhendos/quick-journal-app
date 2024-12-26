@@ -30,7 +30,7 @@ export const authConfig = {
   pages: {
     signIn: '/login',
     signOut: '/login',
-    error: '/login' // Redirect back to login page with error
+    error: '/login'
   },
   session: { 
     strategy: 'jwt',
@@ -46,6 +46,11 @@ export const authConfig = {
     async session({ session, token }) {
       session.user = token.user as any
       return session
+    },
+    async redirect({ url, baseUrl }) {
+      // Always redirect to the base URL (prevent open redirects)
+      if (url.startsWith(baseUrl)) return url
+      return baseUrl
     }
   }
 } satisfies AuthConfig
