@@ -1,5 +1,4 @@
-export { default } from 'next-auth/middleware'
-
+// Temporarily disabled to debug auth flow
 export const config = {
-  matcher: ['/', '/protected/:path*']
+  matcher: ['/protected/:path*']
 }
