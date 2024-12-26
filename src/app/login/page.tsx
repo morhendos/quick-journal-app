@@ -26,15 +26,29 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email: formData.get('email'),
         password: formData.get('password'),
-        redirect: true,
+        redirect: false,
         callbackUrl
       })
 
-      console.log('Sign in result:', result)
+      console.log('Full sign in result:', JSON.stringify(result, null, 2))
       
+      if (!result) {
+        throw new Error('Authentication response is missing')
+      }
+
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+
+      if (result.url) {
+        router.push(result.url)
+      }
+
     } catch (error) {
       console.error('Authentication error:', error)
       setError('An unexpected error occurred. Please try again.')
+    } finally {
       setIsLoading(false)
     }
   }
