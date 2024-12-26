@@ -19,13 +19,26 @@ export default function LoginPage() {
     const email = formData.get('email')
     const password = formData.get('password')
 
+    console.log('Login attempt with:', { email, callbackUrl })
+
     try {
-      await signIn('credentials', {
+      const result = await signIn('credentials', {
         email,
         password,
         callbackUrl,
-        redirect: true
+        redirect: false
       })
+      console.log('Sign in result:', result)
+      
+      if (!result?.error && result?.ok) {
+        console.log('Sign in successful, redirecting to:', callbackUrl)
+        window.location.href = callbackUrl
+      } else {
+        console.error('Sign in failed:', result?.error)
+        setError(result?.error || 'An error occurred during sign in')
+        setIsLoading(false)
+      }
+
     } catch (error) {
       console.error('Sign in error:', error)
       setError('An error occurred during sign in')
