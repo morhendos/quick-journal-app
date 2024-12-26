@@ -1,64 +1,87 @@
 import NextAuth from 'next-auth'
-import { type AuthOptions } from 'next-auth'
+import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-export const authOptions: AuthOptions = {
+const debug = (...args: any[]) => {
+  console.log('[AUTH]', ...args)
+}
+
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
       id: 'credentials',
-      type: 'credentials',
+      name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
-        console.log('authorize called:', { credentials })
-        
+      async authorize(credentials, req) {
+        debug('authorize called:', { credentials })
+
         if (!credentials?.email || !credentials?.password) {
+          debug('Missing credentials')
           return null
         }
 
-        // For testing only
         if (credentials.email === 'user@example.com' && 
             credentials.password === 'password123') {
-          return { 
+          const user = { 
             id: '1', 
             email: credentials.email,
             name: 'Test User'
           }
+          debug('Auth successful:', user)
+          return user
         }
+
+        debug('Invalid credentials')
         return null
       }
     })
   ],
-  session: { strategy: 'jwt' },
+  callbacks: {
+    async signIn({ user, account }) {
+      debug('signIn callback:', { user, account })
+      return true
+    },
+    async jwt({ token, user }) {
+      debug('jwt callback:', { token, user })
+      return token
+    },
+    async session({ session, token }) {
+      debug('session callback:', { session, token })
+      return session
+    }
+  },
+  pages: {
+    signIn: '/login'
+  },
+  session: {
+    strategy: 'jwt'
+  },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: true,
+  logger: {
+    error(code, ...message) {
+      debug('ERROR:', { code, message })
+    },
+    warn(code, ...message) {
+      debug('WARN:', { code, message })
+    },
+    debug(code, ...message) {
+      debug('DEBUG:', { code, message })
+    }
+  }
 }
 
-const handler = NextAuth(authOptions)
-
 export async function GET(request: Request) {
-  const response = await handler(request)
-  console.log('GET auth response:', {
-    url: request.url,
-    headers: Object.fromEntries(response.headers)
-  })
-  return response
+  debug('GET', request.url)
+  return await NextAuth(authOptions)(request)
 }
 
 export async function POST(request: Request) {
-  const body = await request.text()
-  console.log('POST auth request:', {
-    url: request.url,
-    body,
-    headers: Object.fromEntries(request.headers)
-  })
-
-  const response = await handler(request)
-  console.log('POST auth response:', {
-    headers: Object.fromEntries(response.headers)
-  })
-
-  return response
+  debug('POST', request.url)
+  const body = await request.clone().text()
+  debug('POST body:', body)
+  return await NextAuth(authOptions)(request)
 }
