@@ -1,3 +1,1 @@
-import { auth } from '@/auth'
-
-export const { GET, POST } = auth
+// Remove this file as it should be handled by [...nextauth]

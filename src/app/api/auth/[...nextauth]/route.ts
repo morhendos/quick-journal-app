@@ -1,3 +1,8 @@
-import { auth } from '@/auth'
+import NextAuth from 'next-auth'
+import { config } from '@/auth'
 
-export const { GET, POST } = auth
+const handler = NextAuth(config)
+
+// Export individual handler functions for better type safety
+export const GET = handler
+export const POST = handler
