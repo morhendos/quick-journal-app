@@ -17,61 +17,47 @@ export default function LoginPage() {
     setError('')
 
     try {
+      // Get form data
       const formData = new FormData(e.currentTarget)
       const email = formData.get('email') as string
       const password = formData.get('password') as string
 
-      console.log('Attempting login with:', { email, callbackUrl })
-      
-      // First get CSRF token
-      const csrfResp = await fetch('/api/auth/csrf')
-      console.log('CSRF Response:', {
-        status: csrfResp.status,
-        headers: Object.fromEntries(csrfResp.headers)
-      })
-      const { csrfToken } = await csrfResp.json()
-      console.log('Got CSRF token:', csrfToken)
+      console.log('Login attempt:', email)
 
-      // Then try credentials endpoint directly
-      const credResp = await fetch('/api/auth/callback/credentials', {
+      // POST to credentials endpoint directly
+      const response = await fetch('/api/auth/callback/credentials', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-          email,
-          password,
-          'csrf-token': csrfToken,
+          username: email,
+          password: password,
+          redirect: 'false',
           callbackUrl,
           json: 'true'
         })
       })
 
-      console.log('Credentials Response:', {
-        status: credResp.status,
-        headers: Object.fromEntries(credResp.headers)
+      console.log('Auth response:', {
+        status: response.status,
+        headers: Object.fromEntries(response.headers)
       })
-      const credData = await credResp.json()
-      console.log('Credentials Data:', credData)
 
-      if (!credResp.ok) {
-        throw new Error('Authentication failed')
+      if (!response.ok) {
+        setError('Invalid credentials')
+        return
       }
 
       // Check session
       const sessionResp = await fetch('/api/auth/session')
-      const sessionData = await sessionResp.json()
-      console.log('Session Response:', {
-        status: sessionResp.status,
-        headers: Object.fromEntries(sessionResp.headers),
-        data: sessionData
-      })
+      const session = await sessionResp.json()
 
-      if (sessionData?.user) {
+      if (session?.user) {
         router.push(callbackUrl)
         router.refresh()
       } else {
-        setError('Failed to establish session')
+        setError('Authentication failed')
       }
 
     } catch (error) {
