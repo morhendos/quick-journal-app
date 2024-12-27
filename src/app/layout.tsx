@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { getServerSession } from 'next-auth/next'
+import { headers } from 'next/headers'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import NextAuthProvider from './providers'
 import './globals.css'
@@ -14,7 +15,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const headersList = headers()
   const session = await getServerSession(authOptions)
+  console.log('Layout session:', session)
   
   return (
     <html lang="en">
