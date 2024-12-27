@@ -1,46 +1,63 @@
 import { AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { cookies } from 'next/headers'
 
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'credentials',
+      id: 'credentials',
+      name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
+        email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
-        console.log('[AUTH] authorize started:', credentials?.email)
+      async authorize(credentials, req) {
+        console.log('[AUTH] authorize called:', { credentials, headers: req?.headers })
 
         if (!credentials?.email || !credentials?.password) {
           return null
         }
 
-        // For testing only - proper auth would check a database
         if (credentials.email === 'user@example.com' && 
             credentials.password === 'password123') {
-          const user = {
+          return {
             id: '1',
             email: credentials.email,
             name: 'Test User'
           }
-          console.log('[AUTH] authorize success:', user)
-          return user
         }
-
         return null
       }
     })
   ],
-  pages: {
-    signIn: '/login'
-  },
   session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60,  // 30 days
+    strategy: 'jwt'
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  cookies: {
+    sessionToken: {
+      name: 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: false
+      }
+    },
+    csrfToken: {
+      name: 'next-auth.csrf-token',
+      options: {
+        httpOnly: false,
+        sameSite: 'lax',
+        path: '/',
+        secure: false
+      }
+    }
+  },
   callbacks: {
+    async signIn({ user, account }) {
+      console.log('[AUTH] signIn callback:', { user, account, cookies: cookies().getAll() })
+      return true
+    },
     async jwt({ token, user }) {
       console.log('[AUTH] jwt callback:', { token, user })
       if (user) {
@@ -49,11 +66,13 @@ export const authOptions: AuthOptions = {
       return token
     },
     async session({ session, token }) {
-      console.log('[AUTH] session callback:', session)
+      console.log('[AUTH] session callback:', { session, token })
       if (session.user) {
-        session.user.id = token.sub!
+        session.user.id = token.id as string
       }
       return session
     }
-  }
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: true
 }
