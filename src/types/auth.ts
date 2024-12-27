@@ -6,7 +6,8 @@ export interface UserRole {
   name: string
 }
 
-export interface CustomUser extends DefaultUser {
+// Make sure required fields are marked as required
+export interface CustomUser extends Omit<DefaultUser, 'email' | 'name'> {
   id: string
   email: string
   name: string
@@ -16,8 +17,13 @@ export interface CustomUser extends DefaultUser {
 declare module 'next-auth' {
   interface User extends CustomUser {}
   
-  interface Session extends DefaultSession {
-    user: CustomUser
+  interface Session extends Omit<DefaultSession, 'user'> {
+    user: {
+      id: string
+      email: string
+      name: string
+      roles?: UserRole[]
+    }
   }
 }
 
