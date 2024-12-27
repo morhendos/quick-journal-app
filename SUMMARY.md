@@ -1,96 +1,93 @@
-# Development Summary
+# Quick Journal App - Authentication Issue Investigation
 
-## Recent Changes (December 25, 2024)
+## Current State (27 Dec 2024)
 
-### Feature: Export/Import Functionality
-1. Added ability to export journal entries to JSON
-2. Added ability to import entries from JSON
-3. Implemented data merging strategy (newer entries take precedence)
-4. Added validation for imported data
+### Authentication Flow Status
+- Auth route handler works without errors
+- CSRF token request returns 200 but empty token
+- No session cookie is being set
+- Login appears to work but no actual session is established
 
-### UI Improvements
-1. Moved theme toggle to header area
-2. Added export/import buttons to header
-3. Implemented icon-only buttons for cleaner UI
-4. Improved header layout and spacing
+### Key Findings
+1. Route handler issues:
+   - Initially had issues with NextAuth query params in App Router
+   - Edge Runtime not compatible (needs Node.js crypto)
+   - Successfully fixed route handler errors
 
-### Code Refactoring
-1. Created reusable IconButton component
-2. Consolidated header controls into HeaderControls component
-3. Improved error handling with custom error types
-4. Added comprehensive type safety
+2. Cookie/Session issues:
+   - CSRF token is not being generated
+   - Session cookie is not being set after successful auth
+   - Credentials validation works but session establishment fails
 
-### Documentation
-1. Added JSDoc comments to components
-2. Created component and utility documentation
-3. Updated project structure documentation
-4. Added development guidelines
+3. Environment setup:
+   - NEXTAUTH_SECRET and NEXTAUTH_URL are properly set
+   - Running in development mode (Node.js runtime)
+   - Using Next.js 14.1.0 with App Router
+   - next-auth version 4.24.5
 
-## Current State
+### Current Implementation
 
-### Components
-- `IconButton`: Reusable button for icons
-- `HeaderControls`: Manages theme, export, and import
-- `PageHeader`: Main header with controls
-- Various journal entry components
+Key files:
+1. `/src/app/api/auth/[...nextauth]/route.ts`
+   - Basic NextAuth handler for App Router
+   - Node.js runtime (Edge not compatible)
 
-### Data Management
-- Using localStorage for data persistence
-- Export format includes version and timestamp
-- Import supports both new and legacy formats
-- Data validation for imports
+2. `/src/lib/auth.ts`
+   - Auth configuration with credentials provider
+   - JWT strategy for sessions
+   - Debug logging enabled
 
-### Styling
-- Consistent button styling
-- Paper texture and shadow effects
-- Dark/light theme support
-- Responsive design
+3. `/src/app/login/page.tsx`
+   - Direct POST to credentials endpoint
+   - Manual session verification
+   - Debug logging for responses
 
-## Next Steps
+### Next Steps
 
-### Planned Features
-1. MongoDB integration
-2. User authentication
-3. Rich text editor
-4. Search functionality
+1. Investigate why CSRF token is empty:
+   - Check CSRF token generation in NextAuth
+   - Verify cookie settings for CSRF token
 
-### Technical Debt
-1. Add unit tests for components
-2. Add E2E tests for critical flows
-3. Implement error boundaries
-4. Improve performance monitoring
+2. Debug session creation:
+   - Add logging to JWT callback
+   - Check session token cookie settings
+   - Verify token signing process
 
-### Known Issues
-- None currently
+3. Consider:
+   - Upgrading next-auth version
+   - Testing with different cookie configurations
+   - Adding NextAuth debug mode for more logs
 
-## Development Guidelines
+### Environment Requirements
 
-### Branch Strategy
-- `main`: Production-ready code
-- `feature/*`: New features
-- `fix/*`: Bug fixes
-
-### Component Guidelines
-1. Use 'use client' directive when needed
-2. Maintain type safety
-3. Include proper documentation
-4. Follow existing style patterns
-
-### State Management
-1. Use local state for UI
-2. Use localStorage for persistence
-3. Plan for future backend integration
-
-## Project Structure
+```bash
+# Required in .env.local
+NEXTAUTH_SECRET=KVrq9Eef3n4vf4oDYaFtNzyFYVMyHDd13x057Jhn6mE=
+NEXTAUTH_URL=http://localhost:3000
 ```
-src/
-├── app/              # Next.js app router files
-├── components/       # React components
-│   ├── journal/     # Journal components
-│   ├── settings/    # Settings components
-│   ├── layout/      # Layout components
-│   └── ui/          # Shared UI components
-├── hooks/           # Custom React hooks
-├── lib/             # Utilities
-└── types/           # TypeScript types
+
+### Test Credentials
+- Username: user@example.com
+- Password: password123
+
+### Current Logs
+Console output during login attempt:
 ```
+Attempting login with: {email: 'user@example.com', callbackUrl: '/'}
+CSRF Response: {status: 200, headers: {...}}
+Got CSRF token: 
+Credentials Response: {status: 200, headers: {...}}
+Credentials Data: {url: 'http://localhost:3000/api/auth/signin?csrf=true'}
+Session Response: {status: 200, headers: {...}, data: {...}}
+```
+
+### Related Issues
+1. Initial NextAuth query param error (fixed)
+2. Edge Runtime compatibility (fixed)
+3. Empty CSRF token (pending)
+4. Missing session cookie (pending)
+
+### References
+- [NextAuth.js App Router Guide](https://next-auth.js.org/configuration/nextjs#app-router)
+- [NextAuth.js Credentials Provider](https://next-auth.js.org/providers/credentials)
+- [NextAuth.js Cookies](https://next-auth.js.org/configuration/options#cookies)
