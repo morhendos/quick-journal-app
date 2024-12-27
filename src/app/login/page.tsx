@@ -18,58 +18,26 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-      const email = formData.get('email') as string
-      const password = formData.get('password') as string
+      console.log('Login attempt with:', formData.get('email'))
 
-      console.log('Attempting auth with:', { email, callbackUrl })
-
-      // First get CSRF
-      const csrfResp = await fetch('/api/auth/csrf')
-      const csrf = await csrfResp.json()
-      console.log('CSRF response:', csrf)
-
-      // Then credentials
-      const response = await fetch('/api/auth/callback/credentials', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          email,
-          password,
-          'csrf-token': csrf.csrfToken || '',
-          callbackUrl,
-          json: 'true'
-        })
+      const result = await signIn('credentials', {
+        email: formData.get('email'),
+        password: formData.get('password'),
+        redirect: false
       })
 
-      const data = await response.text()
-      console.log('Auth response:', {
-        status: response.status, 
-        headers: Object.fromEntries(response.headers),
-        data: data
-      })
+      console.log('SignIn result:', result)
 
-      if (!response.ok) {
-        throw new Error(data || 'Authentication failed')
+      if (!result?.ok) {
+        throw new Error(result?.error || 'Authentication failed')
       }
 
-      // Check session
-      const sessionResp = await fetch('/api/auth/session')
-      const session = await sessionResp.json()
-      console.log('Session:', session)
-
-      if (session?.user) {
-        router.push(callbackUrl)
-        router.refresh()
-      } else {
-        setError('Session not established')
-      }
+      router.push(callbackUrl)
+      router.refresh()
 
     } catch (error) {
-      console.error('Auth error:', error)
-      setError('Authentication failed')
-    } finally {
+      console.error('Login error:', error)
+      setError(error instanceof Error ? error.message : 'Authentication failed')
       setIsLoading(false)
     }
   }
