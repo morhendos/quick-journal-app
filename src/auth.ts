@@ -12,22 +12,31 @@ export const config = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        if (credentials?.email === 'user@example.com' && credentials?.password === 'password123') {
-          return { 
-            id: '1', 
-            email: credentials.email, 
-            name: 'Test User' 
+        console.log('[AUTH] authorize called:', credentials)
+
+        try {
+          if (credentials?.email === 'user@example.com' && credentials?.password === 'password123') {
+            return { 
+              id: '1', 
+              email: credentials.email, 
+              name: 'Test User' 
+            }
           }
+          return null
+        } catch (error) {
+          console.error('[AUTH] Error in authorize:', error)
+          return null
         }
-        return null
       }
     })
   ],
   pages: { 
     signIn: '/login'
   },
+  debug: process.env.NODE_ENV === 'development',
   session: { 
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -37,12 +46,13 @@ export const config = {
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string
+      if (session?.user) {
+        session.user.id = token.id
       }
       return session
     }
-  }
+  },
+  secret: process.env.NEXTAUTH_SECRET
 } satisfies AuthOptions
 
 export const auth = NextAuth(config)
