@@ -18,16 +18,26 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-      const result = await signIn('credentials', {
-        email: formData.get('email'),
-        password: formData.get('password'),
-        redirect: false,
-        callbackUrl
+      
+      // Direct POST to credentials endpoint
+      const response = await fetch('/api/auth/callback/credentials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          email: formData.get('email') as string,
+          password: formData.get('password') as string,
+          redirect: 'false',
+          callbackUrl: callbackUrl,
+          json: 'true'
+        })
       })
 
-      console.log('Sign in result:', result)
+      const result = await response.json()
+      console.log('Auth response:', result)
 
-      if (!result?.ok) {
+      if (!response.ok) {
         setError('Invalid email or password')
         return
       }
