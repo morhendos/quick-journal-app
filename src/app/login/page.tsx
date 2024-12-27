@@ -18,26 +18,34 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-      console.log('[LOGIN] Attempt with:', formData.get('email'))
+      const email = formData.get('email') as string
+      const password = formData.get('password') as string
+
+      console.log('[LOGIN] Attempting login with:', { 
+        email, 
+        hasPassword: !!password,
+        callbackUrl 
+      })
 
       const res = await signIn('credentials', {
-        email: formData.get('email'),
-        password: formData.get('password'),
+        email,
+        password,
         redirect: false,
       })
 
-      console.log('[LOGIN] Response:', res)
+      console.log('[LOGIN] Auth response:', res)
 
       if (!res?.ok) {
-        throw new Error('Invalid credentials')
+        throw new Error(res?.error || 'Invalid credentials')
       }
 
+      console.log('[LOGIN] Success, redirecting to:', callbackUrl)
       router.push(callbackUrl)
       router.refresh()
 
     } catch (error) {
       console.error('[LOGIN] Error:', error)
-      setError(error instanceof Error ? error.message : 'Something went wrong')
+      setError(error instanceof Error ? error.message : 'Authentication failed')
     } finally {
       setIsLoading(false)
     }
