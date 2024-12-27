@@ -25,17 +25,10 @@ export default function LoginPage() {
         callbackUrl
       })
 
+      console.log('Sign in result:', result)
+
       if (!result?.ok) {
         setError('Invalid email or password')
-        return
-      }
-
-      // Check if we actually have a session
-      const response = await fetch('/api/auth/session')
-      const session = await response.json()
-
-      if (!session?.user) {
-        setError('Failed to establish session')
         return
       }
 
