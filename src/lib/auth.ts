@@ -4,31 +4,44 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      id: 'credentials',
       name: 'Credentials',
-      authorize: async (credentials) => {
-        if (credentials?.email === 'user@example.com' && 
-            credentials?.password === 'password123') {
-          return { id: '1', email: 'user@example.com', name: 'Test User' }
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
+      },
+      async authorize(credentials) {
+        console.log('[AUTH] authorize called:', credentials)
+        if (credentials?.email === 'user@example.com' && credentials?.password === 'password123') {
+          return { 
+            id: '1', 
+            email: credentials.email, 
+            name: 'Test User' 
+          }
         }
         return null
       }
     })
   ],
-  secret: process.env.NEXTAUTH_SECRET,
-  session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 },
-  pages: { signIn: '/login' },
-  useSecureCookies: false,
-  cookies: {
-    sessionToken: {
-      name: `__Secure-next-auth.session-token`,
-      options: {
-        path: '/',
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: false
+  pages: { 
+    signIn: '/login'
+  },
+  session: { 
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
       }
+      return token
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string
+      }
+      return session
     }
   },
-  debug: true
+  debug: process.env.NODE_ENV === 'development',
 }
