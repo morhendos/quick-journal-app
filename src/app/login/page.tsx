@@ -18,26 +18,31 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-      console.log('Login attempt with:', formData.get('email'))
+      console.log('[LOGIN] Attempt with:', formData.get('email'))
 
       const result = await signIn('credentials', {
         email: formData.get('email'),
         password: formData.get('password'),
-        redirect: false
+        redirect: false,
+        callbackUrl
       })
 
-      console.log('SignIn result:', result)
+      console.log('[LOGIN] Result:', result)
 
       if (!result?.ok) {
         throw new Error(result?.error || 'Authentication failed')
       }
 
+      // Important: Wait a bit for the session to be fully established
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
       router.push(callbackUrl)
       router.refresh()
 
     } catch (error) {
-      console.error('Login error:', error)
+      console.error('[LOGIN] Error:', error)
       setError(error instanceof Error ? error.message : 'Authentication failed')
+    } finally {
       setIsLoading(false)
     }
   }
