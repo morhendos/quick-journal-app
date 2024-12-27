@@ -52,19 +52,23 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
-        token.email = user.email
-        token.name = user.name
-        token.roles = user.roles
+        // Ensure we're working with our CustomUser type
+        const customUser = user as CustomUser
+        token.id = customUser.id
+        token.email = customUser.email || ''
+        token.name = customUser.name || ''
+        token.roles = customUser.roles
       }
       return token
     },
 
     async session({ session, token }) {
-      session.user.id = token.id
-      session.user.email = token.email
-      session.user.name = token.name
-      session.user.roles = token.roles
+      if (session.user) {
+        session.user.id = token.id
+        session.user.email = token.email || ''
+        session.user.name = token.name || ''
+        session.user.roles = token.roles
+      }
       return session
     },
   },
@@ -90,3 +94,6 @@ export const authOptions: AuthOptions = {
 
   secret: process.env.NEXTAUTH_SECRET,
 }
+
+// Add the import at the top
+import { CustomUser } from '@/types/auth'
