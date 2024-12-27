@@ -4,48 +4,45 @@ import { authOptions } from '@/lib/auth'
 
 const auth = NextAuth(authOptions)
 
-export async function GET(request: NextRequest) {
+async function createModifiedRequest(request: NextRequest) {
   const nextauthPath = request.nextUrl.pathname.replace('/api/auth/', '')
   const searchParams = request.nextUrl.searchParams
-  
+
   // Reconstruct the query object NextAuth expects
   const query = {
     nextauth: nextauthPath.split('/'),
     ...Object.fromEntries(searchParams.entries())
   }
-  
-  // Pass the modified request to NextAuth
-  const modifiedRequest = new Request(request.url, {
+
+  const opts: RequestInit = {
     headers: request.headers,
     cache: request.cache,
     credentials: request.credentials,
     method: request.method,
-    body: request.body,
-  })
+    duplex: 'half'
+  }
+
+  if (request.method === 'POST') {
+    const clonedRequest = request.clone()
+    const body = await clonedRequest.text()
+    if (body) {
+      opts.body = body
+    }
+  }
+
+  // Create new request with the query object
+  const modifiedRequest = new Request(request.url, opts)
   Object.defineProperty(modifiedRequest, 'query', { value: query })
-  
+
+  return modifiedRequest
+}
+
+export async function GET(request: NextRequest) {
+  const modifiedRequest = await createModifiedRequest(request)
   return auth(modifiedRequest)
 }
 
 export async function POST(request: NextRequest) {
-  const nextauthPath = request.nextUrl.pathname.replace('/api/auth/', '')
-  const searchParams = request.nextUrl.searchParams
-  
-  // Reconstruct the query object NextAuth expects
-  const query = {
-    nextauth: nextauthPath.split('/'),
-    ...Object.fromEntries(searchParams.entries())
-  }
-  
-  // Pass the modified request to NextAuth
-  const modifiedRequest = new Request(request.url, {
-    headers: request.headers,
-    cache: request.cache,
-    credentials: request.credentials,
-    method: request.method,
-    body: request.body,
-  })
-  Object.defineProperty(modifiedRequest, 'query', { value: query })
-  
+  const modifiedRequest = await createModifiedRequest(request)
   return auth(modifiedRequest)
 }
