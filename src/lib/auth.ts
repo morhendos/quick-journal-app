@@ -10,8 +10,12 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
-        console.log('[AUTH] authorize called:', credentials)
+      async authorize(credentials, req) {
+        console.log('[AUTH] authorize called:', {
+          credentials,
+          headers: req?.headers,
+          method: req?.method
+        })
 
         if (!credentials?.email || !credentials?.password) {
           console.log('[AUTH] Missing credentials')
@@ -32,11 +36,29 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
-  jwt: {
-    maxAge: 30 * 24 * 60 * 60 // 30 days
+  callbacks: {
+    async signIn({ user, account }) {
+      console.log('[AUTH] signIn callback:', { user, account })
+      return true
+    },
+    async jwt({ token, user }) {
+      console.log('[AUTH] JWT callback:', { token, user })
+      if (user) {
+        token.id = user.id
+      }
+      return token
+    },
+    async session({ session, token }) {
+      console.log('[AUTH] Session callback:', { session, token })
+      if (session?.user) {
+        session.user.id = token.id as string
+      }
+      return session
+    }
   },
   session: {
-    strategy: 'jwt'
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60 // 30 days
   },
   cookies: {
     sessionToken: {
@@ -49,5 +71,6 @@ export const authOptions: NextAuthOptions = {
       }
     }
   },
-  debug: true
+  debug: true,
+  trustHost: true
 }
