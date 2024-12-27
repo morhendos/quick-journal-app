@@ -1,1 +1,0 @@
-// Remove this file as it should be handled by [...nextauth]
