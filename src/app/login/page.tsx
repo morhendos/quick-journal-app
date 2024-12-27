@@ -18,28 +18,30 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
+      const email = formData.get('email') as string
+      const password = formData.get('password') as string
+
+      console.log('Attempting login with:', { email, callbackUrl })
       
+      // First get CSRF token
+      const csrfResp = await fetch('/api/auth/csrf')
+      const { csrfToken } = await csrfResp.json()
+      console.log('Got CSRF token:', csrfToken)
+
+      // Then attempt sign in
       const result = await signIn('credentials', {
-        email: formData.get('email'),
-        password: formData.get('password'),
-        redirect: false,
+        email,
+        password,
+        csrfToken,
+        redirect: true,
+        callbackUrl
       })
 
-      console.log('Sign in result:', result)
-
-      if (!result?.ok) {
-        setError('Invalid credentials')
-        return
-      }
-
-      // If login was successful, redirect
-      router.push(callbackUrl)
-      router.refresh()
+      console.log('Auth result:', result)
 
     } catch (error) {
       console.error('Login error:', error)
       setError('An unexpected error occurred')
-    } finally {
       setIsLoading(false)
     }
   }
