@@ -1,11 +1,10 @@
-import { NextAuthOptions } from 'next-auth'
-import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { authOptions } from '@/lib/auth'
+import { config } from '@/auth'
+import { getServerSession } from 'next-auth'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(config)
   const csrfToken = crypto.randomBytes(32).toString('hex')
   
   return NextResponse.json({ 
