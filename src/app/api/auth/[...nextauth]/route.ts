@@ -1,16 +1,25 @@
 import NextAuth from 'next-auth'
-import { NextRequest } from 'next/server'
-import { authOptions } from '@/lib/auth'
+import { AuthOptions } from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
 
-export async function GET(request: NextRequest) {
-  const nextauthPath = request.nextUrl.pathname.replace('/api/auth/', '')
-  console.log('[AUTH] GET:', { path: nextauthPath })
-  return await NextAuth(authOptions)(request)
+export const authOptions: AuthOptions = {
+  providers: [CredentialsProvider({
+    name: 'Credentials',
+    credentials: {
+      email: { label: 'Email', type: 'email' },
+      password: { label: 'Password', type: 'password' }
+    },
+    async authorize(credentials) {
+      console.log('[AUTH] authorize called:', credentials)
+      if (credentials?.email === 'user@example.com' && credentials?.password === 'password123') {
+        return { id: '1', email: credentials.email, name: 'Test User' }
+      }
+      return null
+    }
+  })],
+  session: { strategy: 'jwt' },
+  pages: { signIn: '/login' }
 }
 
-export async function POST(request: NextRequest) {
-  const nextauthPath = request.nextUrl.pathname.replace('/api/auth/', '')
-  const body = await request.clone().text()
-  console.log('[AUTH] POST:', { path: nextauthPath, body })
-  return await NextAuth(authOptions)(request)
-}
+const handler = NextAuth(authOptions)
+export { handler as GET, handler as POST }
