@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { AUTH_CONFIG } from './config'
 import { AuthError, validateEmail, validatePassword } from './validation'
 import { authenticateUser } from './auth-service'
+import { CustomUser } from '@/types/auth'
 
 if (!process.env.NEXTAUTH_SECRET) {
   throw new Error('NEXTAUTH_SECRET must be set in environment variables')
@@ -12,8 +13,24 @@ if (!process.env.NEXTAUTH_URL && process.env.NODE_ENV === 'production') {
   throw new Error('NEXTAUTH_URL must be set in production environment')
 }
 
+console.log('[AUTH OPTIONS] Initializing with:', {
+  NODE_ENV: process.env.NODE_ENV,
+  NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+})
+
 export const authOptions: AuthOptions = {
-  debug: process.env.NODE_ENV === 'development',
+  debug: true, // Enable debug logs temporarily
+  logger: {
+    error(code, ...message) {
+      console.error('[NextAuth][Error]', code, message)
+    },
+    warn(code, ...message) {
+      console.warn('[NextAuth][Warn]', code, message)
+    },
+    debug(code, ...message) {
+      console.log('[NextAuth][Debug]', code, message)
+    },
+  },
   
   providers: [
     CredentialsProvider({
@@ -24,22 +41,36 @@ export const authOptions: AuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        console.log('[AUTH OPTIONS] authorize called with:', {
+          hasEmail: !!credentials?.email,
+          hasPassword: !!credentials?.password,
+        })
+
         if (!credentials?.email || !credentials?.password) {
+          console.error('[AUTH OPTIONS] Missing credentials')
           throw new AuthError('Email and password are required', 'invalid_credentials')
         }
 
         if (!validateEmail(credentials.email)) {
+          console.error('[AUTH OPTIONS] Invalid email format')
           throw new AuthError('Invalid email format', 'invalid_credentials')
         }
 
         if (!validatePassword(credentials.password)) {
+          console.error('[AUTH OPTIONS] Password too short')
           throw new AuthError('Password must be at least 8 characters', 'invalid_credentials')
         }
 
         try {
           const user = await authenticateUser(credentials.email, credentials.password)
+          console.log('[AUTH OPTIONS] User authenticated:', {
+            id: user.id,
+            email: user.email,
+            hasRoles: !!user.roles,
+          })
           return user
         } catch (error) {
+          console.error('[AUTH OPTIONS] Authentication error:', error)
           if (error instanceof AuthError) {
             throw error
           }
@@ -51,8 +82,12 @@ export const authOptions: AuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
+      console.log('[AUTH OPTIONS] JWT callback:', { 
+        hasUser: !!user,
+        tokenId: token?.id,
+      })
+
       if (user) {
-        // Ensure we're working with our CustomUser type
         const customUser = user as CustomUser
         token.id = customUser.id
         token.email = customUser.email || ''
@@ -63,6 +98,11 @@ export const authOptions: AuthOptions = {
     },
 
     async session({ session, token }) {
+      console.log('[AUTH OPTIONS] Session callback:', {
+        hasUser: !!session?.user,
+        tokenId: token?.id,
+      })
+
       if (session.user) {
         session.user.id = token.id
         session.user.email = token.email || ''
@@ -81,19 +121,34 @@ export const authOptions: AuthOptions = {
   },
 
   cookies: {
-    csrfToken: {
-      name: AUTH_CONFIG.COOKIE_NAME,
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
       options: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
         path: '/',
-        sameSite: 'strict',
-      },
+        secure: true
+      }
+    },
+    callbackUrl: {
+      name: `__Secure-next-auth.callback-url`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: true
+      }
+    },
+    csrfToken: {
+      name: 'next-auth.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: true
+      }
     },
   },
 
   secret: process.env.NEXTAUTH_SECRET,
 }
-
-// Add the import at the top
-import { CustomUser } from '@/types/auth'
