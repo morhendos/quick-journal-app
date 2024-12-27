@@ -14,14 +14,14 @@ export const authOptions: NextAuthOptions = {
         console.log("[AUTH] authorize called:", credentials);
 
         if (
-          credentials?.email === "user@example.com" &&
-          credentials?.password === "password123"
+          credentials?.email === "morhendos@gmail.com" &&
+          credentials?.password === "YourStrongPassword123!"
         ) {
           console.log("[AUTH] Valid credentials");
           return {
             id: "1",
             email: credentials.email,
-            name: "Test User",
+            name: "Test User 1",
           };
         }
         console.log("[AUTH] Invalid credentials");
