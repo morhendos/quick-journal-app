@@ -1,69 +1,93 @@
-# Quick Journal App - Authentication Issue Summary
+# Quick Journal App - Authentication Issue Investigation
 
-## Current State
+## Current State (27 Dec 2024)
 
 ### Authentication Flow Status
+- Auth route handler works without errors
+- CSRF token request returns 200 but empty token
+- No session cookie is being set
+- Login appears to work but no actual session is established
 
-- Login page works but doesn't complete the authentication flow
-- After login attempt, user is stuck at
-  `/login?callbackUrl=http://localhost:3000/`
+### Key Findings
+1. Route handler issues:
+   - Initially had issues with NextAuth query params in App Router
+   - Edge Runtime not compatible (needs Node.js crypto)
+   - Successfully fixed route handler errors
 
-### File Structure
+2. Cookie/Session issues:
+   - CSRF token is not being generated
+   - Session cookie is not being set after successful auth
+   - Credentials validation works but session establishment fails
 
-Key authentication files:
+3. Environment setup:
+   - NEXTAUTH_SECRET and NEXTAUTH_URL are properly set
+   - Running in development mode (Node.js runtime)
+   - Using Next.js 14.1.0 with App Router
+   - next-auth version 4.24.5
 
-1. `/src/lib/auth.ts` - Main auth configuration
-2. `/src/app/api/auth/[...nextauth]/route.ts` - NextAuth API route
-3. `/src/app/layout.tsx` - Root layout with SessionProvider
-4. `/src/app/login/page.tsx` - Login page implementation
-5. `/src/app/providers.tsx` - NextAuth provider wrapper
+### Current Implementation
 
-### Recent Changes
+Key files:
+1. `/src/app/api/auth/[...nextauth]/route.ts`
+   - Basic NextAuth handler for App Router
+   - Node.js runtime (Edge not compatible)
 
-- Removed duplicate NextAuth initializations
-- Consolidated auth configuration in `/src/lib/auth.ts`
-- Updated session handling in root layout
-- Added debug logging throughout auth flow
+2. `/src/lib/auth.ts`
+   - Auth configuration with credentials provider
+   - JWT strategy for sessions
+   - Debug logging enabled
 
-## Known Issues
+3. `/src/app/login/page.tsx`
+   - Direct POST to credentials endpoint
+   - Manual session verification
+   - Debug logging for responses
 
-What's interesting here is that while we get a successful auth result
-(`ok: true`), we're not seeing ANY of our custom logs from the auth callbacks in
-`auth.ts`.
+### Next Steps
 
-When the auth flow works correctly, we should see logs from:
+1. Investigate why CSRF token is empty:
+   - Check CSRF token generation in NextAuth
+   - Verify cookie settings for CSRF token
 
-1. The authorize callback when checking credentials
-2. The jwt callback when creating the token
-3. The session callback when setting up the session
+2. Debug session creation:
+   - Add logging to JWT callback
+   - Check session token cookie settings
+   - Verify token signing process
 
-But we're not seeing any of these, which suggests our auth configuration might
-not be getting used.
+3. Consider:
+   - Upgrading next-auth version
+   - Testing with different cookie configurations
+   - Adding NextAuth debug mode for more logs
 
-Let's verify which auth configuration is actually being used. Can you check the
-Network tab in your browser's dev tools when you click sign in? We should see
-requests to:
+### Environment Requirements
 
-1. `/api/auth/csrf`
-2. `/api/auth/signin`
-3. `/api/auth/session`
+```bash
+# Required in .env.local
+NEXTAUTH_SECRET=KVrq9Eef3n4vf4oDYaFtNzyFYVMyHDd13x057Jhn6mE=
+NEXTAUTH_URL=http://localhost:3000
+```
 
-This will help us confirm which endpoints are being hit and with what
-configuration.
-
-Also, the `DEBUG_ENABLED` warning suggests NextAuth's debug mode is on, but
-we're not seeing any debug logs, which is suspicious.
-
-## Environment Setup
-
-- Next.js 13+ app directory structure
-- NextAuth.js for authentication
-- TypeScript implementation
-- Environment variables required:
-  - NEXTAUTH_SECRET
-  - NEXTAUTH_URL
-
-## Test Credentials
-
-- Email: user@example.com
+### Test Credentials
+- Username: user@example.com
 - Password: password123
+
+### Current Logs
+Console output during login attempt:
+```
+Attempting login with: {email: 'user@example.com', callbackUrl: '/'}
+CSRF Response: {status: 200, headers: {...}}
+Got CSRF token: 
+Credentials Response: {status: 200, headers: {...}}
+Credentials Data: {url: 'http://localhost:3000/api/auth/signin?csrf=true'}
+Session Response: {status: 200, headers: {...}, data: {...}}
+```
+
+### Related Issues
+1. Initial NextAuth query param error (fixed)
+2. Edge Runtime compatibility (fixed)
+3. Empty CSRF token (pending)
+4. Missing session cookie (pending)
+
+### References
+- [NextAuth.js App Router Guide](https://next-auth.js.org/configuration/nextjs#app-router)
+- [NextAuth.js Credentials Provider](https://next-auth.js.org/providers/credentials)
+- [NextAuth.js Cookies](https://next-auth.js.org/configuration/options#cookies)
