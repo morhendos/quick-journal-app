@@ -4,13 +4,13 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      id: 'credentials',
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        console.log('[AUTH] authorize called:', credentials)
         if (credentials?.email === 'user@example.com' && credentials?.password === 'password123') {
           return { 
             id: '1', 
@@ -43,6 +43,5 @@ export const authOptions: AuthOptions = {
       return session
     }
   },
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === 'development'
+  secret: process.env.NEXTAUTH_SECRET
 }

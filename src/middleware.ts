@@ -1,22 +1,17 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { auth } from '@/auth'
- 
-export async function middleware(request: NextRequest) {
-  const session = await auth()
- 
-  // If user is not signed in and is trying to access a protected route,
-  // redirect them to the login page
-  if (!session) {
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname)
-    return NextResponse.redirect(loginUrl)
+import { withAuth } from 'next-auth/middleware'
+
+export default withAuth(
+  // `withAuth` augments your `Request` with the user's token.
+  function middleware(req) {
+    console.log('Middleware for path:', req.nextUrl.pathname)
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token
+    }
   }
- 
-  return NextResponse.next()
-}
- 
-// See "Matching Paths" below to learn more
+)
+
 export const config = {
   matcher: [
     /*
