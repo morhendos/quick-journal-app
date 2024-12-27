@@ -1,47 +1,51 @@
-import type { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import { type DefaultSession, NextAuthConfig } from 'next-auth'
 
-export const authOptions: NextAuthOptions = {
-  debug: true,
+declare module 'next-auth' {
+  interface Session extends DefaultSession {
+    user: {
+      id: string
+    } & DefaultSession['user']
+  }
+}
+
+export const authConfig = {
   providers: [
-    CredentialsProvider({
+    {
+      id: 'credentials',
       name: 'Credentials',
-      async authorize(credentials, req) {
-        console.log('Authorize called with:', { credentials, headers: req?.headers })
-        
+      type: 'credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
+      },
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          console.log('Missing credentials')
           return null
         }
 
         if (credentials.email === 'user@example.com' && 
             credentials.password === 'password123') {
-          const user = {
+          return {
             id: '1',
             email: credentials.email,
             name: 'Test User'
           }
-          console.log('Returning user:', user)
-          return user
         }
 
-        console.log('Invalid credentials')
         return null
       }
-    })
+    }
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      console.log('JWT callback:', { token, user })
+    jwt({ token, user }) {
       if (user) {
         token.id = user.id
       }
       return token
     },
-    async session({ session, token }) {
-      console.log('Session callback:', { session, token })
-      if (session?.user) {
-        session.user.id = token.id as string
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id
       }
       return session
     }
@@ -49,9 +53,16 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login'
   },
+  debug: true,
+  trustHost: true,
+  useSecureCookies: process.env.NODE_ENV === 'production',
+  secret: process.env.NEXTAUTH_SECRET,
+} satisfies NextAuthConfig
+
+export const authOptions = {
+  ...authConfig,
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60 // 30 days
   },
   secret: process.env.NEXTAUTH_SECRET
 }
