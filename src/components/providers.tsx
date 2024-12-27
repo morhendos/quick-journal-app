@@ -1,14 +1,18 @@
 'use client';
 
-import { ThemeProvider } from 'next-themes';
-import { ToastProvider } from "@/components/ui/toast";
+import { SessionProvider } from 'next-auth/react';
+import { ThemeProvider as NextThemeProvider } from 'next-themes';
 
-export function Providers({ children }: { children: React.ReactNode }) {
+type ProvidersProps = {
+  children: React.ReactNode;
+};
+
+export function Providers({ children }: ProvidersProps) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light">
-      <ToastProvider>
+    <SessionProvider>
+      <NextThemeProvider attribute="class" defaultTheme="system" enableSystem>
         {children}
-      </ToastProvider>
-    </ThemeProvider>
+      </NextThemeProvider>
+    </SessionProvider>
   );
 }
