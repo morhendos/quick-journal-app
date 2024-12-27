@@ -18,36 +18,27 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-      const email = formData.get('email')
-      const password = formData.get('password')
-
-      // Get CSRF token
-      const csrfResponse = await fetch('/api/auth/csrf')
-      const { csrfToken } = await csrfResponse.json()
-      console.log('CSRF token response:', { csrfToken, status: csrfResponse.status })
-      console.log('Current cookies:', document.cookie)
-
       const result = await signIn('credentials', {
-        email,
-        password,
-        csrfToken,
+        email: formData.get('email'),
+        password: formData.get('password'),
         redirect: false,
         callbackUrl
       })
 
-      console.log('Auth result:', result)
-      console.log('Cookies after auth:', document.cookie)
-
-      if (!result) {
-        throw new Error('No authentication response')
-      }
-
-      if (result.error) {
-        setError(result.error)
+      if (!result?.ok) {
+        setError('Invalid email or password')
         return
       }
 
-      // Successful login
+      // Check if we actually have a session
+      const response = await fetch('/api/auth/session')
+      const session = await response.json()
+
+      if (!session?.user) {
+        setError('Failed to establish session')
+        return
+      }
+
       router.push(callbackUrl)
       router.refresh()
 
