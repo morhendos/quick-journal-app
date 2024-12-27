@@ -1,13 +1,11 @@
-import { NextRequest } from 'next/server'
 import NextAuth from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-const handler = NextAuth(authOptions)
+const auth = NextAuth(authOptions)
 
-export async function GET(req: NextRequest) {
-  return await handler(req as any)
-}
+// Export handlers using edge runtime to avoid compatibility issues
+export const runtime = 'edge'
 
-export async function POST(req: NextRequest) {
-  return await handler(req as any)
-}
+// These export handlers properly adapt the Next.js App Router request/response
+export const GET = auth
+export const POST = auth
