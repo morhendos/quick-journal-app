@@ -18,49 +18,23 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-
-      // Get CSRF Token first
-      const csrfResponse = await fetch('/api/auth/csrf')
-      const { csrfToken } = await csrfResponse.json()
-      console.log('Got CSRF token:', csrfToken)
       
-      // Then post credentials
-      const response = await fetch('/api/auth/callback/credentials', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          email: formData.get('email') as string,
-          password: formData.get('password') as string,
-          'csrf-token': csrfToken,
-          callbackUrl: callbackUrl,
-          json: 'true'
-        })
+      const result = await signIn('credentials', {
+        email: formData.get('email'),
+        password: formData.get('password'),
+        redirect: false,
       })
 
-      console.log('Auth response status:', response.status)
-      console.log('Auth response headers:', Object.fromEntries(response.headers))
+      console.log('Sign in result:', result)
 
-      const result = await response.json()
-      console.log('Auth result:', result)
-
-      if (!response.ok) {
-        setError('Invalid email or password')
+      if (!result?.ok) {
+        setError('Invalid credentials')
         return
       }
 
-      // Verify session
-      const sessionResponse = await fetch('/api/auth/session')
-      const session = await sessionResponse.json()
-      console.log('Session:', session)
-
-      if (session?.user) {
-        router.push(callbackUrl)
-        router.refresh()
-      } else {
-        setError('Failed to establish session')
-      }
+      // If login was successful, redirect
+      router.push(callbackUrl)
+      router.refresh()
 
     } catch (error) {
       console.error('Login error:', error)
