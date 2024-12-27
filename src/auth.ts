@@ -2,9 +2,10 @@ import NextAuth from 'next-auth'
 import { AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-export const authOptions: AuthOptions = {
+export const config = {
   providers: [
     CredentialsProvider({
+      id: 'credentials',
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
@@ -27,22 +28,21 @@ export const authOptions: AuthOptions = {
   },
   session: { 
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60 // 30 days
   },
   callbacks: {
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id
-      }
-      return session
-    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
       }
       return token
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string
+      }
+      return session
     }
   }
-}
+} satisfies AuthOptions
 
-export const { handlers: { GET, POST }, auth, signIn, signOut } = NextAuth(authOptions)
+export const auth = NextAuth(config)

@@ -1,5 +1,4 @@
-import NextAuth from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/auth'
 
-const handler = NextAuth(authOptions)
-export { handler as GET, handler as POST }
+// Convert the default export to named exports for App Router
+export const { GET, POST } = auth
