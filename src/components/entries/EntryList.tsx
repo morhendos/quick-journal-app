@@ -1,46 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { JournalEntry } from '@/types/journal';
-import { getEntries } from '@/lib/storage';
-import { EntryDisplay } from '@/components/journal/EntryDisplay';
-import { WeeklyGroupedView } from '@/components/journal/WeeklyGroupedView';
-import { ViewToggle } from '@/components/ViewToggle';
+import { useJournalStorage } from '@/lib/storage';
+import { EntryDisplay } from './EntryDisplay';
+import { WeeklyGroupedView } from './WeeklyGroupedView';
+import { ViewToggle } from '@/components/common/ViewToggle';
 import { BookOpen } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 type ViewType = 'chronological' | 'weekly';
 
-export function JournalEntryList() {
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
+export function EntryList() {
+  const { entries } = useJournalStorage();
+  const [mounted, setMounted] = useState(false);
   const [view, setView] = useState<ViewType>('weekly');
 
-  // Update entries whenever local storage changes
+  // Handle hydration mismatch by only rendering after mount
   useEffect(() => {
-    // Initial load
-    loadEntries();
-
-    // Set up storage event listener
-    const handleStorageChange = () => {
-      loadEntries();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Poll for changes every second (as backup)
-    const interval = setInterval(loadEntries, 1000);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
+    setMounted(true);
   }, []);
 
-  const loadEntries = () => {
-    const newEntries = getEntries().sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-    setEntries(newEntries);
-  };
+  if (!mounted) {
+    return null; // or a loading skeleton
+  }
 
   if (entries.length === 0) {
     return (
@@ -59,10 +40,10 @@ export function JournalEntryList() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col min-h-0">
       <ViewToggle view={view} onViewChange={setView} />
       
-      <div className="max-h-[450px] sm:max-h-[600px] overflow-y-auto pr-1 sm:pr-2 -mr-1 sm:-mr-2">
+      <div className="min-h-0 overflow-auto">
         {view === 'chronological' ? (
           <div className="space-y-4 sm:space-y-6">
             {entries.map((entry, index) => (

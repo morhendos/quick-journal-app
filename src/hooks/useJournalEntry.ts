@@ -1,51 +1,43 @@
-import { useState, useEffect } from 'react';
-import { JournalEntryFormData } from '@/types/journal';
-import { getTodayEntry, saveEntry } from '@/lib/storage';
+import { useState } from 'react';
+import { useJournalStorage } from '@/lib/storage';
 
-/**
- * Custom hook for managing journal entry state and operations
- */
 export function useJournalEntry() {
-  const [learning, setLearning] = useState('');
-  const [enjoyment, setEnjoyment] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const { addEntry, updateEntry, getTodayEntry } = useJournalStorage();
+  
+  const todayEntry = getTodayEntry();
+  const [learning, setLearning] = useState(todayEntry?.learning || '');
+  const [enjoyment, setEnjoyment] = useState(todayEntry?.enjoyment || '');
+  const [submitted, setSubmitted] = useState(!!todayEntry);
   const [isEditing, setIsEditing] = useState(false);
-
-  // Load today's entry if it exists
-  useEffect(() => {
-    const todayEntry = getTodayEntry();
-    if (todayEntry) {
-      setLearning(todayEntry.learning);
-      setEnjoyment(todayEntry.enjoyment);
-      setSubmitted(true);
-    }
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const entryData: JournalEntryFormData = {
-      date: new Date().toISOString().split('T')[0],
-      learning,
-      enjoyment
-    };
+    const today = new Date().toISOString().split('T')[0];
+    const entryData = { date: today, learning, enjoyment };
 
-    saveEntry(entryData);
+    if (isEditing && todayEntry) {
+      updateEntry(todayEntry.id, entryData);
+    } else {
+      addEntry(entryData);
+    }
+
     setSubmitted(true);
     setIsEditing(false);
   };
 
   const handleEdit = () => {
     setIsEditing(true);
+    setSubmitted(false);
   };
 
   const handleCancel = () => {
-    const todayEntry = getTodayEntry();
     if (todayEntry) {
       setLearning(todayEntry.learning);
       setEnjoyment(todayEntry.enjoyment);
     }
     setIsEditing(false);
+    setSubmitted(true);
   };
 
   return {

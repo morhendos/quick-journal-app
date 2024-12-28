@@ -1,12 +1,12 @@
 'use client';
 
-import { JournalEntryForm } from '@/components/JournalEntryForm';
-import { JournalEntryList } from '@/components/JournalEntryList';
+import { JournalEntryForm } from '@/components/forms/JournalEntryForm';
+import { EntryList } from '@/components/entries/EntryList';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { Section } from '@/components/common/Section';
 import { useState } from 'react';
 
 export default function Home() {
-  // Simple counter to force re-render of child components
   const [updateCounter, setUpdateCounter] = useState(0);
 
   const handleEntriesUpdate = () => {
@@ -14,39 +14,20 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-200">
-      <main className="container mx-auto px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative">
+    <div className="min-h-screen bg-background transition-colors duration-200 overflow-hidden">
+      <main className="container mx-auto h-screen px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative flex flex-col">
         <PageHeader onEntriesUpdate={handleEntriesUpdate} />
 
-        <div className="grid gap-6 lg:gap-8 lg:grid-cols-2">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-2 flex-1 min-h-0">
           <Section title="Today's Entry" className="order-1 lg:order-2">
             <JournalEntryForm key={updateCounter} />
           </Section>
 
           <Section title="Previous Entries" className="order-2 lg:order-1">
-            <JournalEntryList key={updateCounter} />
+            <EntryList key={updateCounter} />
           </Section>
         </div>
       </main>
-    </div>
-  );
-}
-
-function Section({ 
-  title, 
-  children,
-  className 
-}: { 
-  title: string; 
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`paper-texture bg-paper rounded-lg p-4 sm:p-8 journal-shadow transition-colors duration-200 ${className}`}>
-      <h2 className="journal-heading text-xl sm:text-2xl font-semibold text-ink mb-6 text-center transition-colors">
-        {title}
-      </h2>
-      {children}
     </div>
   );
 }
