@@ -40,10 +40,10 @@ export function EntryList() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col min-h-0">
       <ViewToggle view={view} onViewChange={setView} />
       
-      <div className="max-h-[450px] sm:max-h-[600px] overflow-y-auto pr-1 sm:pr-2 -mr-1 sm:-mr-2">
+      <div className="min-h-0 overflow-auto">
         {view === 'chronological' ? (
           <div className="space-y-4 sm:space-y-6">
             {entries.map((entry, index) => (
