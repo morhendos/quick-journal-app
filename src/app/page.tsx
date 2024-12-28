@@ -1,3 +1,5 @@
+'use client';
+
 import { JournalEntryForm } from '@/components/forms/JournalEntryForm';
 import { WeekView } from '@/components/WeekView';
 import { ThemeToggle } from '@/components/ThemeToggle';
