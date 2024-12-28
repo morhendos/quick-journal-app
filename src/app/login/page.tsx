@@ -147,6 +147,13 @@ export default function LoginPage() {
                 <LogIn size={18} className="group-hover:scale-105 transition-transform" strokeWidth={1.5} />
                 <span>{isLoading ? 'Logging in...' : 'Log in'}</span>
               </button>
+
+              <p className="text-sm text-center text-muted-foreground">
+                Don't have an account?{' '}
+                <a href="/signup" className="text-accent hover:underline">
+                  Create one
+                </a>
+              </p>
             </form>
           </div>
         </Section>
