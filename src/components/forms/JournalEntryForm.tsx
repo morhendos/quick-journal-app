@@ -2,7 +2,7 @@
 
 import { useJournalEntry } from '@/hooks/useJournalEntry';
 import { EntryDisplay } from '@/components/entries/EntryDisplay';
-import { getTodayEntry } from '@/lib/storage';
+import { useJournalStorage } from '@/lib/storage';
 import { BookOpen, Sparkles, Save, X, Edit } from 'lucide-react';
 
 export function JournalEntryForm() {
@@ -18,6 +18,8 @@ export function JournalEntryForm() {
     handleEdit,
     handleCancel
   } = useJournalEntry();
+
+  const { getTodayEntry } = useJournalStorage();
 
   if (submitted && !isEditing) {
     const todayEntry = getTodayEntry();
