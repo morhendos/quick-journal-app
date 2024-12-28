@@ -70,8 +70,11 @@ export function importEntries(entries: JournalEntry[]) {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(validEntries));
     
-    // Trigger storage event for other tabs
-    window.dispatchEvent(new Event('storage'));
+    // Trigger storage event for other components
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: STORAGE_KEY,
+      newValue: JSON.stringify(validEntries)
+    }));
   } catch (error) {
     console.error('Error importing entries:', error);
     throw error;
