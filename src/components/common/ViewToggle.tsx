@@ -9,7 +9,7 @@ interface ViewToggleProps {
 
 export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
   return (
-    <div className="flex gap-2 mb-6">
+    <div className="flex justify-center gap-2 mb-6">
       <ViewButton
         isActive={view === 'weekly'}
         onClick={() => onViewChange('weekly')}
