@@ -5,13 +5,23 @@ import { EntryDisplay } from './EntryDisplay';
 import { WeeklyGroupedView } from './WeeklyGroupedView';
 import { ViewToggle } from '@/components/common/ViewToggle';
 import { BookOpen } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type ViewType = 'chronological' | 'weekly';
 
 export function EntryList() {
   const { entries } = useJournalStorage();
+  const [mounted, setMounted] = useState(false);
   const [view, setView] = useState<ViewType>('weekly');
+
+  // Handle hydration mismatch by only rendering after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // or a loading skeleton
+  }
 
   if (entries.length === 0) {
     return (
