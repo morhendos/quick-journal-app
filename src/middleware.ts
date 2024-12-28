@@ -7,13 +7,18 @@ export default withAuth(
   {
     pages: {
       signIn: '/login',
-    }
+    },
+    callbacks: {
+      authorized: ({ token }) => {
+        // Only allow access if there's a valid token
+        return !!token
+      },
+    },
   }
 )
 
 export const config = {
   matcher: [
-    // Match all paths except static files and auth endpoints
-    '/((?!api|_next/static|_next/image|favicon.ico|login|assets/).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|login).*)',
   ],
 }
