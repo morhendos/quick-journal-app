@@ -3,6 +3,13 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 const STORAGE_KEY = 'journal_entries';
 
+// Interface for the new JSON format
+interface ImportFormat {
+  version: string;
+  timestamp: string;
+  entries: JournalEntry[];
+}
+
 export function useJournalStorage() {
   const [entries, setEntries] = useLocalStorage<JournalEntry[]>(STORAGE_KEY, []);
 
@@ -57,10 +64,25 @@ export function downloadEntries() {
 }
 
 // Import entries from JSON file
-export function importEntries(entries: JournalEntry[]) {
+export function importEntries(data: ImportFormat | JournalEntry[]) {
   try {
+    // Handle both new format and old format
+    const entries = Array.isArray(data) ? data : data.entries;
+    
     // Validate entries format
     if (!Array.isArray(entries)) throw new Error('Invalid format');
+    
+    // Validate each entry has required fields
+    const isValidEntry = (entry: any): entry is JournalEntry => {
+      return typeof entry === 'object' 
+        && typeof entry.date === 'string'
+        && typeof entry.learning === 'string'
+        && typeof entry.enjoyment === 'string';
+    };
+
+    if (!entries.every(isValidEntry)) {
+      throw new Error('Invalid entry format');
+    }
     
     // Add IDs if missing
     const validEntries = entries.map(entry => ({
@@ -75,6 +97,8 @@ export function importEntries(entries: JournalEntry[]) {
       key: STORAGE_KEY,
       newValue: JSON.stringify(validEntries)
     }));
+
+    return validEntries;
   } catch (error) {
     console.error('Error importing entries:', error);
     throw error;
