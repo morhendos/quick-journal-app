@@ -93,7 +93,7 @@ export default function LoginPage() {
         <Section title="Welcome to Quick Journal">
           <div className="w-full max-w-md mx-auto">
             <p className="text-muted-foreground text-sm mb-8 text-center">
-              Please sign in to continue your journaling journey
+              Please log in to continue your journaling journey
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -140,15 +140,15 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="inline-flex w-full items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none"
+                className="inline-flex w-full items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-6 py-3 text-base font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none shadow-lg hover:shadow-xl"
               >
                 {isLoading ? (
                   <>
-                    <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    <LoaderIcon className="mr-2 h-5 w-5 animate-spin" />
+                    Logging in...
                   </>
                 ) : (
-                  'Sign in'
+                  'Log in'
                 )}
               </button>
             </form>
