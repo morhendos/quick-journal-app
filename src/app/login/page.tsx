@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { useState, useCallback } from 'react'
 import { validateEmail, validatePassword } from '@/lib/auth/validation'
 import { Section } from '@/components/common/Section'
+import AuthLogo from '@/components/auth/AuthLogo'
 import { LogIn } from 'lucide-react'
 
 interface FormErrors {
@@ -90,12 +91,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background transition-colors duration-200">
       <main className="container mx-auto h-screen px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative flex items-center justify-center">
-        <Section title="Journal & Reflect" className="min-w-[450px]">
+        <Section title="" className="min-w-[450px]">
           <div className="w-full max-w-md mx-auto">
-            <p className="text-muted-foreground text-sm mb-8 text-center">
-              Access your personal space
-            </p>
-
+            <AuthLogo />
+            
             <form onSubmit={handleSubmit} className="space-y-6">
               {errors.general && (
                 <div className="rounded-lg bg-destructive/10 dark:bg-destructive/20 p-4">
