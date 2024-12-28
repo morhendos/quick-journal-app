@@ -14,11 +14,11 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-200">
-      <main className="container mx-auto px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative">
+    <div className="min-h-screen bg-background transition-colors duration-200 overflow-hidden">
+      <main className="container mx-auto h-screen px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative flex flex-col">
         <PageHeader onEntriesUpdate={handleEntriesUpdate} />
 
-        <div className="grid gap-6 lg:gap-8 lg:grid-cols-2">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-2 flex-1 min-h-0">
           <Section title="Today's Entry" className="order-1 lg:order-2">
             <JournalEntryForm key={updateCounter} />
           </Section>
