@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import React from 'react';
-import Image from 'next/image';
+import React from "react";
+import Image from "next/image";
 
 const AuthLogo = () => (
   <div className="flex flex-col items-center mb-8 select-none">
     <Image
-      src="/assets/logo.png"
+      src="/assets/quick-journal-logo-white.png"
       alt="Quick Journal - Capture Today, Reflect Tomorrow"
       width={400}
       height={320}
