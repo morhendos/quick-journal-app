@@ -90,10 +90,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background transition-colors duration-200">
       <main className="container mx-auto h-screen px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative flex items-center justify-center">
-        <Section title="Welcome to Quick Journal">
+        <Section title="Journal & Reflect">
           <div className="w-full max-w-md mx-auto">
             <p className="text-muted-foreground text-sm mb-8 text-center">
-              Please log in to continue your journaling journey
+              Access your personal space
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
