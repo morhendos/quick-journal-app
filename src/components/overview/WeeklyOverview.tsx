@@ -9,10 +9,12 @@ export function WeeklyOverview() {
   const getDaysOfWeek = () => {
     const today = new Date();
     const days = [];
+    const currentDay = today.getDay();
+    const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
     
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
-      date.setDate(today.getDate() - today.getDay() + i);
+      date.setDate(today.getDate() + mondayOffset + i);
       days.push(date);
     }
     
