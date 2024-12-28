@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { useState, useCallback } from 'react'
 import { validateEmail, validatePassword } from '@/lib/auth/validation'
 import { Section } from '@/components/common/Section'
-import { LoaderIcon } from 'lucide-react'
+import { LogIn } from 'lucide-react'
 
 interface FormErrors {
   email?: string
@@ -140,16 +140,12 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="inline-flex w-full items-center justify-center rounded-md bg-indigo-600 text-white hover:bg-indigo-500 h-12 px-6 py-3 text-base font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none shadow-lg hover:shadow-xl dark:bg-indigo-500 dark:hover:bg-indigo-400"
+                className="flex-1 bg-accent/10 text-accent hover:bg-accent/15
+                py-3 px-6 rounded-md transition-all duration-200
+                flex items-center justify-center gap-2 group journal-text journal-button w-full"
               >
-                {isLoading ? (
-                  <>
-                    <LoaderIcon className="mr-2 h-5 w-5 animate-spin" />
-                    Logging in...
-                  </>
-                ) : (
-                  'Log in'
-                )}
+                <LogIn size={18} className="group-hover:scale-105 transition-transform" strokeWidth={1.5} />
+                <span>{isLoading ? 'Logging in...' : 'Log in'}</span>
               </button>
             </form>
           </div>
