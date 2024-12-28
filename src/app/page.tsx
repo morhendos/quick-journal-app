@@ -4,6 +4,7 @@ import { JournalEntryForm } from '@/components/forms/JournalEntryForm';
 import { EntryList } from '@/components/entries/EntryList';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Section } from '@/components/common/Section';
+import { WeeklyOverview } from '@/components/overview/WeeklyOverview';
 import { useState } from 'react';
 
 export default function Home() {
@@ -17,6 +18,10 @@ export default function Home() {
     <div className="min-h-screen bg-background transition-colors duration-200 overflow-hidden">
       <main className="container mx-auto h-screen px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative flex flex-col">
         <PageHeader onEntriesUpdate={handleEntriesUpdate} />
+        
+        <div className="mt-6 mb-8">
+          <WeeklyOverview key={updateCounter} />
+        </div>
 
         <div className="grid gap-6 lg:gap-8 lg:grid-cols-2 flex-1 min-h-0">
           <Section title="Today's Entry" className="order-1 lg:order-2">
