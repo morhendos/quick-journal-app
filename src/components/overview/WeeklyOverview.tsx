@@ -1,5 +1,3 @@
-'use client';
-
 import { useJournalStorage } from '@/lib/storage';
 import { Calendar } from 'lucide-react';
 
