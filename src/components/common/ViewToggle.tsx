@@ -1,3 +1,5 @@
+'use client';
+
 import { CalendarDays, List } from 'lucide-react';
 
 interface ViewToggleProps {
