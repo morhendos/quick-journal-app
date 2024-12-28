@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useCallback } from 'react'
 import { validateEmail, validatePassword } from '@/lib/auth/validation'
 import { Section } from '@/components/common/Section'
+import AuthLogo from '@/components/auth/AuthLogo'
 import { UserPlus } from 'lucide-react'
 
 interface FormErrors {
@@ -79,11 +80,9 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen bg-background transition-colors duration-200">
       <main className="container mx-auto h-screen px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative flex items-center justify-center">
-        <Section title="Create Account" className="min-w-[450px]">
+        <Section title="" className="min-w-[450px]">
           <div className="w-full max-w-md mx-auto">
-            <p className="text-muted-foreground text-sm mb-8 text-center">
-              Sign up to start your journaling journey
-            </p>
+            <AuthLogo />
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {errors.general && (
@@ -101,6 +100,7 @@ export default function SignUpPage() {
                     id="email"
                     name="email"
                     type="email"
+                    autoComplete="email"
                     required
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isLoading}
@@ -116,6 +116,7 @@ export default function SignUpPage() {
                     id="password"
                     name="password"
                     type="password"
+                    autoComplete="new-password"
                     required
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isLoading}
@@ -131,6 +132,7 @@ export default function SignUpPage() {
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
+                    autoComplete="new-password"
                     required
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isLoading}
