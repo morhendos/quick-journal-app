@@ -5,9 +5,8 @@ import { startOfWeek, addDays, format } from 'date-fns';
 import { CheckCircle2 } from 'lucide-react';
 
 export function WeekView() {
-  const { getEntries } = useJournalStorage();
+  const { entries } = useJournalStorage();
   const startDate = startOfWeek(new Date(), { weekStartsOn: 1 }); // Start from Monday
-  const entries = getEntries();
 
   const days = Array.from({ length: 7 }, (_, i) => {
     const date = addDays(startDate, i);
