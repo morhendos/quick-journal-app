@@ -39,6 +39,11 @@ export function EntryList() {
     );
   }
 
+  // Sort entries chronologically (oldest first)
+  const sortedEntries = [...entries].sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
   return (
     <div className="flex flex-col min-h-0 h-full">
       <div className="flex-none">
@@ -48,7 +53,7 @@ export function EntryList() {
       <div className="flex-1 overflow-auto min-h-0">
         {view === 'chronological' ? (
           <div className="space-y-4 sm:space-y-6">
-            {entries.map((entry, index) => (
+            {sortedEntries.map((entry, index) => (
               <div 
                 key={entry.id} 
                 style={{ animationDelay: `${index * 0.1}s` }}
@@ -59,7 +64,7 @@ export function EntryList() {
             ))}
           </div>
         ) : (
-          <WeeklyGroupedView entries={entries} />
+          <WeeklyGroupedView entries={sortedEntries} />
         )}
       </div>
     </div>
