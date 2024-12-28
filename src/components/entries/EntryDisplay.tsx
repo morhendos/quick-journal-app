@@ -1,14 +1,22 @@
-import { JournalEntry } from '@/types/journal';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { JournalEntryDisplayProps } from '@/types/journal';
 import { formatDate } from '@/utils/dates';
 import { BookOpen, Sparkles, Edit } from 'lucide-react';
 
-interface EntryDisplayProps {
-  entry: JournalEntry;
-  isToday?: boolean;
-  onEdit?: () => void;
-}
+export function EntryDisplay({ entry, isToday, onEdit }: JournalEntryDisplayProps) {
+  const [mounted, setMounted] = useState(false);
 
-export function EntryDisplay({ entry, isToday, onEdit }: EntryDisplayProps) {
+  // Handle hydration mismatch by only rendering after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
