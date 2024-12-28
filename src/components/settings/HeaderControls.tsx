@@ -1,7 +1,8 @@
 'use client';
 
-import { Download, Sun, Moon } from 'lucide-react';
+import { Download, Upload, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
+import { downloadEntries, importEntries } from '@/lib/storage';
 
 interface HeaderControlsProps {
   onEntriesUpdate?: () => void;
@@ -10,8 +11,45 @@ interface HeaderControlsProps {
 export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   const { theme, toggleTheme } = useTheme();
 
+  const handleImport = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        try {
+          const text = await file.text();
+          const entries = JSON.parse(text);
+          importEntries(entries);
+          onEntriesUpdate?.();
+        } catch (error) {
+          console.error('Error importing entries:', error);
+          alert('Error importing entries. Please check the file format.');
+        }
+      }
+    };
+
+    input.click();
+  };
+
   return (
     <div className="flex justify-end gap-2">
+      <HeaderButton
+        onClick={handleImport}
+        aria-label="Import entries"
+      >
+        <Upload size={20} strokeWidth={1.5} />
+      </HeaderButton>
+
+      <HeaderButton
+        onClick={downloadEntries}
+        aria-label="Export entries"
+      >
+        <Download size={20} strokeWidth={1.5} />
+      </HeaderButton>
+
       <HeaderButton
         onClick={toggleTheme}
         aria-label="Toggle theme"
