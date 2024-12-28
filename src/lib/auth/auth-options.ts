@@ -13,13 +13,15 @@ if (!process.env.NEXTAUTH_URL && process.env.NODE_ENV === 'production') {
   throw new Error('NEXTAUTH_URL must be set in production environment')
 }
 
+const isDevelopment = process.env.NODE_ENV === 'development'
+
 console.log('[AUTH OPTIONS] Initializing with:', {
   NODE_ENV: process.env.NODE_ENV,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
 })
 
 export const authOptions: AuthOptions = {
-  debug: true, // Enable debug logs temporarily
+  debug: isDevelopment,
   logger: {
     error(code, ...message) {
       console.error('[NextAuth][Error]', code, message)
@@ -122,21 +124,21 @@ export const authOptions: AuthOptions = {
 
   cookies: {
     sessionToken: {
-      name: `__Secure-next-auth.session-token`,
+      name: isDevelopment ? 'next-auth.session-token' : `__Secure-next-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true
+        secure: !isDevelopment
       }
     },
     callbackUrl: {
-      name: `__Secure-next-auth.callback-url`,
+      name: isDevelopment ? 'next-auth.callback-url' : `__Secure-next-auth.callback-url`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true
+        secure: !isDevelopment
       }
     },
     csrfToken: {
@@ -145,7 +147,7 @@ export const authOptions: AuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true
+        secure: !isDevelopment
       }
     },
   },
