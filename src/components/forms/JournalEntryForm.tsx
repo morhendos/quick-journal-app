@@ -52,7 +52,7 @@ export function JournalEntryForm() {
           placeholder="Share something new you learned today..."
           className="w-full min-h-[120px] p-4 rounded-md bg-paper
             border border-accent/20 
-            focus:border-accent/40
+            focus:outline-none focus:border-accent/40
             placeholder:text-muted/40 journal-text text-ink/90
             transition-colors duration-200 resize-none"
         />
@@ -70,7 +70,7 @@ export function JournalEntryForm() {
           placeholder="Share something that made you happy..."
           className="w-full min-h-[120px] p-4 rounded-md bg-paper
             border border-accent/20 
-            focus:border-accent/40
+            focus:outline-none focus:border-accent/40
             placeholder:text-muted/40 journal-text text-ink/90
             transition-colors duration-200 resize-none"
         />
