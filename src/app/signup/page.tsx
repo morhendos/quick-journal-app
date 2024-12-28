@@ -1,28 +1,25 @@
 'use client'
 
-import { signIn } from 'next-auth/react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useState, useCallback } from 'react'
 import { validateEmail, validatePassword } from '@/lib/auth/validation'
 import { Section } from '@/components/common/Section'
 import AuthLogo from '@/components/auth/AuthLogo'
-import { LogIn } from 'lucide-react'
+import { UserPlus } from 'lucide-react'
 
 interface FormErrors {
   email?: string
   password?: string
+  confirmPassword?: string
   general?: string
 }
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/'
-  
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
 
-  const validateForm = useCallback((email: string, password: string): boolean => {
+  const validateForm = useCallback((email: string, password: string, confirmPassword: string): boolean => {
     const newErrors: FormErrors = {}
 
     if (!email) {
@@ -35,6 +32,12 @@ export default function LoginPage() {
       newErrors.password = 'Password is required'
     } else if (!validatePassword(password)) {
       newErrors.password = 'Password must be at least 8 characters'
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password'
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match'
     }
 
     setErrors(newErrors)
@@ -50,32 +53,18 @@ export default function LoginPage() {
       const formData = new FormData(e.currentTarget)
       const email = formData.get('email') as string
       const password = formData.get('password') as string
+      const confirmPassword = formData.get('confirmPassword') as string
 
-      if (!validateForm(email, password)) {
+      if (!validateForm(email, password, confirmPassword)) {
         setIsLoading(false)
         return
       }
 
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      })
-
-      if (!result?.ok) {
-        setErrors({
-          general: result?.error === 'invalid_credentials' 
-            ? 'Invalid email or password'
-            : 'Authentication failed'
-        })
-        return
-      }
-
-      router.push(callbackUrl)
-      router.refresh()
+      // TODO: Implement user creation
+      router.push('/login')
 
     } catch (error) {
-      console.error('Login error:', error)
+      console.error('Signup error:', error)
       setErrors({
         general: 'An unexpected error occurred. Please try again.'
       })
@@ -94,7 +83,7 @@ export default function LoginPage() {
         <Section title="" className="min-w-[450px]">
           <div className="w-full max-w-md mx-auto">
             <AuthLogo />
-            
+
             <form onSubmit={handleSubmit} className="space-y-6">
               {errors.general && (
                 <div className="rounded-lg bg-destructive/10 dark:bg-destructive/20 p-4">
@@ -111,7 +100,7 @@ export default function LoginPage() {
                     id="email"
                     name="email"
                     type="email"
-                    defaultValue="morhendos@gmail.com"
+                    autoComplete="email"
                     required
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isLoading}
@@ -127,12 +116,28 @@ export default function LoginPage() {
                     id="password"
                     name="password"
                     type="password"
-                    defaultValue="YourStrongPassword123!"
+                    autoComplete="new-password"
                     required
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isLoading}
                   />
                   <FormError message={errors.password} />
+                </div>
+
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
+                    Confirm Password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={isLoading}
+                  />
+                  <FormError message={errors.confirmPassword} />
                 </div>
               </div>
 
@@ -143,14 +148,14 @@ export default function LoginPage() {
                 py-3 px-6 rounded-md transition-all duration-200
                 flex items-center justify-center gap-2 group journal-text journal-button w-full"
               >
-                <LogIn size={18} className="group-hover:scale-105 transition-transform" strokeWidth={1.5} />
-                <span>{isLoading ? 'Logging in...' : 'Log in'}</span>
+                <UserPlus size={18} className="group-hover:scale-105 transition-transform" strokeWidth={1.5} />
+                <span>{isLoading ? 'Creating account...' : 'Create account'}</span>
               </button>
 
               <p className="text-sm text-center text-muted-foreground">
-                Don&apos;t have an account?{' '}
-                <a href="/signup" className="text-accent hover:underline">
-                  Create one
+                Already have an account?{' '}
+                <a href="/login" className="text-accent hover:underline">
+                  Log in
                 </a>
               </p>
             </form>
