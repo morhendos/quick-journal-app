@@ -50,8 +50,9 @@ export function JournalEntryForm() {
           onChange={(e) => setLearning(e.target.value)}
           required
           placeholder="Share something new you learned today..."
-          className="w-full min-h-[120px] p-4 rounded-md bg-paper border border-accent/20
-            focus:ring-1 focus:ring-accent/30 focus:border-accent/30
+          className="w-full min-h-[120px] p-4 rounded-md bg-paper
+            border border-accent/20 
+            focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-transparent
             placeholder:text-muted/40 journal-text text-ink/90
             transition-all duration-200 resize-none"
         />
@@ -67,8 +68,9 @@ export function JournalEntryForm() {
           onChange={(e) => setEnjoyment(e.target.value)}
           required
           placeholder="Share something that made you happy..."
-          className="w-full min-h-[120px] p-4 rounded-md bg-paper border border-accent/20
-            focus:ring-1 focus:ring-accent/30 focus:border-accent/30
+          className="w-full min-h-[120px] p-4 rounded-md bg-paper
+            border border-accent/20 
+            focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-transparent
             placeholder:text-muted/40 journal-text text-ink/90
             transition-all duration-200 resize-none"
         />
