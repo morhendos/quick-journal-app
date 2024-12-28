@@ -6,3 +6,9 @@ export interface JournalEntry {
 }
 
 export type JournalEntryFormData = Omit<JournalEntry, 'id'>;
+
+export interface JournalEntryDisplayProps {
+  entry: JournalEntry;
+  isToday?: boolean;
+  onEdit?: () => void;
+}
