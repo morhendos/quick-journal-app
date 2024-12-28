@@ -6,6 +6,22 @@ interface WeeklyGroupedViewProps {
   entries: JournalEntry[];
 }
 
+interface GroupedByType {
+  enjoyments: string[];
+  learnings: string[];
+  dates: string[];
+}
+
+function groupEntriesByType(entries: JournalEntry[]): GroupedByType {
+  return entries.reduce((acc: GroupedByType, entry) => {
+    return {
+      enjoyments: [...acc.enjoyments, entry.enjoyment],
+      learnings: [...acc.learnings, entry.learning],
+      dates: [...acc.dates, entry.date]
+    };
+  }, { enjoyments: [], learnings: [], dates: [] });
+}
+
 export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
   const groupedEntries = groupEntriesByWeek(entries);
 
@@ -13,27 +29,43 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
     <div className="space-y-12">
       {Object.entries(groupedEntries)
         .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
-        .map(([weekStart, weekEntries], groupIndex) => (
-          <div key={weekStart} className="relative">
-            {/* Add week separator line except for the first week */}
-            {groupIndex > 0 && (
-              <div className="absolute -top-6 left-0 right-0 border-t border-accent/10" />
-            )}
-            <div className="pl-4 border-l-2 border-accent/10 space-y-6">
-              {weekEntries
-                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                .map((entry, index) => (
-                  <div
-                    key={entry.id}
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                    className="animate-slide-in"
-                  >
-                    <EntryDisplay entry={entry} />
-                  </div>
-                ))}
+        .map(([weekStart, weekEntries]) => {
+          const { enjoyments, learnings, dates } = groupEntriesByType(weekEntries);
+          
+          return (
+            <div key={weekStart} className="space-y-8">
+              {/* Enjoyments section */}
+              <div className="pl-4 border-l-2 border-accent/10">
+                <h3 className="text-lg font-medium mb-4 text-ink/90">Enjoyments:</h3>
+                <div className="space-y-2">
+                  {enjoyments.map((enjoyment, index) => (
+                    <div 
+                      key={index}
+                      className="text-ink/80"
+                    >
+                      {enjoyment}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Learnings section */}
+              <div className="pl-4 border-l-2 border-accent/10">
+                <h3 className="text-lg font-medium mb-4 text-ink/90">Learnings:</h3>
+                <div className="space-y-2">
+                  {learnings.map((learning, index) => (
+                    <div 
+                      key={index}
+                      className="text-ink/80"
+                    >
+                      {learning}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
     </div>
   );
 }
