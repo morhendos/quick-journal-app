@@ -13,6 +13,7 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|login).*)',
+    // Match all paths except static files and auth endpoints
+    '/((?!api|_next/static|_next/image|favicon.ico|login|assets/).*)',
   ],
 }
