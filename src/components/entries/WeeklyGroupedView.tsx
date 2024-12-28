@@ -37,9 +37,15 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
   return (
     <div className="space-y-12">
       {Object.entries(groupedEntries)
-        .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
+        .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime()) // Sort weeks newest first
         .map(([weekStart, weekEntries]) => {
           const { enjoyments, learnings } = groupEntriesByType(weekEntries);
+          
+          // Sort entries within each section by date (newest first)
+          const sortedEnjoyments = enjoyments
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          const sortedLearnings = learnings
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
           
           return (
             <div key={weekStart} className="space-y-8">
@@ -47,7 +53,7 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
               <div className="pl-4 border-l-2 border-accent/10">
                 <h3 className="text-lg font-medium mb-4 text-ink/90">Enjoyments:</h3>
                 <div className="space-y-2">
-                  {enjoyments.map((entry, index) => (
+                  {sortedEnjoyments.map((entry, index) => (
                     <div 
                       key={index}
                       className="text-ink/80 flex gap-3"
@@ -63,7 +69,7 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
               <div className="pl-4 border-l-2 border-accent/10">
                 <h3 className="text-lg font-medium mb-4 text-ink/90">Learnings:</h3>
                 <div className="space-y-2">
-                  {learnings.map((entry, index) => (
+                  {sortedLearnings.map((entry, index) => (
                     <div 
                       key={index}
                       className="text-ink/80 flex gap-3"
