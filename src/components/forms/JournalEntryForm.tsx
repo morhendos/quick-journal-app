@@ -4,8 +4,10 @@ import { useJournalEntry } from '@/hooks/useJournalEntry';
 import { EntryDisplay } from '@/components/entries/EntryDisplay';
 import { useJournalStorage } from '@/lib/storage';
 import { BookOpen, Sparkles, Save, X, Edit } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export function JournalEntryForm() {
+  const [mounted, setMounted] = useState(false);
   const {
     learning,
     setLearning,
@@ -20,6 +22,14 @@ export function JournalEntryForm() {
   } = useJournalEntry();
 
   const { getTodayEntry } = useJournalStorage();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   if (submitted && !isEditing) {
     const todayEntry = getTodayEntry();
