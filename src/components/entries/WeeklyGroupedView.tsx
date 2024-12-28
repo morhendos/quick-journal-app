@@ -1,25 +1,34 @@
 import { JournalEntry } from '@/types/journal';
 import { groupEntriesByWeek } from '@/utils/dates';
-import { EntryDisplay } from './EntryDisplay';
 
 interface WeeklyGroupedViewProps {
   entries: JournalEntry[];
 }
 
+interface GroupedEntry {
+  content: string;
+  date: string;
+}
+
 interface GroupedByType {
-  enjoyments: string[];
-  learnings: string[];
-  dates: string[];
+  enjoyments: GroupedEntry[];
+  learnings: GroupedEntry[];
 }
 
 function groupEntriesByType(entries: JournalEntry[]): GroupedByType {
   return entries.reduce((acc: GroupedByType, entry) => {
     return {
-      enjoyments: [...acc.enjoyments, entry.enjoyment],
-      learnings: [...acc.learnings, entry.learning],
-      dates: [...acc.dates, entry.date]
+      enjoyments: [...acc.enjoyments, { content: entry.enjoyment, date: entry.date }],
+      learnings: [...acc.learnings, { content: entry.learning, date: entry.date }]
     };
-  }, { enjoyments: [], learnings: [], dates: [] });
+  }, { enjoyments: [], learnings: [] });
+}
+
+function formatDate(date: string): string {
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
+  });
 }
 
 export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
@@ -30,7 +39,7 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
       {Object.entries(groupedEntries)
         .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
         .map(([weekStart, weekEntries]) => {
-          const { enjoyments, learnings, dates } = groupEntriesByType(weekEntries);
+          const { enjoyments, learnings } = groupEntriesByType(weekEntries);
           
           return (
             <div key={weekStart} className="space-y-8">
@@ -38,12 +47,13 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
               <div className="pl-4 border-l-2 border-accent/10">
                 <h3 className="text-lg font-medium mb-4 text-ink/90">Enjoyments:</h3>
                 <div className="space-y-2">
-                  {enjoyments.map((enjoyment, index) => (
+                  {enjoyments.map((entry, index) => (
                     <div 
                       key={index}
-                      className="text-ink/80"
+                      className="text-ink/80 flex gap-3"
                     >
-                      {enjoyment}
+                      <span className="text-ink/50 text-sm min-w-[60px]">{formatDate(entry.date)}</span>
+                      <span>{entry.content}</span>
                     </div>
                   ))}
                 </div>
@@ -53,12 +63,13 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
               <div className="pl-4 border-l-2 border-accent/10">
                 <h3 className="text-lg font-medium mb-4 text-ink/90">Learnings:</h3>
                 <div className="space-y-2">
-                  {learnings.map((learning, index) => (
+                  {learnings.map((entry, index) => (
                     <div 
                       key={index}
-                      className="text-ink/80"
+                      className="text-ink/80 flex gap-3"
                     >
-                      {learning}
+                      <span className="text-ink/50 text-sm min-w-[60px]">{formatDate(entry.date)}</span>
+                      <span>{entry.content}</span>
                     </div>
                   ))}
                 </div>
