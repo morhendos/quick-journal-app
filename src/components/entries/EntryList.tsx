@@ -39,10 +39,11 @@ export function EntryList() {
     );
   }
 
-  // Sort entries chronologically (oldest first)
-  const sortedEntries = [...entries].sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  // Sort entries with newest first for chronological view
+  // Keep original order for weekly view (which gets sorted in its own component)
+  const sortedEntries = view === 'chronological' 
+    ? [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    : [...entries];
 
   return (
     <div className="flex flex-col min-h-0 h-full">
