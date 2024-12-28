@@ -1,5 +1,5 @@
 import { JournalEntry } from '@/types/journal';
-import { formatDate, groupEntriesByWeek } from '@/utils/dates';
+import { groupEntriesByWeek } from '@/utils/dates';
 import { EntryDisplay } from './EntryDisplay';
 
 interface WeeklyGroupedViewProps {
@@ -15,9 +15,6 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
         .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
         .map(([weekStart, weekEntries]) => (
           <div key={weekStart} className="space-y-4">
-            <h3 className="journal-heading text-lg font-medium text-ink/90 transition-colors">
-              Week of {formatDate(weekStart)}
-            </h3>
             <div className="space-y-6 pl-4 border-l-2 border-accent/10">
               {weekEntries
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
