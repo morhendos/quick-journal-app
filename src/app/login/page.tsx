@@ -90,7 +90,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background transition-colors duration-200">
       <main className="container mx-auto h-screen px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative flex items-center justify-center">
-        <Section title="Journal & Reflect">
+        <Section title="Journal & Reflect" className="min-w-[450px]">
           <div className="w-full max-w-md mx-auto">
             <p className="text-muted-foreground text-sm mb-8 text-center">
               Access your personal space
