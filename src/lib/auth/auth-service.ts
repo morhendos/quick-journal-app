@@ -35,7 +35,7 @@ export async function registerUser(
   const users = getStoredUsers();
   
   if (users.some(user => user.email === email)) {
-    throw new AuthError('Email already registered', 'invalid_credentials');
+    throw new AuthError('This email is already registered. Please use a different email or log in.', 'invalid_credentials');
   }
 
   const newUser: StoredUser = {
@@ -60,21 +60,28 @@ export async function authenticateUser(
 ): Promise<CustomUser> {
   let users: StoredUser[] = [];
 
-  // Try to parse users from provided JSON first
-  if (usersJson) {
-    try {
+  try {
+    if (usersJson) {
       users = JSON.parse(usersJson);
-    } catch (error) {
-      console.error('Error parsing users JSON:', error);
     }
-  }
 
-  const user = users.find(u => u.email === email && u.password === password);
+    const user = users.find(u => u.email === email);
+    
+    if (!user) {
+      throw new AuthError('No account found with this email. Please check your email or create a new account.', 'invalid_credentials');
+    }
 
-  if (user) {
+    if (user.password !== password) {
+      throw new AuthError('Incorrect password. Please try again.', 'invalid_credentials');
+    }
+
     const { password: _, ...safeUserData } = user;
     return safeUserData;
-  }
 
-  throw new AuthError('Invalid credentials', 'invalid_credentials');
+  } catch (error) {
+    if (error instanceof AuthError) {
+      throw error;
+    }
+    throw new AuthError('Something went wrong. Please try again.', 'invalid_credentials');
+  }
 }
