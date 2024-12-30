@@ -16,7 +16,8 @@ export default withAuth(
         if (
           path.startsWith('/assets/') ||
           path === '/login' ||
-          path === '/register'
+          path === '/signup' ||
+          path === '/api/auth'
         ) {
           return true
         }

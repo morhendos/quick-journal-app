@@ -1,17 +1,34 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useState, useCallback } from 'react'
 import { validateEmail, validatePassword } from '@/lib/auth/validation'
+import { registerUser } from '@/lib/auth/auth-service'
 import { Section } from '@/components/common/Section'
 import AuthLogo from '@/components/auth/AuthLogo'
-import { UserPlus } from 'lucide-react'
+import { UserPlus, AlertCircle } from 'lucide-react'
 
 interface FormErrors {
   email?: string
   password?: string
   confirmPassword?: string
   general?: string
+}
+
+function ErrorAlert({ message }: { message: string }) {
+  return (
+    <div className="rounded-lg bg-red-50 dark:bg-red-900/10 p-4 border border-red-200 dark:border-red-800">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
+        </div>
+        <div className="ml-3">
+          <p className="text-sm text-red-800 dark:text-red-200">{message}</p>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function SignUpPage() {
@@ -60,21 +77,27 @@ export default function SignUpPage() {
         return
       }
 
-      // TODO: Implement user creation
-      router.push('/login')
+      await registerUser(email, password)
+      router.push('/login?registered=true')
 
     } catch (error) {
       console.error('Signup error:', error)
-      setErrors({
-        general: 'An unexpected error occurred. Please try again.'
-      })
+      if (error instanceof Error) {
+        setErrors({
+          general: error.message || 'An unexpected error occurred. Please try again.'
+        })
+      } else {
+        setErrors({
+          general: 'An unexpected error occurred. Please try again.'
+        })
+      }
     } finally {
       setIsLoading(false)
     }
   }
 
   const FormError = ({ message }: { message?: string }) => (
-    message ? <p className="text-sm text-red-600 dark:text-red-400">{message}</p> : null
+    message ? <p className="text-sm text-red-600 dark:text-red-400 mt-1">{message}</p> : null
   )
 
   return (
@@ -85,11 +108,7 @@ export default function SignUpPage() {
             <AuthLogo />
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {errors.general && (
-                <div className="rounded-lg bg-destructive/10 dark:bg-destructive/20 p-4">
-                  <FormError message={errors.general} />
-                </div>
-              )}
+              {errors.general && <ErrorAlert message={errors.general} />}
 
               <div className="space-y-4">
                 <div>
@@ -154,9 +173,9 @@ export default function SignUpPage() {
 
               <p className="text-sm text-center text-muted-foreground">
                 Already have an account?{' '}
-                <a href="/login" className="text-accent hover:underline">
+                <Link href="/login" className="text-accent hover:underline">
                   Log in
-                </a>
+                </Link>
               </p>
             </form>
           </div>

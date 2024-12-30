@@ -1,37 +1,87 @@
 import { CustomUser } from "@/types/auth";
 import { AuthError } from "./validation";
 
-// Development test users
-const DEV_TEST_USERS = [
-  {
-    id: "1",
-    email: "morhendos@gmail.com",
-    password: "YourStrongPassword123!", // Your original test password
-    name: "Test User 1",
-    roles: [{ id: "1", name: "user" }],
-  },
-];
+const USERS_STORAGE_KEY = 'journal_users';
+
+interface StoredUser extends CustomUser {
+  password: string;
+}
+
+function getStoredUsers(): StoredUser[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const usersJson = localStorage.getItem(USERS_STORAGE_KEY);
+    return usersJson ? JSON.parse(usersJson) : [];
+  } catch (error) {
+    console.error('Error reading users from storage:', error);
+    return [];
+  }
+}
+
+function saveUsers(users: StoredUser[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+  } catch (error) {
+    console.error('Error saving users to storage:', error);
+  }
+}
+
+export async function registerUser(
+  email: string,
+  password: string,
+  name?: string
+): Promise<CustomUser> {
+  const users = getStoredUsers();
+  
+  if (users.some(user => user.email === email)) {
+    throw new AuthError('This email is already registered. Please use a different email or log in.', 'invalid_credentials');
+  }
+
+  const newUser: StoredUser = {
+    id: Date.now().toString(),
+    email,
+    password,
+    name: name || email.split('@')[0],
+    roles: [{ id: '1', name: 'user' }],
+  };
+
+  users.push(newUser);
+  saveUsers(users);
+
+  const { password: _, ...safeUserData } = newUser;
+  return safeUserData;
+}
 
 export async function authenticateUser(
   email: string,
-  password: string
+  password: string,
+  usersJson?: string
 ): Promise<CustomUser> {
-  // Development mode authentication
-  // if (process.env.NODE_ENV === 'development') {
-  console.log("[DEV AUTH] Attempting login with:", { email });
+  let users: StoredUser[] = [];
 
-  const testUser = DEV_TEST_USERS.find(
-    (user) => user.email === email && user.password === password
-  );
+  try {
+    if (usersJson) {
+      users = JSON.parse(usersJson);
+    }
 
-  if (testUser) {
-    // Don't include password in the returned user object
-    const { password: _, ...safeUserData } = testUser;
+    const user = users.find(u => u.email === email);
+    
+    if (!user) {
+      throw new AuthError('No account found with this email. Please check your email or create a new account.', 'invalid_credentials');
+    }
+
+    if (user.password !== password) {
+      throw new AuthError('Incorrect password. Please try again.', 'invalid_credentials');
+    }
+
+    const { password: _, ...safeUserData } = user;
     return safeUserData;
-  }
-  // }
 
-  // Production mode authentication
-  // TODO: Implement your actual database authentication here
-  throw new AuthError("Invalid credentials", "invalid_credentials");
+  } catch (error) {
+    if (error instanceof AuthError) {
+      throw error;
+    }
+    throw new AuthError('Something went wrong. Please try again.', 'invalid_credentials');
+  }
 }
