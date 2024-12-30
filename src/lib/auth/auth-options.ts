@@ -41,11 +41,13 @@ export const authOptions: AuthOptions = {
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
+        usersJson: { label: 'Users JSON', type: 'text' },
       },
       async authorize(credentials) {
         console.log('[AUTH OPTIONS] authorize called with:', {
           hasEmail: !!credentials?.email,
           hasPassword: !!credentials?.password,
+          hasUsersJson: !!credentials?.usersJson,
         })
 
         if (!credentials?.email || !credentials?.password) {
@@ -64,7 +66,11 @@ export const authOptions: AuthOptions = {
         }
 
         try {
-          const user = await authenticateUser(credentials.email, credentials.password)
+          const user = await authenticateUser(
+            credentials.email,
+            credentials.password,
+            credentials.usersJson
+          )
           console.log('[AUTH OPTIONS] User authenticated:', {
             id: user.id,
             email: user.email,
