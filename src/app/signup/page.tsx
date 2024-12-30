@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState, useCallback } from 'react'
 import { validateEmail, validatePassword } from '@/lib/auth/validation'
+import { registerUser } from '@/lib/auth/auth-service'
 import { Section } from '@/components/common/Section'
 import AuthLogo from '@/components/auth/AuthLogo'
 import { UserPlus } from 'lucide-react'
@@ -60,14 +61,20 @@ export default function SignUpPage() {
         return
       }
 
-      // TODO: Implement user creation
-      router.push('/login')
+      await registerUser(email, password)
+      router.push('/login?registered=true')
 
     } catch (error) {
       console.error('Signup error:', error)
-      setErrors({
-        general: 'An unexpected error occurred. Please try again.'
-      })
+      if (error instanceof Error) {
+        setErrors({
+          general: error.message || 'An unexpected error occurred. Please try again.'
+        })
+      } else {
+        setErrors({
+          general: 'An unexpected error occurred. Please try again.'
+        })
+      }
     } finally {
       setIsLoading(false)
     }
