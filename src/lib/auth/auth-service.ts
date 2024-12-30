@@ -1,6 +1,17 @@
 import { CustomUser } from "@/types/auth";
 import { AuthError } from "./validation";
 
+// Development test users
+const DEV_TEST_USERS = [
+  {
+    id: "1",
+    email: "morhendos@gmail.com",
+    password: "YourStrongPassword123!",
+    name: "Test User 1",
+    roles: [{ id: "1", name: "user" }],
+  },
+];
+
 const USERS_STORAGE_KEY = 'journal_users';
 
 interface StoredUser extends CustomUser {
@@ -50,16 +61,6 @@ export async function authenticateUser(
 ): Promise<CustomUser> {
   // First try development test users
   if (process.env.NODE_ENV === 'development') {
-    const DEV_TEST_USERS = [
-      {
-        id: "1",
-        email: "morhendos@gmail.com",
-        password: "YourStrongPassword123!",
-        name: "Test User 1",
-        roles: [{ id: "1", name: "user" }],
-      },
-    ];
-
     const testUser = DEV_TEST_USERS.find(
       (user) => user.email === email && user.password === password
     );
@@ -79,5 +80,5 @@ export async function authenticateUser(
     return safeUserData;
   }
 
-  throw new AuthError("Invalid credentials", "invalid_credentials");
+  throw new AuthError('Invalid credentials', 'invalid_credentials');
 }
