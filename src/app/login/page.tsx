@@ -80,6 +80,7 @@ export default function LoginPage() {
         password,
         usersJson,
         redirect: false,
+        callbackUrl
       })
 
       if (!result?.ok) {
@@ -113,7 +114,7 @@ export default function LoginPage() {
           <div className="w-full max-w-md mx-auto">
             <AuthLogo />
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form method="POST" onSubmit={handleSubmit} className="space-y-6">
               {errors.general && <ErrorAlert message={errors.general} />}
 
               <div className="space-y-4">
