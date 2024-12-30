@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useState, useCallback } from 'react'
 import { validateEmail, validatePassword } from '@/lib/auth/validation'
 import { registerUser } from '@/lib/auth/auth-service'
@@ -161,9 +162,9 @@ export default function SignUpPage() {
 
               <p className="text-sm text-center text-muted-foreground">
                 Already have an account?{' '}
-                <a href="/login" className="text-accent hover:underline">
+                <Link href="/login" className="text-accent hover:underline">
                   Log in
-                </a>
+                </Link>
               </p>
             </form>
           </div>
