@@ -1,17 +1,6 @@
 import { CustomUser } from "@/types/auth";
 import { AuthError } from "./validation";
 
-// Development test users
-const DEV_TEST_USERS = [
-  {
-    id: "1",
-    email: "morhendos@gmail.com",
-    password: "YourStrongPassword123!",
-    name: "Test User 1",
-    roles: [{ id: "1", name: "user" }],
-  },
-];
-
 const USERS_STORAGE_KEY = 'journal_users';
 
 interface StoredUser extends CustomUser {
@@ -20,13 +9,22 @@ interface StoredUser extends CustomUser {
 
 function getStoredUsers(): StoredUser[] {
   if (typeof window === 'undefined') return [];
-  const usersJson = localStorage.getItem(USERS_STORAGE_KEY);
-  return usersJson ? JSON.parse(usersJson) : [];
+  try {
+    const usersJson = localStorage.getItem(USERS_STORAGE_KEY);
+    return usersJson ? JSON.parse(usersJson) : [];
+  } catch (error) {
+    console.error('Error reading users from storage:', error);
+    return [];
+  }
 }
 
 function saveUsers(users: StoredUser[]): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+  try {
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+  } catch (error) {
+    console.error('Error saving users to storage:', error);
+  }
 }
 
 export async function registerUser(
@@ -57,22 +55,20 @@ export async function registerUser(
 
 export async function authenticateUser(
   email: string,
-  password: string
+  password: string,
+  usersJson?: string
 ): Promise<CustomUser> {
-  // First try development test users
-  if (process.env.NODE_ENV === 'development') {
-    const testUser = DEV_TEST_USERS.find(
-      (user) => user.email === email && user.password === password
-    );
+  let users: StoredUser[] = [];
 
-    if (testUser) {
-      const { password: _, ...safeUserData } = testUser;
-      return safeUserData;
+  // Try to parse users from provided JSON first
+  if (usersJson) {
+    try {
+      users = JSON.parse(usersJson);
+    } catch (error) {
+      console.error('Error parsing users JSON:', error);
     }
   }
 
-  // Then check localStorage users
-  const users = getStoredUsers();
   const user = users.find(u => u.email === email && u.password === password);
 
   if (user) {
