@@ -2,6 +2,7 @@
 
 import { signIn } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useState, useCallback } from 'react'
 import { validateEmail, validatePassword } from '@/lib/auth/validation'
 import { Section } from '@/components/common/Section'
@@ -149,9 +150,9 @@ export default function LoginPage() {
 
               <p className="text-sm text-center text-muted-foreground">
                 Don&apos;t have an account?{' '}
-                <a href="/signup" className="text-accent hover:underline">
+                <Link href="/signup" className="text-accent hover:underline">
                   Create one
-                </a>
+                </Link>
               </p>
             </form>
           </div>
