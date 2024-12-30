@@ -7,7 +7,7 @@ import { useState, useCallback } from 'react'
 import { validateEmail, validatePassword } from '@/lib/auth/validation'
 import { Section } from '@/components/common/Section'
 import AuthLogo from '@/components/auth/AuthLogo'
-import { LogIn } from 'lucide-react'
+import { LogIn, AlertCircle } from 'lucide-react'
 
 interface FormErrors {
   email?: string
@@ -16,6 +16,21 @@ interface FormErrors {
 }
 
 const USERS_STORAGE_KEY = 'journal_users';
+
+function ErrorAlert({ message }: { message: string }) {
+  return (
+    <div className="rounded-lg bg-red-50 dark:bg-red-900/10 p-4 border border-red-200 dark:border-red-800">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
+        </div>
+        <div className="ml-3">
+          <p className="text-sm text-red-800 dark:text-red-200">{message}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function LoginPage() {
   const router = useRouter()
@@ -69,9 +84,7 @@ export default function LoginPage() {
 
       if (!result?.ok) {
         setErrors({
-          general: result?.error === 'invalid_credentials' 
-            ? 'Invalid email or password'
-            : 'Authentication failed'
+          general: result?.error || 'Authentication failed'
         })
         return
       }
@@ -90,7 +103,7 @@ export default function LoginPage() {
   }
 
   const FormError = ({ message }: { message?: string }) => (
-    message ? <p className="text-sm text-red-600 dark:text-red-400">{message}</p> : null
+    message ? <p className="text-sm text-red-600 dark:text-red-400 mt-1">{message}</p> : null
   )
 
   return (
@@ -101,11 +114,7 @@ export default function LoginPage() {
             <AuthLogo />
             
             <form onSubmit={handleSubmit} className="space-y-6">
-              {errors.general && (
-                <div className="rounded-lg bg-destructive/10 dark:bg-destructive/20 p-4">
-                  <FormError message={errors.general} />
-                </div>
-              )}
+              {errors.general && <ErrorAlert message={errors.general} />}
 
               <div className="space-y-4">
                 <div>
