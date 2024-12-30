@@ -6,7 +6,7 @@ export default withAuth(
   },
   {
     pages: {
-      signIn: '/login',
+      signIn: '/auth/login',
     },
     callbacks: {
       authorized: ({ token, req }) => {
@@ -15,8 +15,8 @@ export default withAuth(
         // Always allow these paths
         if (
           path.startsWith('/assets/') ||
-          path === '/login' ||
-          path === '/register'
+          path.startsWith('/auth/') ||
+          path === '/api/auth'
         ) {
           return true
         }
