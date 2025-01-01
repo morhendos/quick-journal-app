@@ -1,5 +1,5 @@
 import { JournalEntry } from '@/types/journal';
-import { formatShortDate, getWeekStart } from '@/utils/dates';
+import { formatShortDate, getLocalISOString, getWeekBounds } from '@/utils/dates';
 
 interface WeeklyGroupedViewProps {
   entries: JournalEntry[];
@@ -15,13 +15,16 @@ interface GroupedByType {
   learnings: GroupedEntry[];
 }
 
-function isInSameWeek(date1: string, date2: string): boolean {
-  return getWeekStart(date1) === getWeekStart(date2);
-}
-
 function getCurrentWeekEntries(entries: JournalEntry[]): JournalEntry[] {
-  const today = new Date().toISOString().split('T')[0];
-  return entries.filter(entry => isInSameWeek(entry.date, today));
+  const { monday, sunday } = getWeekBounds();
+  
+  return entries.filter(entry => {
+    const entryDate = new Date(entry.date + 'T00:00:00');
+    const entryLocalDate = getLocalISOString(entryDate);
+    const mondayLocal = getLocalISOString(monday);
+    const sundayLocal = getLocalISOString(sunday);
+    return entryLocalDate >= mondayLocal && entryLocalDate <= sundayLocal;
+  });
 }
 
 function groupEntriesByType(entries: JournalEntry[]): GroupedByType {

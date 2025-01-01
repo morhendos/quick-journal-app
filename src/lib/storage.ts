@@ -37,6 +37,10 @@ export function useJournalStorage() {
     return entries.find(entry => entry.date === today);
   };
 
+  const getEntryByDate = (date: string): JournalEntry | undefined => {
+    return entries.find(entry => entry.date === date);
+  };
+
   const hasEntryForToday = (): boolean => {
     return !!getTodayEntry();
   };
@@ -46,6 +50,7 @@ export function useJournalStorage() {
     addEntry,
     updateEntry,
     getTodayEntry,
+    getEntryByDate,
     hasEntryForToday
   };
 }

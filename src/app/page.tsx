@@ -5,34 +5,41 @@ import { EntryList } from '@/components/entries/EntryList';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Section } from '@/components/common/Section';
 import { WeeklyOverview } from '@/components/overview/WeeklyOverview';
-import { useState } from 'react';
+import { useRef } from 'react';
+import { DateProvider } from '@/contexts/DateContext';
+import { isToday } from '@/utils/dates';
 
 export default function Home() {
-  const [updateCounter, setUpdateCounter] = useState(0);
+  const updateCounterRef = useRef(0);
 
   const handleEntriesUpdate = () => {
-    setUpdateCounter(prev => prev + 1);
+    updateCounterRef.current += 1;
   };
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-200 overflow-hidden">
-      <main className="container mx-auto h-screen px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative flex flex-col">
-        <PageHeader onEntriesUpdate={handleEntriesUpdate} />
-        
-        <div className="mt-6 mb-8">
-          <WeeklyOverview key={updateCounter} />
-        </div>
+    <DateProvider>
+      <div className="min-h-screen bg-background transition-colors duration-200 overflow-hidden">
+        <main className="container mx-auto h-screen px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative flex flex-col">
+          <PageHeader onEntriesUpdate={handleEntriesUpdate} />
+          
+          <div className="mt-6 mb-8">
+            <WeeklyOverview key={updateCounterRef.current} />
+          </div>
 
-        <div className="grid gap-6 lg:gap-8 lg:grid-cols-2 flex-1 min-h-0">
-          <Section title="Today's Entry" className="order-1 lg:order-2">
-            <JournalEntryForm key={updateCounter} />
-          </Section>
+          <div className="grid gap-6 lg:gap-8 lg:grid-cols-2 flex-1 min-h-0">
+            <Section 
+              title={`Entry for ${new Date().toLocaleDateString()}`}
+              className="order-1 lg:order-2"
+            >
+              <JournalEntryForm key={updateCounterRef.current} />
+            </Section>
 
-          <Section title="Previous Entries" className="order-2 lg:order-1">
-            <EntryList key={updateCounter} />
-          </Section>
-        </div>
-      </main>
-    </div>
+            <Section title="Previous Entries" className="order-2 lg:order-1">
+              <EntryList key={updateCounterRef.current} />
+            </Section>
+          </div>
+        </main>
+      </div>
+    </DateProvider>
   );
 }

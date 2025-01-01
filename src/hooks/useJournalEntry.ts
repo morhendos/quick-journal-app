@@ -1,23 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useJournalStorage } from '@/lib/storage';
 
-export function useJournalEntry() {
-  const { addEntry, updateEntry, getTodayEntry } = useJournalStorage();
+export function useJournalEntry(selectedDate: string) {
+  const { addEntry, updateEntry, getEntryByDate } = useJournalStorage();
+  const lastDateRef = useRef(selectedDate);
   
-  const todayEntry = getTodayEntry();
-  const [learning, setLearning] = useState(todayEntry?.learning || '');
-  const [enjoyment, setEnjoyment] = useState(todayEntry?.enjoyment || '');
-  const [submitted, setSubmitted] = useState(!!todayEntry);
+  const entry = getEntryByDate(selectedDate);
+  const [learning, setLearning] = useState(entry?.learning || '');
+  const [enjoyment, setEnjoyment] = useState(entry?.enjoyment || '');
+  const [submitted, setSubmitted] = useState(!!entry);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Only update content when date changes and we're not creating a new entry
+  useEffect(() => {
+    const currentEntry = getEntryByDate(selectedDate);
+    const dateChanged = lastDateRef.current !== selectedDate;
+    lastDateRef.current = selectedDate;
+
+    if (dateChanged && !isEditing) {
+      if (currentEntry) {
+        setLearning(currentEntry.learning);
+        setEnjoyment(currentEntry.enjoyment);
+        setSubmitted(true);
+      } else {
+        setLearning('');
+        setEnjoyment('');
+        setSubmitted(false);
+      }
+    }
+  }, [selectedDate, getEntryByDate, isEditing]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const today = new Date().toISOString().split('T')[0];
-    const entryData = { date: today, learning, enjoyment };
+    const entryData = { date: selectedDate, learning, enjoyment };
 
-    if (isEditing && todayEntry) {
-      updateEntry(todayEntry.id, entryData);
+    if (entry) {
+      updateEntry(entry.id, entryData);
     } else {
       addEntry(entryData);
     }
@@ -27,17 +46,27 @@ export function useJournalEntry() {
   };
 
   const handleEdit = () => {
+    const currentEntry = getEntryByDate(selectedDate);
+    if (currentEntry) {
+      setLearning(currentEntry.learning);
+      setEnjoyment(currentEntry.enjoyment);
+    }
     setIsEditing(true);
     setSubmitted(false);
   };
 
   const handleCancel = () => {
-    if (todayEntry) {
-      setLearning(todayEntry.learning);
-      setEnjoyment(todayEntry.enjoyment);
+    const currentEntry = getEntryByDate(selectedDate);
+    if (currentEntry) {
+      setLearning(currentEntry.learning);
+      setEnjoyment(currentEntry.enjoyment);
+      setSubmitted(true);
+    } else {
+      setLearning('');
+      setEnjoyment('');
+      setSubmitted(false);
     }
     setIsEditing(false);
-    setSubmitted(true);
   };
 
   return {
@@ -46,10 +75,10 @@ export function useJournalEntry() {
     enjoyment,
     setEnjoyment,
     submitted,
-    setSubmitted,
     isEditing,
     handleSubmit,
     handleEdit,
-    handleCancel
+    handleCancel,
+    entry
   };
 }

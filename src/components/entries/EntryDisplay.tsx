@@ -23,7 +23,7 @@ export function EntryDisplay({ entry, isToday, onEdit }: JournalEntryDisplayProp
         <h3 className="journal-heading text-lg font-medium text-ink transition-colors">
           {formatDate(entry.date)}
         </h3>
-        {isToday && onEdit && (
+        {onEdit && (
           <button
             onClick={onEdit}
             className="text-accent hover:text-accent/80 transition-colors"

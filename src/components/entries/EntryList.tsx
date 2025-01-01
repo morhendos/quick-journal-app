@@ -6,6 +6,7 @@ import { WeeklyGroupedView } from './WeeklyGroupedView';
 import { ViewToggle } from '@/components/common/ViewToggle';
 import { BookOpen } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { getLocalISOString, getWeekBounds } from '@/utils/dates';
 
 type ViewType = 'chronological' | 'weekly';
 
@@ -14,13 +15,12 @@ export function EntryList() {
   const [mounted, setMounted] = useState(false);
   const [view, setView] = useState<ViewType>('weekly');
 
-  // Handle hydration mismatch by only rendering after mount
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) {
-    return null; // or a loading skeleton
+    return null;
   }
 
   if (entries.length === 0) {
@@ -39,11 +39,25 @@ export function EntryList() {
     );
   }
 
+  // Filter entries for chronological view to only show current week
+  const { monday, sunday } = getWeekBounds();
+  
+  const filteredEntries = view === 'chronological'
+    ? entries.filter(entry => {
+        const entryDate = new Date(entry.date + 'T00:00:00');
+        const entryLocalDate = getLocalISOString(entryDate);
+        const mondayLocal = getLocalISOString(monday);
+        const sundayLocal = getLocalISOString(sunday);
+        return entryLocalDate >= mondayLocal && entryLocalDate <= sundayLocal;
+      })
+    : entries;
+
   // Sort entries with newest first for chronological view
-  // Keep original order for weekly view (which gets sorted in its own component)
   const sortedEntries = view === 'chronological' 
-    ? [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    : [...entries];
+    ? [...filteredEntries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    : [...filteredEntries];
+
+  const noEntriesThisWeek = view === 'chronological' && sortedEntries.length === 0;
 
   return (
     <div className="flex flex-col min-h-0 h-full">
@@ -52,7 +66,11 @@ export function EntryList() {
       </div>
       
       <div className="flex-1 overflow-auto min-h-0">
-        {view === 'chronological' ? (
+        {noEntriesThisWeek ? (
+          <div className="text-center py-8 text-muted text-sm journal-text">
+            No entries for this week yet
+          </div>
+        ) : view === 'chronological' ? (
           <div className="space-y-4 sm:space-y-6">
             {sortedEntries.map((entry, index) => (
               <div 

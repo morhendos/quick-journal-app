@@ -3,7 +3,7 @@
 import { signIn } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, Suspense } from 'react'
 import { validateEmail, validatePassword } from '@/lib/auth/validation'
 import { Section } from '@/components/common/Section'
 import AuthLogo from '@/components/auth/AuthLogo'
@@ -32,7 +32,7 @@ function ErrorAlert({ message }: { message: string }) {
   )
 }
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/'
@@ -171,5 +171,13 @@ export default function LoginPage() {
         </Section>
       </main>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginPageContent />
+    </Suspense>
   )
 }
