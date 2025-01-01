@@ -8,18 +8,23 @@ A modern, minimalist journaling application that helps users track their daily l
 - Daily journal entries with learning and enjoyment sections
 - Edit functionality for today's entry
 - Chronological entry list with weekly view
+- Interactive week overview with entry indicators
 - Local storage for data persistence
+- User authentication (email/password)
 
 ### Data Management
 - Export journal to JSON with metadata
 - Import entries with smart merging
 - Data validation and error handling
+- Secure user data isolation
 
 ### User Experience
 - Clean, modern UI with animations
 - Dark/light theme support
 - Responsive design for all devices
 - Consistent paper-like styling
+- Loading states with skeleton UI
+- Client-side form validation
 
 ## Tech Stack
 
@@ -28,6 +33,7 @@ A modern, minimalist journaling application that helps users track their daily l
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide React
 - **Storage**: Local Storage (MongoDB planned)
+- **Auth**: NextAuth.js with Credentials provider
 - **Component Library**: Custom components with shadcn/ui influences
 
 ## Getting Started
@@ -43,7 +49,13 @@ cd quick-journal-app
 npm install
 ```
 
-3. Run the development server:
+3. Set up environment variables:
+```bash
+cp .env.example .env.local
+# Edit .env.local with your settings
+```
+
+4. Run the development server:
 ```bash
 npm run dev
 ```
@@ -55,13 +67,21 @@ Open [http://localhost:3000](http://localhost:3000) with your browser.
 ```
 src/
 ├── app/              # Next.js app router files
+│   ├── api/         # API routes
+│   ├── auth/        # Authentication pages
+│   └── login/       # Login page
 ├── components/       # React components
+│   ├── auth/        # Authentication components
 │   ├── journal/     # Journal components
+│   ├── overview/    # Overview components
 │   ├── settings/    # Settings components
 │   ├── layout/      # Layout components
 │   └── ui/          # Shared UI components
+├── contexts/        # React contexts
 ├── hooks/           # Custom React hooks
-├── lib/             # Utilities
+├── lib/             # Utilities and configurations
+│   ├── auth/        # Authentication utilities
+│   └── storage/     # Storage utilities
 └── types/           # TypeScript types
 ```
 
@@ -72,6 +92,7 @@ src/
 {
   "version": "1.0.0",
   "timestamp": "2024-12-25T12:00:00.000Z",
+  "userId": "user123",
   "entries": [
     {
       "id": "1703505600000",
@@ -88,6 +109,7 @@ src/
 - Merges with existing entries
 - Newer entries take precedence
 - Supports both current and legacy formats
+- User data isolation
 
 ## Development Guidelines
 
@@ -96,12 +118,22 @@ src/
 2. Follow existing style patterns
 3. Include proper TypeScript types
 4. Add JSDoc documentation
+5. Implement loading states
+6. Handle errors gracefully
 
 ### Styling Guidelines
 1. Use Tailwind utility classes
 2. Follow the paper-like design system
 3. Ensure dark mode compatibility
 4. Maintain responsive design
+5. Add loading skeletons for better UX
+
+### Authentication Guidelines
+1. Always wrap useSearchParams with Suspense
+2. Implement proper loading states
+3. Handle auth errors gracefully
+4. Use form validation
+5. Add appropriate security headers
 
 ## Contributing
 
@@ -117,15 +149,48 @@ git commit -m "Description of changes"
 
 3. Push and create a pull request
 
+## Testing
+
+1. Run the test suite:
+```bash
+npm test
+```
+
+2. Local development testing:
+```bash
+npm run dev
+npm run build # Ensure production build works
+```
+
+## Environment Variables
+
+```env
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-here
+NODE_ENV=development
+```
+
 ## Planned Features
 
-- MongoDB integration
-- User authentication
-- Rich text editor
-- Search and filtering
-- Tags and categories
-- Data analytics
-- Export to different formats
+- [x] User authentication
+- [x] Interactive week overview
+- [ ] MongoDB integration
+- [ ] Rich text editor
+- [ ] Search and filtering
+- [ ] Tags and categories
+- [ ] Data analytics
+- [ ] Export to different formats
+
+## Troubleshooting
+
+### Common Issues
+1. Build errors with useSearchParams
+   - Wrap components using useSearchParams in Suspense
+   - Add loading states
+
+2. Authentication errors
+   - Check environment variables
+   - Ensure proper NextAuth configuration
 
 ## License
 
