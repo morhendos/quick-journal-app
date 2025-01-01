@@ -31,10 +31,9 @@ export function MonthlyList<T extends BaseItem>({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
 
+  // Update listItems when items prop changes
   useEffect(() => {
-    if (JSON.stringify(items) !== JSON.stringify(listItems)) {
-      setListItems(items);
-    }
+    setListItems(items);
   }, [items]);
 
   useEffect(() => {
@@ -141,7 +140,7 @@ export function MonthlyList<T extends BaseItem>({
       )}
 
       <ul className="space-y-3">
-        {(listItems || []).map(item => (
+        {listItems.map(item => (
           <li
             key={item.id}
             className="group flex items-start gap-3 p-3 rounded-md bg-paper/50 hover:bg-paper transition-colors"
