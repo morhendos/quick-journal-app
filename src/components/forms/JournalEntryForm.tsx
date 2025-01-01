@@ -5,6 +5,7 @@ import { EntryDisplay } from '@/components/entries/EntryDisplay';
 import { useJournalStorage } from '@/lib/storage';
 import { BookOpen, Sparkles, Save, X, Edit } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { AutoResizeTextarea } from '@/components/common/AutoResizeTextarea';
 
 export function JournalEntryForm() {
   const [mounted, setMounted] = useState(false);
@@ -42,17 +43,12 @@ export function JournalEntryForm() {
           <BookOpen size={18} className="text-accent" strokeWidth={1.5} />
           <span>What did you learn today?</span>
         </label>
-        <textarea
+        <AutoResizeTextarea
           value={learning}
           onChange={(e) => setLearning(e.target.value)}
           required
           placeholder="Share something new you learned today..."
-          rows={1}
-          className="w-full p-3 rounded-md bg-paper
-            border border-accent/20 
-            focus:outline-none focus:border-accent/40
-            placeholder:text-muted/40 journal-text text-ink/90
-            transition-colors duration-200"
+          className="w-full"
         />
       </div>
       
@@ -61,17 +57,12 @@ export function JournalEntryForm() {
           <Sparkles size={18} className="text-accent" strokeWidth={1.5} />
           <span>What brought you joy today?</span>
         </label>
-        <textarea
+        <AutoResizeTextarea
           value={enjoyment}
           onChange={(e) => setEnjoyment(e.target.value)}
           required
           placeholder="Share something that made you happy..."
-          rows={1}
-          className="w-full p-3 rounded-md bg-paper
-            border border-accent/20 
-            focus:outline-none focus:border-accent/40
-            placeholder:text-muted/40 journal-text text-ink/90
-            transition-colors duration-200"
+          className="w-full"
         />
       </div>
 
