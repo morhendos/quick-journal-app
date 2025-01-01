@@ -1,58 +1,48 @@
-import { JournalEntry } from '@/types/journal';
+export function getLocalISOString(date: Date) {
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - (offset * 60 * 1000));
+  return localDate.toISOString().split('T')[0];
+}
 
-export const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-};
+export function getWeekBounds() {
+  const today = new Date();
+  const currentDay = today.getDay();
+  const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
 
-export const formatShortDate = (date: string): string => {
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
-};
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + mondayOffset);
+  monday.setHours(0, 0, 0, 0);
 
-export const isToday = (date: string): boolean => {
-  const today = new Date().toISOString().split('T')[0];
-  return date === today;
-};
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
 
-export const getWeekStart = (dateStr: string): string => {
-  const date = new Date(dateStr);
-  date.setHours(0, 0, 0, 0);
+  return { monday, sunday };
+}
+
+export function isToday(dateStr: string) {
+  const today = new Date();
+  return dateStr === getLocalISOString(today);
+}
+
+export function isFutureDate(date: Date) {
+  const today = new Date();
+  const todayStr = getLocalISOString(today);
+  const dateStr = getLocalISOString(date);
+  return dateStr > todayStr;
+}
+
+export function getCurrentWeekDays() {
+  const today = new Date();
+  const days = [];
+  const currentDay = today.getDay();
+  const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
   
-  // Get the day of week (0 = Sunday, 1 = Monday, etc.)
-  const day = date.getDay();
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + mondayOffset + i);
+    days.push(date);
+  }
   
-  // Calculate days to subtract to get to Monday (or previous Monday if it's Sunday)
-  const daysToSubtract = day === 0 ? 6 : day - 1;
-  
-  // Create a new date for the start of the week
-  const weekStart = new Date(date);
-  weekStart.setDate(date.getDate() - daysToSubtract);
-  
-  // Return in YYYY-MM-DD format
-  return weekStart.toISOString().split('T')[0];
-};
-
-export const groupEntriesByWeek = (entries: JournalEntry[]): Record<string, JournalEntry[]> => {
-  return entries.reduce((groups, entry) => {
-    const weekStart = getWeekStart(entry.date);
-    return {
-      ...groups,
-      [weekStart]: [...(groups[weekStart] || []), entry]
-    };
-  }, {} as Record<string, JournalEntry[]>);
-};
-
-export const getWeekRange = (weekStart: string): string => {
-  const start = new Date(weekStart);
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  
-  return `${formatShortDate(start.toISOString())} - ${formatShortDate(end.toISOString())}`;
-};
+  return days;
+}
