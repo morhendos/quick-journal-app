@@ -1,29 +1,22 @@
-import type { Metadata } from 'next'
-import { headers } from 'next/headers'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth/auth-options'
-import NextAuthProvider from './providers'
-import './globals.css'
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Quick Journal App',
-  description: 'Simple journaling app',
-}
+  title: 'Quick Journal',
+  description: 'Track your daily learnings and joys',
+};
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const headersList = headers()
-  const session = await getServerSession(authOptions)
-  console.log('Layout session:', session)
-  
   return (
-    <html lang="en" className="h-full">
-      <body className="h-full">
-        <NextAuthProvider session={session}>{children}</NextAuthProvider>
-      </body>
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
     </html>
-  )
+  );
 }
