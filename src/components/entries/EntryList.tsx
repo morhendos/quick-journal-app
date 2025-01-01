@@ -9,6 +9,12 @@ import { useState, useEffect } from 'react';
 
 type ViewType = 'chronological' | 'weekly';
 
+function getLocalISOString(date: Date) {
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - (offset * 60 * 1000));
+  return localDate.toISOString().split('T')[0];
+}
+
 function getWeekBounds() {
   const today = new Date();
   const currentDay = today.getDay();
@@ -60,8 +66,11 @@ export function EntryList() {
   
   const filteredEntries = view === 'chronological'
     ? entries.filter(entry => {
-        const entryDate = new Date(entry.date);
-        return entryDate >= monday && entryDate <= sunday;
+        const entryDate = new Date(entry.date + 'T00:00:00');
+        const entryLocalDate = getLocalISOString(entryDate);
+        const mondayLocal = getLocalISOString(monday);
+        const sundayLocal = getLocalISOString(sunday);
+        return entryLocalDate >= mondayLocal && entryLocalDate <= sundayLocal;
       })
     : entries;
 
