@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Plus, X } from 'lucide-react';
+import { Check, Plus, X, Pencil } from 'lucide-react';
 
 interface WorkItem {
   id: string;
@@ -12,6 +12,8 @@ export function MonthlyWorkList() {
   const [workItems, setWorkItems] = useState<WorkItem[]>([]);
   const [newItem, setNewItem] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
 
   const handleAddItem = () => {
     if (newItem.trim()) {
@@ -25,11 +27,37 @@ export function MonthlyWorkList() {
     setWorkItems(prev => prev.filter(item => item.id !== id));
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleStartEdit = (item: WorkItem) => {
+    setEditingId(item.id);
+    setEditText(item.text);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingId && editText.trim()) {
+      setWorkItems(prev =>
+        prev.map(item =>
+          item.id === editingId
+            ? { ...item, text: editText.trim() }
+            : item
+        )
+      );
+      setEditingId(null);
+      setEditText('');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditText('');
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent, mode: 'add' | 'edit') => {
     if (e.key === 'Enter') {
-      handleAddItem();
+      e.preventDefault();
+      mode === 'add' ? handleAddItem() : handleSaveEdit();
     } else if (e.key === 'Escape') {
-      setIsAdding(false);
+      e.preventDefault();
+      mode === 'add' ? setIsAdding(false) : handleCancelEdit();
       setNewItem('');
     }
   };
@@ -56,7 +84,7 @@ export function MonthlyWorkList() {
             type="text"
             value={newItem}
             onChange={(e) => setNewItem(e.target.value)}
-            onKeyDown={handleKeyPress}
+            onKeyDown={(e) => handleKeyPress(e, 'add')}
             placeholder="Enter an accomplishment..."
             className="flex-1 p-2 rounded-md bg-paper
               border border-accent/20
@@ -91,13 +119,52 @@ export function MonthlyWorkList() {
             key={item.id}
             className="group flex items-start gap-3 p-3 rounded-md bg-paper/50 hover:bg-paper transition-colors"
           >
-            <span className="flex-1 text-ink/80">{item.text}</span>
-            <button
-              onClick={() => handleDeleteItem(item.id)}
-              className="opacity-0 group-hover:opacity-100 p-1 text-ink/40 hover:text-ink/70 transition-all"
-            >
-              <X size={16} />
-            </button>
+            {editingId === item.id ? (
+              <div className="flex gap-2 flex-1">
+                <input
+                  type="text"
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  onKeyDown={(e) => handleKeyPress(e, 'edit')}
+                  className="flex-1 p-1 rounded-md bg-paper
+                    border border-accent/20
+                    focus:outline-none focus:border-accent/40
+                    text-ink/90 transition-colors duration-200"
+                  autoFocus
+                />
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={!editText.trim()}
+                  className="p-1 text-accent hover:bg-accent/10 rounded-md transition-colors"
+                >
+                  <Check size={18} />
+                </button>
+                <button
+                  onClick={handleCancelEdit}
+                  className="p-1 text-ink/70 hover:text-ink/90 rounded-md transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <span className="flex-1 text-ink/80">{item.text}</span>
+                <div className="opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity">
+                  <button
+                    onClick={() => handleStartEdit(item)}
+                    className="p-1 text-ink/40 hover:text-ink/70 transition-colors"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteItem(item.id)}
+                    className="p-1 text-ink/40 hover:text-ink/70 transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </>
+            )}
           </li>
         ))}
       </ul>
