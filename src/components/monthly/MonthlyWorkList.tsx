@@ -155,17 +155,19 @@ export function MonthlyWorkList() {
             
             {editingId === item.id ? (
               <div className="flex gap-2 flex-1">
-                <input
-                  type="text"
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  onKeyDown={(e) => handleKeyPress(e, 'edit')}
-                  className="flex-1 p-1.5 rounded-md bg-paper
-                    border border-accent/20
-                    focus:outline-none focus:border-accent/40
-                    text-ink/90 transition-colors duration-200"
-                  autoFocus
-                />
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    onKeyDown={(e) => handleKeyPress(e, 'edit')}
+                    className="w-full min-h-[36px] p-1.5 rounded-md bg-paper
+                      border border-accent/20 
+                      focus:outline-none focus:border-accent/40
+                      text-ink/90 leading-relaxed transition-colors duration-200"
+                    autoFocus
+                  />
+                </div>
                 <button
                   onClick={handleSaveEdit}
                   disabled={!editText.trim()}
@@ -185,7 +187,7 @@ export function MonthlyWorkList() {
                 <div 
                   onClick={() => handleStartEdit(item)}
                   className="flex-1 min-h-[36px] p-1.5 rounded-md border border-transparent
-                    hover:bg-paper/80 cursor-pointer transition-colors duration-200"
+                    hover:bg-paper/80 cursor-pointer transition-colors duration-200 flex items-center"
                 >
                   <span className="text-ink/80 leading-relaxed">{item.text}</span>
                 </div>
