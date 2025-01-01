@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Check, Plus, X, Pencil, Circle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Check, Plus, X, Circle } from 'lucide-react';
 import { BaseItem } from '@/types/monthly';
+import { AutoResizeTextarea } from '@/components/common/AutoResizeTextarea';
 
 interface MonthlyListProps<T extends BaseItem> {
   title: string;
@@ -16,7 +17,7 @@ interface MonthlyListProps<T extends BaseItem> {
 
 export function MonthlyList<T extends BaseItem>({
   title,
-  items = [], // Default empty array
+  items = [],
   addItem,
   updateItem,
   deleteItem,
@@ -29,9 +30,6 @@ export function MonthlyList<T extends BaseItem>({
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
-  
-  const newTextareaRef = useRef<HTMLTextAreaElement>(null);
-  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (JSON.stringify(items) !== JSON.stringify(listItems)) {
@@ -42,24 +40,6 @@ export function MonthlyList<T extends BaseItem>({
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const adjustTextareaHeight = (textarea: HTMLTextAreaElement | null) => {
-    if (!textarea) return;
-    
-    const scrollLeft = window.pageXOffset;
-    const scrollTop = window.pageYOffset;
-    
-    textarea.style.height = '36px';
-    
-    const singleLineScrollHeight = 36;
-    const contentScrollHeight = textarea.scrollHeight;
-    
-    if (contentScrollHeight > singleLineScrollHeight) {
-      textarea.style.height = contentScrollHeight + 'px';
-    }
-    
-    window.scrollTo(scrollLeft, scrollTop);
-  };
 
   const handleAddItem = () => {
     if (newItem.trim()) {
@@ -73,12 +53,6 @@ export function MonthlyList<T extends BaseItem>({
   const handleStartEdit = (item: T) => {
     setEditingId(item.id);
     setEditText(item.text);
-    setTimeout(() => {
-      if (editTextareaRef.current) {
-        editTextareaRef.current.focus();
-        adjustTextareaHeight(editTextareaRef.current);
-      }
-    }, 0);
   };
 
   const handleSaveEdit = () => {
@@ -99,26 +73,6 @@ export function MonthlyList<T extends BaseItem>({
   const handleDeleteItem = (id: string) => {
     deleteItem(id);
     setListItems(prev => prev.filter(item => item.id !== id));
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && e.metaKey) {
-      e.preventDefault();
-      if (editingId) {
-        handleSaveEdit();
-      } else {
-        handleAddItem();
-      }
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      if (editingId) {
-        setEditingId(null);
-        setEditText('');
-      } else {
-        setIsAdding(false);
-        setNewItem('');
-      }
-    }
   };
 
   if (!mounted) {
@@ -151,21 +105,16 @@ export function MonthlyList<T extends BaseItem>({
 
       {isAdding && (
         <div className="flex gap-2 mb-4">
-          <textarea
-            ref={newTextareaRef}
+          <AutoResizeTextarea
             value={newItem}
-            onChange={(e) => {
-              setNewItem(e.target.value);
-              adjustTextareaHeight(newTextareaRef.current);
+            onChange={(e) => setNewItem(e.target.value)}
+            onSave={handleAddItem}
+            onCancel={() => {
+              setIsAdding(false);
+              setNewItem('');
             }}
-            onKeyDown={handleKeyPress}
             placeholder={placeholder}
-            className="flex-1 px-2 py-1.5 rounded-md bg-paper leading-normal
-              border border-accent/20
-              focus:outline-none focus:border-accent/40
-              placeholder:text-muted/40 text-ink/90
-              transition-colors duration-200 resize-none overflow-hidden"
-            style={{ height: '36px' }}
+            className="flex-1"
             autoFocus
           />
           <div className="flex flex-row gap-2">
@@ -206,20 +155,15 @@ export function MonthlyList<T extends BaseItem>({
             
             {editingId === item.id ? (
               <div className="flex gap-2 flex-1">
-                <textarea
-                  ref={editTextareaRef}
+                <AutoResizeTextarea
                   value={editText}
-                  onChange={(e) => {
-                    setEditText(e.target.value);
-                    adjustTextareaHeight(editTextareaRef.current);
+                  onChange={(e) => setEditText(e.target.value)}
+                  onSave={handleSaveEdit}
+                  onCancel={() => {
+                    setEditingId(null);
+                    setEditText('');
                   }}
-                  onKeyDown={handleKeyPress}
-                  className="w-full px-2 py-1.5 rounded-md bg-paper leading-normal
-                    border border-accent/20
-                    focus:outline-none focus:border-accent/40
-                    text-ink/90 transition-colors duration-200
-                    resize-none overflow-hidden"
-                  style={{ height: '36px' }}
+                  className="w-full"
                   autoFocus
                 />
                 <div className="flex flex-row gap-2">
