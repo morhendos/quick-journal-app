@@ -26,9 +26,9 @@ export function JournalEntryForm() {
   const enjoymentRef = useRef<HTMLTextAreaElement>(null);
 
   const adjustHeight = (textarea: HTMLTextAreaElement) => {
-    textarea.style.height = '24px'; // Reset to single line
+    textarea.style.height = '42px'; // Reset to initial line height
     const scrollHeight = textarea.scrollHeight;
-    if (scrollHeight > 24) { // Only expand if content exceeds one line
+    if (scrollHeight > 42) { // Only expand if content exceeds one line
       textarea.style.height = `${scrollHeight}px`;
     }
   };
@@ -69,12 +69,12 @@ export function JournalEntryForm() {
           onChange={(e) => handleTextareaChange(e, setLearning)}
           required
           placeholder="Share something new you learned today..."
-          className="w-full p-4 rounded-md bg-paper
+          className="w-full p-3 rounded-md bg-paper
             border border-accent/20 
             focus:outline-none focus:border-accent/40
             placeholder:text-muted/40 journal-text text-ink/90
             transition-colors duration-200 resize-none
-            min-h-[24px] overflow-hidden"
+            min-h-[42px] overflow-hidden"
         />
       </div>
       
@@ -89,12 +89,12 @@ export function JournalEntryForm() {
           onChange={(e) => handleTextareaChange(e, setEnjoyment)}
           required
           placeholder="Share something that made you happy..."
-          className="w-full p-4 rounded-md bg-paper
+          className="w-full p-3 rounded-md bg-paper
             border border-accent/20 
             focus:outline-none focus:border-accent/40
             placeholder:text-muted/40 journal-text text-ink/90
             transition-colors duration-200 resize-none
-            min-h-[24px] overflow-hidden"
+            min-h-[42px] overflow-hidden"
         />
       </div>
 
