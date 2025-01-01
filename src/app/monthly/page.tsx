@@ -20,31 +20,31 @@ export default function MonthlyReview() {
         
         <div className="flex-1 overflow-auto min-h-0">
           <div className="space-y-8">
-            <Section>
+            <Section title="Work">
               <MonthlyWorkList />
             </Section>
 
-            <Section>
+            <Section title="Projects">
               <MonthlyProjectsList />
             </Section>
             
-            <Section>
+            <Section title="Learning">
               <MonthlyLearningList />
             </Section>
 
-            <Section>
+            <Section title="Health">
               <MonthlyHealthList />
             </Section>
 
-            <Section>
+            <Section title="Life Events">
               <MonthlyLifeEventsList />
             </Section>
 
-            <Section>
+            <Section title="Learnings to Remember">
               <MonthlyLearningsToRememberList />
             </Section>
 
-            <Section>
+            <Section title="Hopes & Dreams">
               <MonthlyHopesList />
             </Section>
           </div>
