@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Check, Plus, X, Pencil, Circle } from 'lucide-react';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { WorkItem } from '@/types/monthly';
@@ -19,12 +19,32 @@ export function MonthlyWorkList() {
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
+  
+  const newTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Function to adjust textarea height
+  const adjustTextareaHeight = (textarea: HTMLTextAreaElement | null) => {
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
 
   useEffect(() => {
     const currentData = getCurrentMonthData();
     setWorkItems(currentData.workItems);
     setMounted(true);
   }, [getCurrentMonthData]);
+
+  // Adjust height when content changes
+  useEffect(() => {
+    adjustTextareaHeight(newTextareaRef.current);
+  }, [newItem]);
+
+  useEffect(() => {
+    adjustTextareaHeight(editTextareaRef.current);
+  }, [editText]);
 
   const handleAddItem = () => {
     if (newItem.trim()) {
@@ -112,16 +132,17 @@ export function MonthlyWorkList() {
       {isAdding && (
         <div className="flex gap-2 mb-4">
           <textarea
+            ref={newTextareaRef}
             value={newItem}
             onChange={(e) => setNewItem(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Enter an accomplishment..."
-            rows={3}
             className="flex-1 p-2 rounded-md bg-paper
               border border-accent/20
               focus:outline-none focus:border-accent/40
               placeholder:text-muted/40 text-ink/90
-              transition-colors duration-200 resize-none"
+              transition-colors duration-200 resize-none
+              min-h-[60px] overflow-hidden"
             autoFocus
           />
           <div className="flex flex-col gap-2">
@@ -164,6 +185,7 @@ export function MonthlyWorkList() {
             {editingId === item.id ? (
               <div className="flex gap-2 flex-1">
                 <textarea
+                  ref={editTextareaRef}
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
                   onKeyDown={handleKeyPress}
@@ -171,8 +193,7 @@ export function MonthlyWorkList() {
                     border border-accent/20
                     focus:outline-none focus:border-accent/40
                     text-ink/90 leading-relaxed transition-colors duration-200
-                    resize-none min-h-[36px]"
-                  rows={Math.max(editText.split('\n').length, 2)}
+                    resize-none min-h-[36px] overflow-hidden"
                   autoFocus
                 />
                 <div className="flex flex-col gap-2">
@@ -200,7 +221,7 @@ export function MonthlyWorkList() {
               <>
                 <div 
                   onClick={() => handleStartEdit(item)}
-                  className="flex-1 min-h-[36px] p-1.5 rounded-md border border-transparent
+                  className="flex-1 p-1.5 rounded-md border border-transparent
                     hover:bg-paper/80 cursor-pointer transition-colors duration-200
                     whitespace-pre-wrap"
                 >
