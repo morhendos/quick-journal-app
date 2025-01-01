@@ -6,9 +6,12 @@ import { useJournalStorage } from '@/lib/storage';
 import { BookOpen, Sparkles, Save, X, Edit } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { AutoResizeTextarea } from '@/components/common/AutoResizeTextarea';
+import { useSelectedDate } from '@/hooks/useSelectedDate';
 
 export function JournalEntryForm() {
   const [mounted, setMounted] = useState(false);
+  const { selectedDate, isToday } = useSelectedDate();
+  
   const {
     learning,
     setLearning,
@@ -20,9 +23,9 @@ export function JournalEntryForm() {
     handleSubmit,
     handleEdit,
     handleCancel
-  } = useJournalEntry();
+  } = useJournalEntry(selectedDate);
 
-  const { getTodayEntry } = useJournalStorage();
+  const { getEntryByDate } = useJournalStorage();
 
   useEffect(() => {
     setMounted(true);
@@ -31,23 +34,31 @@ export function JournalEntryForm() {
   if (!mounted) return null;
 
   if (submitted && !isEditing) {
-    const todayEntry = getTodayEntry();
-    if (!todayEntry) return null;
-    return <EntryDisplay entry={todayEntry} isToday onEdit={handleEdit} />;
+    const entry = getEntryByDate(selectedDate);
+    if (!entry) return null;
+    return <EntryDisplay entry={entry} isToday={isToday(selectedDate)} onEdit={handleEdit} />;
   }
+
+  const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  });
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
       <div className="space-y-3">
         <label className="block text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5 transition-colors">
           <BookOpen size={18} className="text-accent" strokeWidth={1.5} />
-          <span>What did you learn today?</span>
+          <span>
+            What did you learn {isToday(selectedDate) ? 'today' : `on ${formattedDate}`}?
+          </span>
         </label>
         <AutoResizeTextarea
           value={learning}
           onChange={(e) => setLearning(e.target.value)}
           required
-          placeholder="Share something new you learned today..."
+          placeholder="Share something new you learned..."
           className="w-full"
         />
       </div>
@@ -55,7 +66,9 @@ export function JournalEntryForm() {
       <div className="space-y-3">
         <label className="block text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5 transition-colors">
           <Sparkles size={18} className="text-accent" strokeWidth={1.5} />
-          <span>What brought you joy today?</span>
+          <span>
+            What brought you joy {isToday(selectedDate) ? 'today' : 'on this day'}?
+          </span>
         </label>
         <AutoResizeTextarea
           value={enjoyment}

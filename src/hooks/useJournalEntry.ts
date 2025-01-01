@@ -1,23 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useJournalStorage } from '@/lib/storage';
 
-export function useJournalEntry() {
-  const { addEntry, updateEntry, getTodayEntry } = useJournalStorage();
+export function useJournalEntry(selectedDate: string) {
+  const { addEntry, updateEntry, getEntryByDate } = useJournalStorage();
   
-  const todayEntry = getTodayEntry();
-  const [learning, setLearning] = useState(todayEntry?.learning || '');
-  const [enjoyment, setEnjoyment] = useState(todayEntry?.enjoyment || '');
-  const [submitted, setSubmitted] = useState(!!todayEntry);
+  const entry = getEntryByDate(selectedDate);
+  const [learning, setLearning] = useState(entry?.learning || '');
+  const [enjoyment, setEnjoyment] = useState(entry?.enjoyment || '');
+  const [submitted, setSubmitted] = useState(!!entry);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Update form when selected date changes
+  useEffect(() => {
+    const entry = getEntryByDate(selectedDate);
+    setLearning(entry?.learning || '');
+    setEnjoyment(entry?.enjoyment || '');
+    setSubmitted(!!entry);
+    setIsEditing(false);
+  }, [selectedDate, getEntryByDate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const today = new Date().toISOString().split('T')[0];
-    const entryData = { date: today, learning, enjoyment };
+    const entryData = { date: selectedDate, learning, enjoyment };
 
-    if (isEditing && todayEntry) {
-      updateEntry(todayEntry.id, entryData);
+    if (isEditing && entry) {
+      updateEntry(entry.id, entryData);
     } else {
       addEntry(entryData);
     }
@@ -32,9 +40,12 @@ export function useJournalEntry() {
   };
 
   const handleCancel = () => {
-    if (todayEntry) {
-      setLearning(todayEntry.learning);
-      setEnjoyment(todayEntry.enjoyment);
+    if (entry) {
+      setLearning(entry.learning);
+      setEnjoyment(entry.enjoyment);
+    } else {
+      setLearning('');
+      setEnjoyment('');
     }
     setIsEditing(false);
     setSubmitted(true);
