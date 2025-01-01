@@ -3,6 +3,8 @@
 import { Download, Upload, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { downloadEntries, importEntries } from '@/lib/storage';
+import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
+import { usePathname } from 'next/navigation';
 
 interface HeaderControlsProps {
   onEntriesUpdate?: () => void;
@@ -10,6 +12,9 @@ interface HeaderControlsProps {
 
 export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   const { theme, toggleTheme } = useTheme();
+  const { exportData, importData } = useMonthlyStorage();
+  const pathname = usePathname();
+  const isMonthlyPage = pathname === '/monthly';
 
   const handleImport = async () => {
     const input = document.createElement('input');
@@ -18,20 +23,33 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
     
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        try {
-          const text = await file.text();
-          const entries = JSON.parse(text);
-          importEntries(entries);
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        if (isMonthlyPage) {
+          await importData(data);
+        } else {
+          importEntries(data);
           onEntriesUpdate?.();
-        } catch (error) {
-          console.error('Error importing entries:', error);
-          alert('Error importing entries. Please check the file format.');
         }
+      } catch (error) {
+        console.error('Error importing data:', error);
+        alert('Error importing data. Please check the file format.');
       }
     };
 
     input.click();
+  };
+
+  const handleExport = () => {
+    if (isMonthlyPage) {
+      exportData();
+    } else {
+      downloadEntries();
+    }
   };
 
   return (
@@ -44,7 +62,7 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
       </HeaderButton>
 
       <HeaderButton
-        onClick={downloadEntries}
+        onClick={handleExport}
         aria-label="Export entries"
       >
         <Download size={20} strokeWidth={1.5} />

@@ -1,5 +1,6 @@
 import { JournalEntry, JournalEntryFormData } from '@/types/journal';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { BaseItem } from '@/types/monthly';
 
 const STORAGE_KEY = 'journal_entries';
 
@@ -103,4 +104,101 @@ export function importEntries(data: ImportFormat | JournalEntry[]) {
     console.error('Error importing entries:', error);
     throw error;
   }
+}
+
+// Monthly items storage
+export function useMonthlyStorage() {
+  const [workItems, setWorkItems] = useLocalStorage<BaseItem[]>('monthlyWorkItems', []);
+  const [projectItems, setProjectItems] = useLocalStorage<BaseItem[]>('monthlyProjectItems', []);
+  const [learningItems, setLearningItems] = useLocalStorage<BaseItem[]>('monthlyLearningItems', []);
+
+  const addWorkItem = (text: string): BaseItem => {
+    const newItem: BaseItem = {
+      id: Date.now().toString(),
+      text,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    setWorkItems(current => [newItem, ...current]);
+    return newItem;
+  };
+
+  const addProjectItem = (text: string): BaseItem => {
+    const newItem: BaseItem = {
+      id: Date.now().toString(),
+      text,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    setProjectItems(current => [newItem, ...current]);
+    return newItem;
+  };
+
+  const addLearningItem = (text: string): BaseItem => {
+    const newItem: BaseItem = {
+      id: Date.now().toString(),
+      text,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    setLearningItems(current => [newItem, ...current]);
+    return newItem;
+  };
+
+  const updateWorkItem = (id: string, text: string) => {
+    setWorkItems(items =>
+      items.map(item =>
+        item.id === id
+          ? { ...item, text, updatedAt: new Date().toISOString() }
+          : item
+      )
+    );
+  };
+
+  const updateProjectItem = (id: string, text: string) => {
+    setProjectItems(items =>
+      items.map(item =>
+        item.id === id
+          ? { ...item, text, updatedAt: new Date().toISOString() }
+          : item
+      )
+    );
+  };
+
+  const updateLearningItem = (id: string, text: string) => {
+    setLearningItems(items =>
+      items.map(item =>
+        item.id === id
+          ? { ...item, text, updatedAt: new Date().toISOString() }
+          : item
+      )
+    );
+  };
+
+  const deleteWorkItem = (id: string) => {
+    setWorkItems(items => items.filter(item => item.id !== id));
+  };
+
+  const deleteProjectItem = (id: string) => {
+    setProjectItems(items => items.filter(item => item.id !== id));
+  };
+
+  const deleteLearningItem = (id: string) => {
+    setLearningItems(items => items.filter(item => item.id !== id));
+  };
+
+  return {
+    workItems,
+    projectItems,
+    learningItems,
+    addWorkItem,
+    addProjectItem,
+    addLearningItem,
+    updateWorkItem,
+    updateProjectItem,
+    updateLearningItem,
+    deleteWorkItem,
+    deleteProjectItem,
+    deleteLearningItem
+  };
 }

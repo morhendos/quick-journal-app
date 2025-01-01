@@ -1,5 +1,5 @@
 import { JournalEntry } from '@/types/journal';
-import { groupEntriesByWeek } from '@/utils/dates';
+import { formatShortDate, getWeekStart } from '@/utils/dates';
 
 interface WeeklyGroupedViewProps {
   entries: JournalEntry[];
@@ -15,6 +15,15 @@ interface GroupedByType {
   learnings: GroupedEntry[];
 }
 
+function isInSameWeek(date1: string, date2: string): boolean {
+  return getWeekStart(date1) === getWeekStart(date2);
+}
+
+function getCurrentWeekEntries(entries: JournalEntry[]): JournalEntry[] {
+  const today = new Date().toISOString().split('T')[0];
+  return entries.filter(entry => isInSameWeek(entry.date, today));
+}
+
 function groupEntriesByType(entries: JournalEntry[]): GroupedByType {
   return entries.reduce((acc: GroupedByType, entry) => {
     return {
@@ -24,65 +33,72 @@ function groupEntriesByType(entries: JournalEntry[]): GroupedByType {
   }, { enjoyments: [], learnings: [] });
 }
 
-function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric'
-  });
-}
-
 export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
-  const groupedEntries = groupEntriesByWeek(entries);
-
+  // Filter entries for current week only and group by type
+  const currentWeekEntries = getCurrentWeekEntries(entries);
+  const { enjoyments, learnings } = groupEntriesByType(currentWeekEntries);
+  
+  // Sort by date (newest first)
+  const sortedEnjoyments = enjoyments.sort((a, b) => 
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  const sortedLearnings = learnings.sort((a, b) => 
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  
   return (
     <div className="space-y-12">
-      {Object.entries(groupedEntries)
-        .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime()) // Sort weeks newest first
-        .map(([weekStart, weekEntries]) => {
-          const { enjoyments, learnings } = groupEntriesByType(weekEntries);
-          
-          // Sort entries within each section by date (newest first)
-          const sortedEnjoyments = enjoyments
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-          const sortedLearnings = learnings
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-          
-          return (
-            <div key={weekStart} className="space-y-8">
-              {/* Enjoyments section */}
-              <div className="pl-4 border-l-2 border-accent/10">
-                <h3 className="text-lg font-medium mb-4 text-ink/90">Enjoyments:</h3>
-                <div className="space-y-2">
-                  {sortedEnjoyments.map((entry, index) => (
-                    <div 
-                      key={index}
-                      className="text-ink/80 flex gap-3"
-                    >
-                      <span className="text-ink/50 text-sm min-w-[60px]">{formatDate(entry.date)}</span>
-                      <span>{entry.content}</span>
-                    </div>
-                  ))}
-                </div>
+      {/* Enjoyments section */}
+      <div className="pl-4 border-l-2 border-accent/10 space-y-4">
+        <h3 className="text-lg font-medium text-ink/90">Enjoyments:</h3>
+        {sortedEnjoyments.length > 0 ? (
+          <div className="space-y-2">
+            {sortedEnjoyments.map((entry, index) => (
+              <div 
+                key={`${entry.date}-${index}`}
+                className="text-ink/80 flex gap-3 group items-start"
+              >
+                <span className="text-ink/50 text-sm min-w-[60px] pt-0.5">
+                  {formatShortDate(entry.date)}
+                </span>
+                <span className="flex-1 group-hover:text-ink/90 transition-colors">
+                  {entry.content}
+                </span>
               </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-ink/50 text-sm">
+            No enjoyments recorded this week
+          </div>
+        )}
+      </div>
 
-              {/* Learnings section */}
-              <div className="pl-4 border-l-2 border-accent/10">
-                <h3 className="text-lg font-medium mb-4 text-ink/90">Learnings:</h3>
-                <div className="space-y-2">
-                  {sortedLearnings.map((entry, index) => (
-                    <div 
-                      key={index}
-                      className="text-ink/80 flex gap-3"
-                    >
-                      <span className="text-ink/50 text-sm min-w-[60px]">{formatDate(entry.date)}</span>
-                      <span>{entry.content}</span>
-                    </div>
-                  ))}
-                </div>
+      {/* Learnings section */}
+      <div className="pl-4 border-l-2 border-accent/10 space-y-4">
+        <h3 className="text-lg font-medium text-ink/90">Learnings:</h3>
+        {sortedLearnings.length > 0 ? (
+          <div className="space-y-2">
+            {sortedLearnings.map((entry, index) => (
+              <div 
+                key={`${entry.date}-${index}`}
+                className="text-ink/80 flex gap-3 group items-start"
+              >
+                <span className="text-ink/50 text-sm min-w-[60px] pt-0.5">
+                  {formatShortDate(entry.date)}
+                </span>
+                <span className="flex-1 group-hover:text-ink/90 transition-colors">
+                  {entry.content}
+                </span>
               </div>
-            </div>
-          );
-        })}
+            ))}
+          </div>
+        ) : (
+          <div className="text-ink/50 text-sm">
+            No learnings recorded this week
+          </div>
+        )}
+      </div>
     </div>
   );
 }
