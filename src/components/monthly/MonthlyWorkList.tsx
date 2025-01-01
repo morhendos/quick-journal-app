@@ -29,7 +29,6 @@ export function MonthlyWorkList() {
   const handleAddItem = () => {
     if (newItem.trim()) {
       const item = addWorkItem(newItem);
-      // Add new item at the beginning of the array
       setWorkItems(prev => [item, ...prev]);
       setNewItem('');
       setIsAdding(false);
@@ -56,25 +55,29 @@ export function MonthlyWorkList() {
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && e.metaKey) {
+      e.preventDefault();
+      if (editingId) {
+        handleSaveEdit();
+      } else {
+        handleAddItem();
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      if (editingId) {
+        setEditingId(null);
+        setEditText('');
+      } else {
+        setIsAdding(false);
+        setNewItem('');
+      }
+    }
+  };
+
   const handleDeleteItem = (id: string) => {
     deleteWorkItem(id);
     setWorkItems(prev => prev.filter(item => item.id !== id));
-  };
-
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setEditText('');
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent, mode: 'add' | 'edit') => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      mode === 'add' ? handleAddItem() : handleSaveEdit();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      mode === 'add' ? setIsAdding(false) : handleCancelEdit();
-      setNewItem('');
-    }
   };
 
   if (!mounted) {
@@ -108,35 +111,39 @@ export function MonthlyWorkList() {
       {/* Add new item form */}
       {isAdding && (
         <div className="flex gap-2 mb-4">
-          <input
-            type="text"
+          <textarea
             value={newItem}
             onChange={(e) => setNewItem(e.target.value)}
-            onKeyDown={(e) => handleKeyPress(e, 'add')}
+            onKeyDown={handleKeyPress}
             placeholder="Enter an accomplishment..."
+            rows={3}
             className="flex-1 p-2 rounded-md bg-paper
               border border-accent/20
               focus:outline-none focus:border-accent/40
               placeholder:text-muted/40 text-ink/90
-              transition-colors duration-200"
+              transition-colors duration-200 resize-none"
             autoFocus
           />
-          <button
-            onClick={handleAddItem}
-            disabled={!newItem.trim()}
-            className="p-2 text-accent hover:bg-accent/10 rounded-md transition-colors"
-          >
-            <Check size={20} />
-          </button>
-          <button
-            onClick={() => {
-              setIsAdding(false);
-              setNewItem('');
-            }}
-            className="p-2 text-ink/70 hover:text-ink/90 rounded-md transition-colors"
-          >
-            <X size={20} />
-          </button>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={handleAddItem}
+              disabled={!newItem.trim()}
+              className="p-2 text-accent hover:bg-accent/10 rounded-md transition-colors"
+              title="Save (⌘+Enter)"
+            >
+              <Check size={20} />
+            </button>
+            <button
+              onClick={() => {
+                setIsAdding(false);
+                setNewItem('');
+              }}
+              className="p-2 text-ink/70 hover:text-ink/90 rounded-md transition-colors"
+              title="Cancel (Esc)"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
       )}
 
@@ -145,50 +152,57 @@ export function MonthlyWorkList() {
         {workItems.map(item => (
           <li
             key={item.id}
-            className="group flex items-center gap-3 p-3 rounded-md bg-paper/50 hover:bg-paper transition-colors"
+            className="group flex items-start gap-3 p-3 rounded-md bg-paper/50 hover:bg-paper transition-colors"
           >
             <Circle 
               size={14} 
-              className="flex-shrink-0 text-accent/70" 
+              className="flex-shrink-0 mt-1.5 text-accent/70" 
               fill="currentColor" 
               strokeWidth={0}
             />
             
             {editingId === item.id ? (
               <div className="flex gap-2 flex-1">
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    onKeyDown={(e) => handleKeyPress(e, 'edit')}
-                    className="w-full min-h-[36px] p-1.5 rounded-md bg-paper
-                      border border-accent/20 
-                      focus:outline-none focus:border-accent/40
-                      text-ink/90 leading-relaxed transition-colors duration-200"
-                    autoFocus
-                  />
+                <textarea
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  className="w-full p-1.5 rounded-md bg-paper
+                    border border-accent/20
+                    focus:outline-none focus:border-accent/40
+                    text-ink/90 leading-relaxed transition-colors duration-200
+                    resize-none min-h-[36px]"
+                  rows={Math.max(editText.split('\n').length, 2)}
+                  autoFocus
+                />
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={!editText.trim()}
+                    className="p-1 text-accent hover:bg-accent/10 rounded-md transition-colors"
+                    title="Save (⌘+Enter)"
+                  >
+                    <Check size={18} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingId(null);
+                      setEditText('');
+                    }}
+                    className="p-1 text-ink/70 hover:text-ink/90 rounded-md transition-colors"
+                    title="Cancel (Esc)"
+                  >
+                    <X size={18} />
+                  </button>
                 </div>
-                <button
-                  onClick={handleSaveEdit}
-                  disabled={!editText.trim()}
-                  className="p-1 text-accent hover:bg-accent/10 rounded-md transition-colors"
-                >
-                  <Check size={18} />
-                </button>
-                <button
-                  onClick={handleCancelEdit}
-                  className="p-1 text-ink/70 hover:text-ink/90 rounded-md transition-colors"
-                >
-                  <X size={18} />
-                </button>
               </div>
             ) : (
               <>
                 <div 
                   onClick={() => handleStartEdit(item)}
                   className="flex-1 min-h-[36px] p-1.5 rounded-md border border-transparent
-                    hover:bg-paper/80 cursor-pointer transition-colors duration-200 flex items-center"
+                    hover:bg-paper/80 cursor-pointer transition-colors duration-200
+                    whitespace-pre-wrap"
                 >
                   <span className="text-ink/80 leading-relaxed">{item.text}</span>
                 </div>
