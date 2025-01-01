@@ -5,6 +5,10 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { MonthlyWorkList } from '@/components/monthly/MonthlyWorkList';
 import { MonthlyProjectsList } from '@/components/monthly/MonthlyProjectsList';
 import { MonthlyLearningList } from '@/components/monthly/MonthlyLearningList';
+import { MonthlyHealthList } from '@/components/monthly/MonthlyHealthList';
+import { MonthlyLifeEventsList } from '@/components/monthly/MonthlyLifeEventsList';
+import { MonthlyLearningsToRememberList } from '@/components/monthly/MonthlyLearningsToRememberList';
+import { MonthlyHopesList } from '@/components/monthly/MonthlyHopesList';
 
 export default function MonthlyReview() {
   return (
@@ -25,7 +29,23 @@ export default function MonthlyReview() {
             </Section>
 
             <Section>
+              <MonthlyHealthList />
+            </Section>
+
+            <Section>
+              <MonthlyLifeEventsList />
+            </Section>
+
+            <Section>
+              <MonthlyLearningsToRememberList />
+            </Section>
+
+            <Section>
               <MonthlyLearningList />
+            </Section>
+
+            <Section>
+              <MonthlyHopesList />
             </Section>
           </div>
         </div>
