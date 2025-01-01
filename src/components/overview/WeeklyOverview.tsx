@@ -3,8 +3,6 @@
 import { useJournalStorage } from '@/lib/storage';
 import { Calendar } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSelectedDate } from '@/hooks/useSelectedDate';
 
 function getLocalISOString(date: Date) {
   const offset = date.getTimezoneOffset();
@@ -12,11 +10,14 @@ function getLocalISOString(date: Date) {
   return localDate.toISOString().split('T')[0];
 }
 
-export function WeeklyOverview() {
+interface WeeklyOverviewProps {
+  selectedDate: string;
+  onDateSelect: (date: string) => void;
+}
+
+export function WeeklyOverview({ selectedDate, onDateSelect }: WeeklyOverviewProps) {
   const { entries } = useJournalStorage();
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
-  const { selectedDate } = useSelectedDate();
   
   useEffect(() => {
     setMounted(true);
@@ -56,11 +57,7 @@ export function WeeklyOverview() {
 
   const handleDayClick = (date: Date) => {
     if (isFutureDate(date)) return;
-    
-    const dateStr = getLocalISOString(date);
-    const params = new URLSearchParams(window.location.search);
-    params.set('date', dateStr);
-    router.replace(`/?${params.toString()}`, { scroll: false });
+    onDateSelect(getLocalISOString(date));
   };
 
   const isSelectedDay = (date: Date) => {

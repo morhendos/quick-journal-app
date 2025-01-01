@@ -5,12 +5,13 @@ import { EntryDisplay } from '@/components/entries/EntryDisplay';
 import { BookOpen, Sparkles, Save, X, Edit } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { AutoResizeTextarea } from '@/components/common/AutoResizeTextarea';
-import { useSelectedDate } from '@/hooks/useSelectedDate';
 
-export function JournalEntryForm() {
+interface JournalEntryFormProps {
+  selectedDate: string;
+}
+
+export function JournalEntryForm({ selectedDate }: JournalEntryFormProps) {
   const [mounted, setMounted] = useState(false);
-  const { selectedDate, isToday } = useSelectedDate();
-  
   const {
     learning,
     setLearning,
@@ -21,7 +22,7 @@ export function JournalEntryForm() {
     handleSubmit,
     handleEdit,
     handleCancel,
-    entry // Get the current entry
+    entry
   } = useJournalEntry(selectedDate);
 
   useEffect(() => {
@@ -30,8 +31,10 @@ export function JournalEntryForm() {
 
   if (!mounted) return null;
 
+  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+
   if (submitted && !isEditing && entry) {
-    return <EntryDisplay entry={entry} isToday={isToday(selectedDate)} onEdit={handleEdit} />;
+    return <EntryDisplay entry={entry} isToday={isToday} onEdit={handleEdit} />;
   }
 
   const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', {
@@ -46,7 +49,7 @@ export function JournalEntryForm() {
         <label className="block text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5 transition-colors">
           <BookOpen size={18} className="text-accent" strokeWidth={1.5} />
           <span>
-            What did you learn {isToday(selectedDate) ? 'today' : `on ${formattedDate}`}?
+            What did you learn {isToday ? 'today' : `on ${formattedDate}`}?
           </span>
         </label>
         <AutoResizeTextarea
@@ -62,7 +65,7 @@ export function JournalEntryForm() {
         <label className="block text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5 transition-colors">
           <Sparkles size={18} className="text-accent" strokeWidth={1.5} />
           <span>
-            What brought you joy {isToday(selectedDate) ? 'today' : 'on this day'}?
+            What brought you joy {isToday ? 'today' : 'on this day'}?
           </span>
         </label>
         <AutoResizeTextarea
