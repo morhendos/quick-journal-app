@@ -3,7 +3,7 @@
 import { useJournalStorage } from '@/lib/storage';
 import { Calendar } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useSelectedDate } from '@/hooks/useSelectedDate';
 
 export function WeeklyOverview() {
@@ -41,7 +41,16 @@ export function WeeklyOverview() {
     return date.toISOString().split('T')[0] === today.toISOString().split('T')[0];
   };
 
+  const isFutureDate = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time component for accurate date comparison
+    date.setHours(0, 0, 0, 0);
+    return date > today;
+  };
+
   const handleDayClick = (date: Date) => {
+    if (isFutureDate(date)) return; // Prevent clicks on future dates
+    
     const dateStr = date.toISOString().split('T')[0];
     const params = new URLSearchParams(window.location.search);
     params.set('date', dateStr);
@@ -94,18 +103,20 @@ export function WeeklyOverview() {
           const hasEntry = entries.some(entry => entry.date === dateStr);
           const isCurrentDay = dateStr === todayStr;
           const isSelected = isSelectedDay(date);
+          const isFuture = isFutureDate(new Date(date));
           
           return (
             <button
               key={index}
-              onClick={() => handleDayClick(date)}
+              onClick={() => handleDayClick(new Date(date))}
+              disabled={isFuture}
               className={`w-8 h-8 rounded-md flex items-center justify-center text-xs
                 transition-all duration-200
                 ${hasEntry ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-paper text-ink/50 hover:bg-paper/80'}
                 ${isCurrentDay ? 'ring-2 ring-accent' : ''}
                 ${isSelected ? 'ring-2 ring-accent/50 shadow-sm' : ''}
-                cursor-pointer
-                hover:scale-105 active:scale-95`}
+                ${isFuture ? 'opacity-50 cursor-not-allowed hover:bg-paper' : 'cursor-pointer hover:scale-105 active:scale-95'}
+                `}
             >
               {date.getDate()}
             </button>
