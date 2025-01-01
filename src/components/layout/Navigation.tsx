@@ -1,1 +1,30 @@
-J2NsaWVudCc7CgppbXBvcnQgTGluayBmcm9tICduZXh0L2xpbmsnOwppbXBvcnQgeyB1c2VQYXRobmFtZSB9IGZyb20gJ25leHQvbmF2aWdhdGlvbic7CmltcG9ydCB7IENhbGVuZGFyRGF5cywgQm9va09wZW4gfSBmcm9tICdsdWNpZGUtcmVhY3QnOwoKZXhwb3J0IGZ1bmN0aW9uIE5hdmlnYXRpb24oKSB7CiAgY29uc3QgcGF0aG5hbWUgPSB1c2VQYXRobmFtZSgpOwoKICByZXR1cm4gKAogICAgPG5hdiBjbGFzc05hbWU9ImZsZXggaXRlbXMtY2VudGVyIGdhcC02Ij4KICAgICAgPExpbmsKICAgICAgICBocmVmPSIvIgogICAgICAgIGNsYXNzTmFtZT17YGZsZXggaXRlbXMtY2VudGVyIGdhcC0yIHRleHQtc20gZm9udC1tZWRpdW0gdHJhbnNpdGlvbi1jb2xvcnMgaG92ZXI6dGV4dC1hY2NlbnQKICAgICAgICAgICR7cGF0aG5hbWUgPT09ICcvJyA/ICd0ZXh0LWFjY2VudCcgOiAndGV4dC1pbmsvNzAnfWB9CiAgICAgID4KICAgICAgICA8Qm9va09wZW4gc2l6ZT17MTh9IHN0cm9rZVdpZHRoPXsxLjV9IC8+CiAgICAgICAgPHNwYW4+RGFpbHkgSm91cm5hbDwvc3Bhbj4KICAgICAgPC9MaW5rPgogICAgICA8TGluawogICAgICAgIGhyZWY9Ii9tb250aGx5IgogICAgICAgIGNsYXNzTmFtZT17YGZsZXggaXRlbXMtY2VudGVyIGdhcC0yIHRleHQtc20gZm9udC1tZWRpdW0gdHJhbnNpdGlvbi1jb2xvcnMgaG92ZXI6dGV4dC1hY2NlbnQKICAgICAgICAgICR7cGF0aG5hbWUgPT09ICcvbW9udGhseScgPyAndGV4dC1hY2NlbnQnIDogJ3RleHQtaW5rLzcwJ31gfQogICAgICA+CiAgICAgICAgPENhbGVuZGFyRGF5cyBzaXplPXsxOH0gc3Ryb2tlV2lkdGg9ezEuNX0gLz4KICAgICAgICA8c3Bhbj5Nb250aGx5IFJldmlldzwvc3Bhbj4KICAgICAgPC9MaW5rPgogICAgPC9uYXY+CiAgKTsKfQ==
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { CalendarDays, BookOpen } from 'lucide-react';
+
+export function Navigation() {
+  const pathname = usePathname();
+
+  return (
+    <nav className="flex items-center gap-6">
+      <Link
+        href="/"
+        className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-accent
+          ${pathname === '/' ? 'text-accent' : 'text-ink/70'}`}
+      >
+        <BookOpen size={18} strokeWidth={1.5} />
+        <span>Daily Journal</span>
+      </Link>
+      <Link
+        href="/monthly"
+        className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-accent
+          ${pathname === '/monthly' ? 'text-accent' : 'text-ink/70'}`}
+      >
+        <CalendarDays size={18} strokeWidth={1.5} />
+        <span>Monthly Review</span>
+      </Link>
+    </nav>
+  );
+}
