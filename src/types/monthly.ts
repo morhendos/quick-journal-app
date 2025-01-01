@@ -1,1 +1,25 @@
-ZXhwb3J0IGludGVyZmFjZSBCYXNlSXRlbSB7CiAgaWQ6IHN0cmluZzsKICB0ZXh0OiBzdHJpbmc7CiAgY3JlYXRlZEF0OiBzdHJpbmc7CiAgdXBkYXRlZEF0OiBzdHJpbmc7Cn0KCmV4cG9ydCBpbnRlcmZhY2UgV29ya0l0ZW0gZXh0ZW5kcyBCYXNlSXRlbSB7fQpleHBvcnQgaW50ZXJmYWNlIFByb2plY3RJdGVtIGV4dGVuZHMgQmFzZUl0ZW0ge30KZXhwb3J0IGludGVyZmFjZSBMZWFybmluZ0l0ZW0gZXh0ZW5kcyBCYXNlSXRlbSB7fQpleHBvcnQgaW50ZXJmYWNlIEhlYWx0aEl0ZW0gZXh0ZW5kcyBCYXNlSXRlbSB7fQpleHBvcnQgaW50ZXJmYWNlIExpZmVFdmVudEl0ZW0gZXh0ZW5kcyBCYXNlSXRlbSB7fQpleHBvcnQgaW50ZXJmYWNlIExlYXJuaW5nVG9SZW1lbWJlckl0ZW0gZXh0ZW5kcyBCYXNlSXRlbSB7fQpleHBvcnQgaW50ZXJmYWNlIEhvcGVJdGVtIGV4dGVuZHMgQmFzZUl0ZW0ge30KCmV4cG9ydCBpbnRlcmZhY2UgTW9udGhseURhdGEgewogIG1vbnRoOiBzdHJpbmc7CiAgd29ya0l0ZW1zOiBXb3JrSXRlbVtdOwogIHByb2plY3RJdGVtczogUHJvamVjdEl0ZW1bXTsKICBsZWFybmluZ0l0ZW1zOiBMZWFybmluZ0l0ZW1bXTsKICBoZWFsdGhJdGVtczogSGVhbHRoSXRlbVtdOwogIGxpZmVFdmVudEl0ZW1zOiBMaWZlRXZlbnRJdGVtW107CiAgbGVhcm5pbmdUb1JlbWVtYmVySXRlbXM6IExlYXJuaW5nVG9SZW1lbWJlckl0ZW1bXTsKICBob3BlSXRlbXM6IEhvcGVJdGVtW107Cn0=
+export interface BaseItem {
+  id: string;
+  text: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WorkItem extends BaseItem {}
+export interface ProjectItem extends BaseItem {}
+export interface LearningItem extends BaseItem {}
+export interface HealthItem extends BaseItem {}
+export interface LifeEventItem extends BaseItem {}
+export interface LearningToRememberItem extends BaseItem {}
+export interface HopeItem extends BaseItem {}
+
+export interface MonthlyData {
+  month: string;
+  workItems: WorkItem[];
+  projectItems: ProjectItem[];
+  learningItems: LearningItem[];
+  healthItems: HealthItem[];
+  lifeEventItems: LifeEventItem[];
+  learningToRememberItems: LearningToRememberItem[];
+  hopeItems: HopeItem[];
+}
