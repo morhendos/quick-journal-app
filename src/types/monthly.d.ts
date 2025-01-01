@@ -1,4 +1,4 @@
-export interface MonthlyItem {
+export interface BaseItem {
   id: string;
   text: string;
   createdAt: string;
@@ -7,10 +7,10 @@ export interface MonthlyItem {
 
 export interface MonthlyData {
   month: string;
-  workItems: MonthlyItem[];
-  projectItems: MonthlyItem[];
-  healthItems: MonthlyItem[];
-  lifeEventItems: MonthlyItem[];
-  learningToRememberItems: MonthlyItem[];
-  hopeItems: MonthlyItem[];
+  workItems: BaseItem[];
+  projectItems: BaseItem[];
+  healthItems: BaseItem[];
+  lifeEventItems: BaseItem[];
+  learningToRememberItems: BaseItem[];
+  hopeItems: BaseItem[];
 }
