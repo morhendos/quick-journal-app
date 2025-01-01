@@ -6,6 +6,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelectedDate } from '@/hooks/useSelectedDate';
 
+function getLocalISOString(date: Date) {
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - (offset * 60 * 1000));
+  return localDate.toISOString().split('T')[0];
+}
+
 export function WeeklyOverview() {
   const { entries } = useJournalStorage();
   const [mounted, setMounted] = useState(false);
@@ -32,38 +38,38 @@ export function WeeklyOverview() {
   };
 
   const hasEntryForDate = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = getLocalISOString(date);
     return entries.some(entry => entry.date === dateStr);
   };
 
   const isToday = (date: Date) => {
     const today = new Date();
-    return date.toISOString().split('T')[0] === today.toISOString().split('T')[0];
+    return getLocalISOString(date) === getLocalISOString(today);
   };
 
   const isFutureDate = (date: Date) => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    date.setHours(0, 0, 0, 0);
-    return date > today;
+    const todayStr = getLocalISOString(today);
+    const dateStr = getLocalISOString(date);
+    return dateStr > todayStr;
   };
 
   const handleDayClick = (date: Date) => {
     if (isFutureDate(date)) return;
     
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = getLocalISOString(date);
     const params = new URLSearchParams(window.location.search);
     params.set('date', dateStr);
     router.push(`/?${params.toString()}`);
   };
 
   const isSelectedDay = (date: Date) => {
-    return date.toISOString().split('T')[0] === selectedDate;
+    return getLocalISOString(date) === selectedDate;
   };
 
   const weekDays = getDaysOfWeek();
   const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
+  const todayStr = getLocalISOString(today);
 
   if (!mounted) {
     return (
@@ -98,16 +104,16 @@ export function WeeklyOverview() {
       
       <div className="flex gap-2 items-center">
         {weekDays.map((date, index) => {
-          const dateStr = date.toISOString().split('T')[0];
+          const dateStr = getLocalISOString(date);
           const hasEntry = entries.some(entry => entry.date === dateStr);
           const isCurrentDay = dateStr === todayStr;
           const isSelected = isSelectedDay(date);
-          const isFuture = isFutureDate(new Date(date));
+          const isFuture = isFutureDate(date);
           
           return (
             <button
               key={index}
-              onClick={() => handleDayClick(new Date(date))}
+              onClick={() => handleDayClick(date)}
               disabled={isFuture}
               className={`w-8 h-8 rounded-md flex items-center justify-center text-xs
                 transition-all duration-200
