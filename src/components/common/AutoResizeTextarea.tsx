@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 interface AutoResizeTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   value: string;
@@ -23,7 +23,7 @@ export function AutoResizeTextarea({
 }: AutoResizeTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const adjustHeight = () => {
+  const adjustHeight = useCallback(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -38,11 +38,11 @@ export function AutoResizeTextarea({
     }
 
     window.scrollTo(scrollLeft, scrollTop);
-  };
+  }, [minHeight]);
 
   useEffect(() => {
     adjustHeight();
-  }, [value, minHeight]);
+  }, [value, minHeight, adjustHeight]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && e.metaKey && onSave) {
