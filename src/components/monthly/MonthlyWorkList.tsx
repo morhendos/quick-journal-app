@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Check, Plus, X, Pencil } from 'lucide-react';
+import { Check, Plus, X, Pencil, Circle } from 'lucide-react';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { WorkItem } from '@/types/monthly';
 
@@ -20,7 +20,6 @@ export function MonthlyWorkList() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
 
-  // Load data after component mounts
   useEffect(() => {
     const currentData = getCurrentMonthData();
     setWorkItems(currentData.workItems);
@@ -77,7 +76,6 @@ export function MonthlyWorkList() {
     }
   };
 
-  // Don't render anything until after mount to prevent hydration errors
   if (!mounted) {
     return (
       <div className="space-y-4">
@@ -142,12 +140,19 @@ export function MonthlyWorkList() {
       )}
 
       {/* Items list */}
-      <ul className="space-y-2">
+      <ul className="space-y-3">
         {workItems.map(item => (
           <li
             key={item.id}
             className="group flex items-start gap-3 p-3 rounded-md bg-paper/50 hover:bg-paper transition-colors"
           >
+            <Circle 
+              size={16} 
+              className="flex-shrink-0 mt-1 text-accent/70" 
+              fill="currentColor" 
+              strokeWidth={0}
+            />
+            
             {editingId === item.id ? (
               <div className="flex gap-2 flex-1">
                 <input
