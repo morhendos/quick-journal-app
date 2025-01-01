@@ -6,43 +6,21 @@ import { WeeklyGroupedView } from './WeeklyGroupedView';
 import { ViewToggle } from '@/components/common/ViewToggle';
 import { BookOpen } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { getLocalISOString, getWeekBounds } from '@/utils/dates';
 
 type ViewType = 'chronological' | 'weekly';
-
-function getLocalISOString(date: Date) {
-  const offset = date.getTimezoneOffset();
-  const localDate = new Date(date.getTime() - (offset * 60 * 1000));
-  return localDate.toISOString().split('T')[0];
-}
-
-function getWeekBounds() {
-  const today = new Date();
-  const currentDay = today.getDay();
-  const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
-
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + mondayOffset);
-  monday.setHours(0, 0, 0, 0);
-
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
-
-  return { monday, sunday };
-}
 
 export function EntryList() {
   const { entries } = useJournalStorage();
   const [mounted, setMounted] = useState(false);
   const [view, setView] = useState<ViewType>('weekly');
 
-  // Handle hydration mismatch by only rendering after mount
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) {
-    return null; // or a loading skeleton
+    return null;
   }
 
   if (entries.length === 0) {
