@@ -13,16 +13,16 @@ export default function MonthlyReview() {
         <PageHeader />
         
         <div className="flex-1 min-h-0 space-y-8">
-          <div className="grid gap-6 lg:gap-8 lg:grid-cols-3">
-            <Section className="order-1">
+          <div className="space-y-8">
+            <Section>
               <MonthlyWorkList />
             </Section>
 
-            <Section className="order-2">
+            <Section>
               <MonthlyProjectsList />
             </Section>
 
-            <Section className="order-3">
+            <Section>
               <MonthlyLearningList />
             </Section>
           </div>
