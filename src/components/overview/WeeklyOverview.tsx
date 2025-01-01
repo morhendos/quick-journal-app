@@ -4,24 +4,19 @@ import { useJournalStorage } from '@/lib/storage';
 import { Calendar } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { getLocalISOString, getCurrentWeekDays, isFutureDate } from '@/utils/dates';
+import { useDateContext } from '@/contexts/DateContext';
 
-interface WeeklyOverviewProps {
-  selectedDate: string;
-  onDateSelect: (date: string) => void;
-}
-
-export function WeeklyOverview({ selectedDate, onDateSelect }: WeeklyOverviewProps) {
+export function WeeklyOverview() {
   const { entries } = useJournalStorage();
+  const { selectedDate, setSelectedDate } = useDateContext();
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Memoize the week days to prevent unnecessary recalculation
   const weekDays = useMemo(() => getCurrentWeekDays(), []);
 
-  // Create a memoized map of dates with entries for O(1) lookup
   const entryMap = useMemo(() => {
     const map = new Map<string, boolean>();
     entries.forEach(entry => {
@@ -62,7 +57,7 @@ export function WeeklyOverview({ selectedDate, onDateSelect }: WeeklyOverviewPro
     if (isFutureDate(date)) return;
     try {
       const dateStr = getLocalISOString(date);
-      onDateSelect(dateStr);
+      setSelectedDate(dateStr);
     } catch (error) {
       console.error('Error handling day click:', error);
     }
