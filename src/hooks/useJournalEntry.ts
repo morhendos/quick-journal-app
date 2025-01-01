@@ -10,13 +10,14 @@ export function useJournalEntry(selectedDate: string) {
   const [submitted, setSubmitted] = useState(!!entry);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Reset form when date changes
+  // Only reset content when date changes, but preserve editing state
   useEffect(() => {
     const currentEntry = getEntryByDate(selectedDate);
-    setLearning(currentEntry?.learning || '');
-    setEnjoyment(currentEntry?.enjoyment || '');
-    setSubmitted(!!currentEntry);
-    setIsEditing(false);
+    if (!isEditing) {
+      setLearning(currentEntry?.learning || '');
+      setEnjoyment(currentEntry?.enjoyment || '');
+      setSubmitted(!!currentEntry);
+    }
   }, [selectedDate, getEntryByDate]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,10 +26,8 @@ export function useJournalEntry(selectedDate: string) {
     const entryData = { date: selectedDate, learning, enjoyment };
 
     if (entry) {
-      // If entry exists, update it
       updateEntry(entry.id, entryData);
     } else {
-      // If no entry exists, create new one
       addEntry(entryData);
     }
 
@@ -37,21 +36,19 @@ export function useJournalEntry(selectedDate: string) {
   };
 
   const handleEdit = () => {
+    const currentEntry = getEntryByDate(selectedDate);
+    setLearning(currentEntry?.learning || '');
+    setEnjoyment(currentEntry?.enjoyment || '');
     setIsEditing(true);
     setSubmitted(false);
   };
 
   const handleCancel = () => {
-    if (entry) {
-      setLearning(entry.learning);
-      setEnjoyment(entry.enjoyment);
-      setIsEditing(false);
-      setSubmitted(true);
-    } else {
-      setLearning('');
-      setEnjoyment('');
-      setSubmitted(false);
-    }
+    const currentEntry = getEntryByDate(selectedDate);
+    setLearning(currentEntry?.learning || '');
+    setEnjoyment(currentEntry?.enjoyment || '');
+    setIsEditing(false);
+    setSubmitted(!!currentEntry);
   };
 
   return {
@@ -65,6 +62,6 @@ export function useJournalEntry(selectedDate: string) {
     handleSubmit,
     handleEdit,
     handleCancel,
-    entry // Add this to expose the current entry
+    entry
   };
 }
