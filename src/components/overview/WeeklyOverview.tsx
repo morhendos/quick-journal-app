@@ -60,7 +60,7 @@ export function WeeklyOverview() {
     const dateStr = getLocalISOString(date);
     const params = new URLSearchParams(window.location.search);
     params.set('date', dateStr);
-    router.push(`/?${params.toString()}`);
+    router.replace(`/?${params.toString()}`, { scroll: false });
   };
 
   const isSelectedDay = (date: Date) => {
