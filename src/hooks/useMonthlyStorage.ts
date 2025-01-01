@@ -1,5 +1,5 @@
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { MonthlyData, WorkItem } from '@/types/monthly';
+import { MonthlyData, WorkItem, ProjectItem } from '@/types/monthly';
 
 const STORAGE_KEY = 'monthly_reviews';
 
@@ -15,7 +15,7 @@ export function useMonthlyStorage() {
     const currentMonth = getCurrentMonth();
     return (
       monthlyReviews.find(review => review.month === currentMonth) || 
-      { month: currentMonth, workItems: [] }
+      { month: currentMonth, workItems: [], projectItems: [] }
     );
   };
 
@@ -44,10 +44,37 @@ export function useMonthlyStorage() {
     return newItem;
   };
 
+  const addProjectItem = (text: string): ProjectItem => {
+    const newItem: ProjectItem = {
+      id: Date.now().toString(),
+      text: text.trim(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    updateCurrentMonth(current => ({
+      ...current,
+      projectItems: [newItem, ...(current.projectItems || [])]
+    }));
+
+    return newItem;
+  };
+
   const updateWorkItem = (id: string, text: string) => {
     updateCurrentMonth(current => ({
       ...current,
       workItems: current.workItems.map(item =>
+        item.id === id
+          ? { ...item, text: text.trim(), updatedAt: new Date().toISOString() }
+          : item
+      )
+    }));
+  };
+
+  const updateProjectItem = (id: string, text: string) => {
+    updateCurrentMonth(current => ({
+      ...current,
+      projectItems: (current.projectItems || []).map(item =>
         item.id === id
           ? { ...item, text: text.trim(), updatedAt: new Date().toISOString() }
           : item
@@ -62,10 +89,20 @@ export function useMonthlyStorage() {
     }));
   };
 
+  const deleteProjectItem = (id: string) => {
+    updateCurrentMonth(current => ({
+      ...current,
+      projectItems: (current.projectItems || []).filter(item => item.id !== id)
+    }));
+  };
+
   return {
     getCurrentMonthData,
     addWorkItem,
     updateWorkItem,
-    deleteWorkItem
+    deleteWorkItem,
+    addProjectItem,
+    updateProjectItem,
+    deleteProjectItem
   };
 }
