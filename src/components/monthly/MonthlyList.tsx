@@ -24,7 +24,7 @@ export function MonthlyList<T extends BaseItem>({
   placeholder
 }: MonthlyListProps<T>) {
   const [mounted, setMounted] = useState(false);
-  const [listItems, setListItems] = useState<T[]>(items || []); // Safe initialization
+  const [listItems, setListItems] = useState<T[]>(items);
   const [newItem, setNewItem] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -34,7 +34,9 @@ export function MonthlyList<T extends BaseItem>({
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setListItems(items || []); // Safe update
+    if (JSON.stringify(items) !== JSON.stringify(listItems)) {
+      setListItems(items);
+    }
   }, [items]);
 
   useEffect(() => {
