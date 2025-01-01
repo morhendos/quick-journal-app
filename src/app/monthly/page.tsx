@@ -3,6 +3,7 @@
 import { Section } from '@/components/common/Section';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { MonthlyWorkList } from '@/components/monthly/MonthlyWorkList';
+import { MonthlyProjectsList } from '@/components/monthly/MonthlyProjectsList';
 
 export default function MonthlyReview() {
   return (
@@ -10,12 +11,16 @@ export default function MonthlyReview() {
       <main className="container mx-auto h-screen px-3 py-4 sm:px-4 sm:py-12 max-w-6xl relative flex flex-col">
         <PageHeader />
         
-        <div className="flex-1 min-h-0">
-          <Section title="Monthly Overview">
-            <div className="p-4 space-y-8">
+        <div className="flex-1 min-h-0 space-y-8">
+          <div className="grid gap-6 lg:gap-8 lg:grid-cols-2">
+            <Section className="order-1">
               <MonthlyWorkList />
-            </div>
-          </Section>
+            </Section>
+
+            <Section className="order-2">
+              <MonthlyProjectsList />
+            </Section>
+          </div>
         </div>
       </main>
     </div>
