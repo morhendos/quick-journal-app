@@ -1,5 +1,5 @@
 import { JournalEntry } from '@/types/journal';
-import { formatShortDate } from '@/utils/dates';
+import { formatShortDate, getWeekStart } from '@/utils/dates';
 
 interface WeeklyGroupedViewProps {
   entries: JournalEntry[];
@@ -15,6 +15,15 @@ interface GroupedByType {
   learnings: GroupedEntry[];
 }
 
+function isInSameWeek(date1: string, date2: string): boolean {
+  return getWeekStart(date1) === getWeekStart(date2);
+}
+
+function getCurrentWeekEntries(entries: JournalEntry[]): JournalEntry[] {
+  const today = new Date().toISOString().split('T')[0];
+  return entries.filter(entry => isInSameWeek(entry.date, today));
+}
+
 function groupEntriesByType(entries: JournalEntry[]): GroupedByType {
   return entries.reduce((acc: GroupedByType, entry) => {
     return {
@@ -25,8 +34,11 @@ function groupEntriesByType(entries: JournalEntry[]): GroupedByType {
 }
 
 export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
-  // Group by type and sort by date (newest first)
-  const { enjoyments, learnings } = groupEntriesByType(entries);
+  // Filter entries for current week only and group by type
+  const currentWeekEntries = getCurrentWeekEntries(entries);
+  const { enjoyments, learnings } = groupEntriesByType(currentWeekEntries);
+  
+  // Sort by date (newest first)
   const sortedEnjoyments = enjoyments.sort((a, b) => 
     new Date(b.date).getTime() - new Date(a.date).getTime()
   );
@@ -39,41 +51,53 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
       {/* Enjoyments section */}
       <div className="pl-4 border-l-2 border-accent/10 space-y-4">
         <h3 className="text-lg font-medium text-ink/90">Enjoyments:</h3>
-        <div className="space-y-2">
-          {sortedEnjoyments.map((entry, index) => (
-            <div 
-              key={`${entry.date}-${index}`}
-              className="text-ink/80 flex gap-3 group items-start"
-            >
-              <span className="text-ink/50 text-sm min-w-[60px] pt-0.5">
-                {formatShortDate(entry.date)}
-              </span>
-              <span className="flex-1 group-hover:text-ink/90 transition-colors">
-                {entry.content}
-              </span>
-            </div>
-          ))}
-        </div>
+        {sortedEnjoyments.length > 0 ? (
+          <div className="space-y-2">
+            {sortedEnjoyments.map((entry, index) => (
+              <div 
+                key={`${entry.date}-${index}`}
+                className="text-ink/80 flex gap-3 group items-start"
+              >
+                <span className="text-ink/50 text-sm min-w-[60px] pt-0.5">
+                  {formatShortDate(entry.date)}
+                </span>
+                <span className="flex-1 group-hover:text-ink/90 transition-colors">
+                  {entry.content}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-ink/50 text-sm">
+            No enjoyments recorded this week
+          </div>
+        )}
       </div>
 
       {/* Learnings section */}
       <div className="pl-4 border-l-2 border-accent/10 space-y-4">
         <h3 className="text-lg font-medium text-ink/90">Learnings:</h3>
-        <div className="space-y-2">
-          {sortedLearnings.map((entry, index) => (
-            <div 
-              key={`${entry.date}-${index}`}
-              className="text-ink/80 flex gap-3 group items-start"
-            >
-              <span className="text-ink/50 text-sm min-w-[60px] pt-0.5">
-                {formatShortDate(entry.date)}
-              </span>
-              <span className="flex-1 group-hover:text-ink/90 transition-colors">
-                {entry.content}
-              </span>
-            </div>
-          ))}
-        </div>
+        {sortedLearnings.length > 0 ? (
+          <div className="space-y-2">
+            {sortedLearnings.map((entry, index) => (
+              <div 
+                key={`${entry.date}-${index}`}
+                className="text-ink/80 flex gap-3 group items-start"
+              >
+                <span className="text-ink/50 text-sm min-w-[60px] pt-0.5">
+                  {formatShortDate(entry.date)}
+                </span>
+                <span className="flex-1 group-hover:text-ink/90 transition-colors">
+                  {entry.content}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-ink/50 text-sm">
+            No learnings recorded this week
+          </div>
+        )}
       </div>
     </div>
   );
