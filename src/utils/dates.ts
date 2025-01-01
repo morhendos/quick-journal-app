@@ -46,3 +46,11 @@ export function getCurrentWeekDays() {
   
   return days;
 }
+
+export function formatShortDate(dateStr: string) {
+  const date = new Date(dateStr);
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric'
+  }).format(date);
+}
