@@ -26,8 +26,15 @@ export function MonthlyWorkList() {
   // Function to adjust textarea height
   const adjustTextareaHeight = (textarea: HTMLTextAreaElement | null) => {
     if (textarea) {
+      // Reset height to auto to get the correct scrollHeight
       textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
+      
+      // Calculate the needed height by checking scrollHeight
+      // Add 2px to ensure no scrollbar appears on single line
+      const height = textarea.scrollHeight + 2;
+      
+      // Set the height
+      textarea.style.height = `${height}px`;
     }
   };
 
@@ -58,6 +65,8 @@ export function MonthlyWorkList() {
   const handleStartEdit = (item: WorkItem) => {
     setEditingId(item.id);
     setEditText(item.text);
+    // Delay height adjustment to ensure it happens after the textarea is rendered
+    setTimeout(() => adjustTextareaHeight(editTextareaRef.current), 0);
   };
 
   const handleSaveEdit = () => {
@@ -137,12 +146,11 @@ export function MonthlyWorkList() {
             onChange={(e) => setNewItem(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Enter an accomplishment..."
-            className="flex-1 p-2 rounded-md bg-paper
+            className="flex-1 p-2 rounded-md bg-paper leading-normal
               border border-accent/20
               focus:outline-none focus:border-accent/40
               placeholder:text-muted/40 text-ink/90
-              transition-colors duration-200 resize-none
-              min-h-[60px] overflow-hidden"
+              transition-colors duration-200 resize-none overflow-hidden"
             autoFocus
           />
           <div className="flex flex-col gap-2">
@@ -189,11 +197,11 @@ export function MonthlyWorkList() {
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
                   onKeyDown={handleKeyPress}
-                  className="w-full p-1.5 rounded-md bg-paper
+                  className="w-full p-1.5 rounded-md bg-paper leading-normal
                     border border-accent/20
                     focus:outline-none focus:border-accent/40
-                    text-ink/90 leading-relaxed transition-colors duration-200
-                    resize-none min-h-[36px] overflow-hidden"
+                    text-ink/90 transition-colors duration-200
+                    resize-none overflow-hidden"
                   autoFocus
                 />
                 <div className="flex flex-col gap-2">
@@ -225,7 +233,7 @@ export function MonthlyWorkList() {
                     hover:bg-paper/80 cursor-pointer transition-colors duration-200
                     whitespace-pre-wrap"
                 >
-                  <span className="text-ink/80 leading-relaxed">{item.text}</span>
+                  <span className="text-ink/80 leading-normal">{item.text}</span>
                 </div>
                 <div className="opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity">
                   <button
