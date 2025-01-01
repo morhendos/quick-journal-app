@@ -16,7 +16,7 @@ interface MonthlyListProps<T extends BaseItem> {
 
 export function MonthlyList<T extends BaseItem>({
   title,
-  items,
+  items = [], // Default empty array
   addItem,
   updateItem,
   deleteItem,
@@ -24,7 +24,7 @@ export function MonthlyList<T extends BaseItem>({
   placeholder
 }: MonthlyListProps<T>) {
   const [mounted, setMounted] = useState(false);
-  const [listItems, setListItems] = useState<T[]>(items);
+  const [listItems, setListItems] = useState<T[]>(items || []); // Safe initialization
   const [newItem, setNewItem] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -34,7 +34,7 @@ export function MonthlyList<T extends BaseItem>({
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setListItems(items);
+    setListItems(items || []); // Safe update
   }, [items]);
 
   useEffect(() => {
@@ -190,7 +190,7 @@ export function MonthlyList<T extends BaseItem>({
       )}
 
       <ul className="space-y-3">
-        {listItems.map(item => (
+        {(listItems || []).map(item => (
           <li
             key={item.id}
             className="group flex items-start gap-3 p-3 rounded-md bg-paper/50 hover:bg-paper transition-colors"
