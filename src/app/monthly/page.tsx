@@ -2,6 +2,7 @@
 
 import { Section } from '@/components/common/Section';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { MonthlyWorkList } from '@/components/monthly/MonthlyWorkList';
 
 export default function MonthlyReview() {
   return (
@@ -11,8 +12,8 @@ export default function MonthlyReview() {
         
         <div className="flex-1 min-h-0">
           <Section title="Monthly Overview">
-            <div className="p-4 text-ink/70">
-              Monthly review content will go here...
+            <div className="p-4 space-y-8">
+              <MonthlyWorkList />
             </div>
           </Section>
         </div>
