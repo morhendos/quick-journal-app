@@ -33,7 +33,6 @@ export function MonthlyList<T extends BaseItem>({
   const newTextareaRef = useRef<HTMLTextAreaElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Update list items when props change
   useEffect(() => {
     setListItems(items);
   }, [items]);
@@ -42,24 +41,28 @@ export function MonthlyList<T extends BaseItem>({
     setMounted(true);
   }, []);
 
-  // Function to adjust textarea height
+  // Fixed textarea auto-expansion to only happen on actual line wrapping
   const adjustTextareaHeight = (textarea: HTMLTextAreaElement | null) => {
-    if (textarea) {
-      // Reset height to auto to get the correct scrollHeight
-      textarea.style.height = 'auto';
-      const height = textarea.scrollHeight;
-      textarea.style.height = `${height}px`;
+    if (!textarea) return;
+    
+    // Save scroll position
+    const scrollLeft = window.pageXOffset;
+    const scrollTop = window.pageYOffset;
+    
+    // Reset height to single line
+    textarea.style.height = '36px';
+    
+    // Check if content actually wraps
+    const singleLineScrollHeight = 36;
+    const contentScrollHeight = textarea.scrollHeight;
+    
+    if (contentScrollHeight > singleLineScrollHeight) {
+      textarea.style.height = contentScrollHeight + 'px';
     }
+    
+    // Restore scroll position
+    window.scrollTo(scrollLeft, scrollTop);
   };
-
-  // Adjust height when content changes
-  useEffect(() => {
-    adjustTextareaHeight(newTextareaRef.current);
-  }, [newItem]);
-
-  useEffect(() => {
-    adjustTextareaHeight(editTextareaRef.current);
-  }, [editText]);
 
   const handleAddItem = () => {
     if (newItem.trim()) {
@@ -73,7 +76,12 @@ export function MonthlyList<T extends BaseItem>({
   const handleStartEdit = (item: T) => {
     setEditingId(item.id);
     setEditText(item.text);
-    setTimeout(() => adjustTextareaHeight(editTextareaRef.current), 0);
+    setTimeout(() => {
+      if (editTextareaRef.current) {
+        editTextareaRef.current.focus();
+        adjustTextareaHeight(editTextareaRef.current);
+      }
+    }, 0);
   };
 
   const handleSaveEdit = () => {
@@ -150,7 +158,10 @@ export function MonthlyList<T extends BaseItem>({
           <textarea
             ref={newTextareaRef}
             value={newItem}
-            onChange={(e) => setNewItem(e.target.value)}
+            onChange={(e) => {
+              setNewItem(e.target.value);
+              adjustTextareaHeight(newTextareaRef.current);
+            }}
             onKeyDown={handleKeyPress}
             placeholder={placeholder}
             className="flex-1 px-2 py-1.5 rounded-md bg-paper leading-normal
@@ -158,7 +169,7 @@ export function MonthlyList<T extends BaseItem>({
               focus:outline-none focus:border-accent/40
               placeholder:text-muted/40 text-ink/90
               transition-colors duration-200 resize-none overflow-hidden"
-            style={{ height: '36px' }} // Set initial height to one line
+            style={{ height: '36px' }}
             autoFocus
           />
           <div className="flex flex-col gap-2">
@@ -203,14 +214,17 @@ export function MonthlyList<T extends BaseItem>({
                 <textarea
                   ref={editTextareaRef}
                   value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
+                  onChange={(e) => {
+                    setEditText(e.target.value);
+                    adjustTextareaHeight(editTextareaRef.current);
+                  }}
                   onKeyDown={handleKeyPress}
                   className="w-full px-2 py-1.5 rounded-md bg-paper leading-normal
                     border border-accent/20
                     focus:outline-none focus:border-accent/40
                     text-ink/90 transition-colors duration-200
                     resize-none overflow-hidden"
-                  style={{ height: '36px' }} // Set initial height to one line
+                  style={{ height: '36px' }}
                   autoFocus
                 />
                 <div className="flex flex-col gap-2">
