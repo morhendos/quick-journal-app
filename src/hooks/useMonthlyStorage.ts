@@ -1,5 +1,5 @@
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { MonthlyData } from '@/types/monthly';
+import { MonthlyData, BaseItem } from '@/types/monthly';
 
 const STORAGE_KEY = 'monthly_reviews';
 
@@ -67,8 +67,8 @@ export function useMonthlyStorage() {
   const deleteLearningToRememberItem = (id: string) => deleteItem('learningToRememberItems', id);
   const deleteHopeItem = (id: string) => deleteItem('hopeItems', id);
 
-  function addItem(itemType: keyof MonthlyData, text: string) {
-    const newItem = {
+  function addItem<K extends keyof MonthlyData>(itemType: K, text: string): BaseItem {
+    const newItem: BaseItem = {
       id: Date.now().toString(),
       text: text.trim(),
       createdAt: new Date().toISOString(),
@@ -77,16 +77,16 @@ export function useMonthlyStorage() {
 
     updateCurrentMonth(current => ({
       ...current,
-      [itemType]: [newItem, ...(current[itemType] || [])]
+      [itemType]: [newItem, ...((current[itemType] as BaseItem[]) || [])]
     }));
 
     return newItem;
   }
 
-  function updateItem(itemType: keyof MonthlyData, id: string, text: string) {
+  function updateItem<K extends keyof MonthlyData>(itemType: K, id: string, text: string) {
     updateCurrentMonth(current => ({
       ...current,
-      [itemType]: (current[itemType] || []).map(item =>
+      [itemType]: ((current[itemType] as BaseItem[]) || []).map(item =>
         item.id === id
           ? { ...item, text: text.trim(), updatedAt: new Date().toISOString() }
           : item
@@ -94,10 +94,10 @@ export function useMonthlyStorage() {
     }));
   }
 
-  function deleteItem(itemType: keyof MonthlyData, id: string) {
+  function deleteItem<K extends keyof MonthlyData>(itemType: K, id: string) {
     updateCurrentMonth(current => ({
       ...current,
-      [itemType]: (current[itemType] || []).filter(item => item.id !== id)
+      [itemType]: ((current[itemType] as BaseItem[]) || []).filter(item => item.id !== id)
     }));
   }
 
