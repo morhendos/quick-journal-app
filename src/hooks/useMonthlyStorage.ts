@@ -1,5 +1,5 @@
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { MonthlyData, WorkItem, ProjectItem } from '@/types/monthly';
+import { MonthlyData } from '@/types/monthly';
 
 const STORAGE_KEY = 'monthly_reviews';
 
@@ -21,7 +21,15 @@ export function useMonthlyStorage() {
     const currentMonth = getCurrentMonth();
     return (
       monthlyReviews.find(review => review.month === currentMonth) || 
-      { month: currentMonth, workItems: [], projectItems: [] }
+      { 
+        month: currentMonth, 
+        workItems: [], 
+        projectItems: [],
+        healthItems: [],
+        lifeEventItems: [],
+        learningToRememberItems: [],
+        hopeItems: []
+      }
     );
   };
 
@@ -34,8 +42,29 @@ export function useMonthlyStorage() {
     });
   };
 
-  const addWorkItem = (text: string): WorkItem => {
-    const newItem: WorkItem = {
+  const addWorkItem = (text: string) => addItem('workItems', text);
+  const addProjectItem = (text: string) => addItem('projectItems', text);
+  const addHealthItem = (text: string) => addItem('healthItems', text);
+  const addLifeEventItem = (text: string) => addItem('lifeEventItems', text);
+  const addLearningToRememberItem = (text: string) => addItem('learningToRememberItems', text);
+  const addHopeItem = (text: string) => addItem('hopeItems', text);
+
+  const updateWorkItem = (id: string, text: string) => updateItem('workItems', id, text);
+  const updateProjectItem = (id: string, text: string) => updateItem('projectItems', id, text);
+  const updateHealthItem = (id: string, text: string) => updateItem('healthItems', id, text);
+  const updateLifeEventItem = (id: string, text: string) => updateItem('lifeEventItems', id, text);
+  const updateLearningToRememberItem = (id: string, text: string) => updateItem('learningToRememberItems', id, text);
+  const updateHopeItem = (id: string, text: string) => updateItem('hopeItems', id, text);
+
+  const deleteWorkItem = (id: string) => deleteItem('workItems', id);
+  const deleteProjectItem = (id: string) => deleteItem('projectItems', id);
+  const deleteHealthItem = (id: string) => deleteItem('healthItems', id);
+  const deleteLifeEventItem = (id: string) => deleteItem('lifeEventItems', id);
+  const deleteLearningToRememberItem = (id: string) => deleteItem('learningToRememberItems', id);
+  const deleteHopeItem = (id: string) => deleteItem('hopeItems', id);
+
+  function addItem(itemType: keyof MonthlyData, text: string) {
+    const newItem = {
       id: Date.now().toString(),
       text: text.trim(),
       createdAt: new Date().toISOString(),
@@ -44,63 +73,29 @@ export function useMonthlyStorage() {
 
     updateCurrentMonth(current => ({
       ...current,
-      workItems: [newItem, ...current.workItems]
+      [itemType]: [newItem, ...(current[itemType] || [])]
     }));
 
     return newItem;
-  };
+  }
 
-  const addProjectItem = (text: string): ProjectItem => {
-    const newItem: ProjectItem = {
-      id: Date.now().toString(),
-      text: text.trim(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
+  function updateItem(itemType: keyof MonthlyData, id: string, text: string) {
     updateCurrentMonth(current => ({
       ...current,
-      projectItems: [newItem, ...(current.projectItems || [])]
-    }));
-
-    return newItem;
-  };
-
-  const updateWorkItem = (id: string, text: string) => {
-    updateCurrentMonth(current => ({
-      ...current,
-      workItems: current.workItems.map(item =>
+      [itemType]: (current[itemType] || []).map(item =>
         item.id === id
           ? { ...item, text: text.trim(), updatedAt: new Date().toISOString() }
           : item
       )
     }));
-  };
+  }
 
-  const updateProjectItem = (id: string, text: string) => {
+  function deleteItem(itemType: keyof MonthlyData, id: string) {
     updateCurrentMonth(current => ({
       ...current,
-      projectItems: (current.projectItems || []).map(item =>
-        item.id === id
-          ? { ...item, text: text.trim(), updatedAt: new Date().toISOString() }
-          : item
-      )
+      [itemType]: (current[itemType] || []).filter(item => item.id !== id)
     }));
-  };
-
-  const deleteWorkItem = (id: string) => {
-    updateCurrentMonth(current => ({
-      ...current,
-      workItems: current.workItems.filter(item => item.id !== id)
-    }));
-  };
-
-  const deleteProjectItem = (id: string) => {
-    updateCurrentMonth(current => ({
-      ...current,
-      projectItems: (current.projectItems || []).filter(item => item.id !== id)
-    }));
-  };
+  }
 
   const exportData = () => {
     const exportData: ExportFormat = {
@@ -122,33 +117,25 @@ export function useMonthlyStorage() {
 
   const importData = async (importedData: unknown) => {
     try {
-      // Validate the imported data structure
       if (typeof importedData !== 'object' || !importedData) {
         throw new Error('Invalid data format');
       }
 
       let dataToImport: MonthlyData[];
 
-      // Check if it's the new format with version and metadata
       if ('version' in importedData && 'data' in importedData) {
         const typedData = importedData as ExportFormat;
         dataToImport = typedData.data;
       } else if (Array.isArray(importedData)) {
-        // Handle legacy format (direct array)
         dataToImport = importedData;
       } else {
         throw new Error('Unrecognized data format');
       }
 
-      // Validate the structure of each monthly review
       const isValidMonthlyData = (data: unknown): data is MonthlyData => {
         if (typeof data !== 'object' || !data) return false;
         const d = data as any;
-        return (
-          typeof d.month === 'string' &&
-          Array.isArray(d.workItems) &&
-          (!d.projectItems || Array.isArray(d.projectItems))
-        );
+        return typeof d.month === 'string';
       };
 
       if (!Array.isArray(dataToImport) || !dataToImport.every(isValidMonthlyData)) {
@@ -171,6 +158,18 @@ export function useMonthlyStorage() {
     addProjectItem,
     updateProjectItem,
     deleteProjectItem,
+    addHealthItem,
+    updateHealthItem,
+    deleteHealthItem,
+    addLifeEventItem,
+    updateLifeEventItem,
+    deleteLifeEventItem,
+    addLearningToRememberItem,
+    updateLearningToRememberItem,
+    deleteLearningToRememberItem,
+    addHopeItem,
+    updateHopeItem,
+    deleteHopeItem,
     exportData,
     importData
   };
