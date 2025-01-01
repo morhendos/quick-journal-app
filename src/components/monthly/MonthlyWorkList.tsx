@@ -148,7 +148,7 @@ export function MonthlyWorkList() {
           >
             <Circle 
               size={16} 
-              className="flex-shrink-0 mt-1 text-accent/70" 
+              className="flex-shrink-0 mt-1.5 text-accent/70" 
               fill="currentColor" 
               strokeWidth={0}
             />
@@ -160,7 +160,7 @@ export function MonthlyWorkList() {
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
                   onKeyDown={(e) => handleKeyPress(e, 'edit')}
-                  className="flex-1 p-1 rounded-md bg-paper
+                  className="flex-1 p-1.5 rounded-md bg-paper
                     border border-accent/20
                     focus:outline-none focus:border-accent/40
                     text-ink/90 transition-colors duration-200"
@@ -182,14 +182,14 @@ export function MonthlyWorkList() {
               </div>
             ) : (
               <>
-                <span className="flex-1 text-ink/80">{item.text}</span>
+                <div 
+                  onClick={() => handleStartEdit(item)}
+                  className="flex-1 min-h-[36px] p-1.5 rounded-md border border-transparent
+                    hover:bg-paper/80 cursor-pointer transition-colors duration-200"
+                >
+                  <span className="text-ink/80">{item.text}</span>
+                </div>
                 <div className="opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity">
-                  <button
-                    onClick={() => handleStartEdit(item)}
-                    className="p-1 text-ink/40 hover:text-ink/70 transition-colors"
-                  >
-                    <Pencil size={16} />
-                  </button>
                   <button
                     onClick={() => handleDeleteItem(item.id)}
                     className="p-1 text-ink/40 hover:text-ink/70 transition-colors"
