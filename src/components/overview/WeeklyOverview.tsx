@@ -2,9 +2,15 @@
 
 import { useJournalStorage } from '@/lib/storage';
 import { Calendar } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export function WeeklyOverview() {
   const { entries } = useJournalStorage();
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const getDaysOfWeek = () => {
     const today = new Date();
@@ -35,6 +41,31 @@ export function WeeklyOverview() {
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
 
+  // Show a loading state or default state before client-side hydration
+  if (!mounted) {
+    return (
+      <div className="flex flex-col items-center gap-4">
+        <h3 className="text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5">
+          <Calendar size={18} className="text-accent" strokeWidth={1.5} />
+          <span>Week Overview</span>
+        </h3>
+        
+        <div className="flex gap-2 items-center">
+          {weekDays.map((date, index) => (
+            <div
+              key={index}
+              className="w-8 h-8 rounded-md flex items-center justify-center text-xs
+                transition-colors duration-200
+                bg-paper text-ink/50"
+            >
+              {date.getDate()}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center gap-4">
       <h3 className="text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5">
@@ -51,12 +82,10 @@ export function WeeklyOverview() {
           return (
             <div
               key={index}
-              className={`
-                w-8 h-8 rounded-md flex items-center justify-center text-xs
+              className={`w-8 h-8 rounded-md flex items-center justify-center text-xs
                 transition-colors duration-200
                 ${hasEntry ? 'bg-accent/20 text-accent' : 'bg-paper text-ink/50'}
-                ${isCurrentDay ? 'ring-2 ring-accent' : ''}
-              `}
+                ${isCurrentDay ? 'ring-2 ring-accent' : ''}`}
             >
               {date.getDate()}
             </div>
