@@ -10,12 +10,12 @@ export function useJournalEntry(selectedDate: string) {
   const [submitted, setSubmitted] = useState(!!entry);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Update form when selected date changes
+  // Reset form when date changes
   useEffect(() => {
-    const entry = getEntryByDate(selectedDate);
-    setLearning(entry?.learning || '');
-    setEnjoyment(entry?.enjoyment || '');
-    setSubmitted(!!entry);
+    const currentEntry = getEntryByDate(selectedDate);
+    setLearning(currentEntry?.learning || '');
+    setEnjoyment(currentEntry?.enjoyment || '');
+    setSubmitted(!!currentEntry);
     setIsEditing(false);
   }, [selectedDate, getEntryByDate]);
 
@@ -24,9 +24,11 @@ export function useJournalEntry(selectedDate: string) {
     
     const entryData = { date: selectedDate, learning, enjoyment };
 
-    if (isEditing && entry) {
+    if (entry) {
+      // If entry exists, update it
       updateEntry(entry.id, entryData);
     } else {
+      // If no entry exists, create new one
       addEntry(entryData);
     }
 
@@ -43,12 +45,13 @@ export function useJournalEntry(selectedDate: string) {
     if (entry) {
       setLearning(entry.learning);
       setEnjoyment(entry.enjoyment);
+      setIsEditing(false);
+      setSubmitted(true);
     } else {
       setLearning('');
       setEnjoyment('');
+      setSubmitted(false);
     }
-    setIsEditing(false);
-    setSubmitted(true);
   };
 
   return {
@@ -61,6 +64,7 @@ export function useJournalEntry(selectedDate: string) {
     isEditing,
     handleSubmit,
     handleEdit,
-    handleCancel
+    handleCancel,
+    entry // Add this to expose the current entry
   };
 }

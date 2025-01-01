@@ -2,7 +2,6 @@
 
 import { useJournalEntry } from '@/hooks/useJournalEntry';
 import { EntryDisplay } from '@/components/entries/EntryDisplay';
-import { useJournalStorage } from '@/lib/storage';
 import { BookOpen, Sparkles, Save, X, Edit } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { AutoResizeTextarea } from '@/components/common/AutoResizeTextarea';
@@ -18,14 +17,12 @@ export function JournalEntryForm() {
     enjoyment,
     setEnjoyment,
     submitted,
-    setSubmitted,
     isEditing,
     handleSubmit,
     handleEdit,
-    handleCancel
+    handleCancel,
+    entry // Get the current entry
   } = useJournalEntry(selectedDate);
-
-  const { getEntryByDate } = useJournalStorage();
 
   useEffect(() => {
     setMounted(true);
@@ -33,9 +30,7 @@ export function JournalEntryForm() {
 
   if (!mounted) return null;
 
-  if (submitted && !isEditing) {
-    const entry = getEntryByDate(selectedDate);
-    if (!entry) return null;
+  if (submitted && !isEditing && entry) {
     return <EntryDisplay entry={entry} isToday={isToday(selectedDate)} onEdit={handleEdit} />;
   }
 
@@ -80,7 +75,7 @@ export function JournalEntryForm() {
       </div>
 
       <div className="flex gap-4 pt-2">
-        {isEditing && (
+        {(isEditing || entry) && (
           <button
             type="button"
             onClick={handleCancel}
