@@ -4,7 +4,7 @@ import { useJournalEntry } from '@/hooks/useJournalEntry';
 import { EntryDisplay } from '@/components/entries/EntryDisplay';
 import { useJournalStorage } from '@/lib/storage';
 import { BookOpen, Sparkles, Save, X, Edit } from 'lucide-react';
-import { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { useState, useEffect } from 'react';
 
 export function JournalEntryForm() {
   const [mounted, setMounted] = useState(false);
@@ -22,30 +22,9 @@ export function JournalEntryForm() {
   } = useJournalEntry();
 
   const { getTodayEntry } = useJournalStorage();
-  const learningRef = useRef<HTMLTextAreaElement>(null);
-  const enjoymentRef = useRef<HTMLTextAreaElement>(null);
-
-  const adjustHeight = (textarea: HTMLTextAreaElement) => {
-    textarea.style.height = '42px'; // Reset to initial line height
-    const scrollHeight = textarea.scrollHeight;
-    if (scrollHeight > 42) { // Only expand if content exceeds one line
-      textarea.style.height = `${scrollHeight}px`;
-    }
-  };
-
-  const handleTextareaChange = (
-    e: ChangeEvent<HTMLTextAreaElement>,
-    setter: (value: string) => void
-  ) => {
-    setter(e.target.value);
-    adjustHeight(e.target);
-  };
 
   useEffect(() => {
     setMounted(true);
-    // Initialize textarea heights
-    if (learningRef.current) adjustHeight(learningRef.current);
-    if (enjoymentRef.current) adjustHeight(enjoymentRef.current);
   }, []);
 
   if (!mounted) return null;
@@ -64,17 +43,16 @@ export function JournalEntryForm() {
           <span>What did you learn today?</span>
         </label>
         <textarea
-          ref={learningRef}
           value={learning}
-          onChange={(e) => handleTextareaChange(e, setLearning)}
+          onChange={(e) => setLearning(e.target.value)}
           required
           placeholder="Share something new you learned today..."
+          rows={1}
           className="w-full p-3 rounded-md bg-paper
             border border-accent/20 
             focus:outline-none focus:border-accent/40
             placeholder:text-muted/40 journal-text text-ink/90
-            transition-colors duration-200 resize-none
-            min-h-[42px] overflow-hidden"
+            transition-colors duration-200"
         />
       </div>
       
@@ -84,17 +62,16 @@ export function JournalEntryForm() {
           <span>What brought you joy today?</span>
         </label>
         <textarea
-          ref={enjoymentRef}
           value={enjoyment}
-          onChange={(e) => handleTextareaChange(e, setEnjoyment)}
+          onChange={(e) => setEnjoyment(e.target.value)}
           required
           placeholder="Share something that made you happy..."
+          rows={1}
           className="w-full p-3 rounded-md bg-paper
             border border-accent/20 
             focus:outline-none focus:border-accent/40
             placeholder:text-muted/40 journal-text text-ink/90
-            transition-colors duration-200 resize-none
-            min-h-[42px] overflow-hidden"
+            transition-colors duration-200"
         />
       </div>
 
