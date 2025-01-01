@@ -1,5 +1,6 @@
 import { JournalEntry, JournalEntryFormData } from '@/types/journal';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { BaseItem } from '@/types/monthly';
 
 const STORAGE_KEY = 'journal_entries';
 
@@ -107,12 +108,12 @@ export function importEntries(data: ImportFormat | JournalEntry[]) {
 
 // Monthly items storage
 export function useMonthlyStorage() {
-  const [workItems, setWorkItems] = useLocalStorage('monthlyWorkItems', []);
-  const [projectItems, setProjectItems] = useLocalStorage('monthlyProjectItems', []);
-  const [learningItems, setLearningItems] = useLocalStorage('monthlyLearningItems', []);
+  const [workItems, setWorkItems] = useLocalStorage<BaseItem[]>('monthlyWorkItems', []);
+  const [projectItems, setProjectItems] = useLocalStorage<BaseItem[]>('monthlyProjectItems', []);
+  const [learningItems, setLearningItems] = useLocalStorage<BaseItem[]>('monthlyLearningItems', []);
 
-  const addWorkItem = (text: string) => {
-    const newItem = {
+  const addWorkItem = (text: string): BaseItem => {
+    const newItem: BaseItem = {
       id: Date.now().toString(),
       text,
       createdAt: new Date().toISOString(),
@@ -122,8 +123,8 @@ export function useMonthlyStorage() {
     return newItem;
   };
 
-  const addProjectItem = (text: string) => {
-    const newItem = {
+  const addProjectItem = (text: string): BaseItem => {
+    const newItem: BaseItem = {
       id: Date.now().toString(),
       text,
       createdAt: new Date().toISOString(),
@@ -133,8 +134,8 @@ export function useMonthlyStorage() {
     return newItem;
   };
 
-  const addLearningItem = (text: string) => {
-    const newItem = {
+  const addLearningItem = (text: string): BaseItem => {
+    const newItem: BaseItem = {
       id: Date.now().toString(),
       text,
       createdAt: new Date().toISOString(),
