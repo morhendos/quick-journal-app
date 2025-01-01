@@ -2,29 +2,31 @@
 
 import { useState } from 'react';
 import { Check, Plus, X, Pencil } from 'lucide-react';
-
-interface WorkItem {
-  id: string;
-  text: string;
-}
+import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
+import { WorkItem } from '@/types/monthly';
 
 export function MonthlyWorkList() {
-  const [workItems, setWorkItems] = useState<WorkItem[]>([]);
+  const {
+    getCurrentMonthData,
+    addWorkItem,
+    updateWorkItem,
+    deleteWorkItem
+  } = useMonthlyStorage();
+
   const [newItem, setNewItem] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
 
+  const currentMonthData = getCurrentMonthData();
+  const workItems = currentMonthData.workItems;
+
   const handleAddItem = () => {
     if (newItem.trim()) {
-      setWorkItems(prev => [...prev, { id: Date.now().toString(), text: newItem.trim() }]);
+      addWorkItem(newItem);
       setNewItem('');
       setIsAdding(false);
     }
-  };
-
-  const handleDeleteItem = (id: string) => {
-    setWorkItems(prev => prev.filter(item => item.id !== id));
   };
 
   const handleStartEdit = (item: WorkItem) => {
@@ -34,13 +36,7 @@ export function MonthlyWorkList() {
 
   const handleSaveEdit = () => {
     if (editingId && editText.trim()) {
-      setWorkItems(prev =>
-        prev.map(item =>
-          item.id === editingId
-            ? { ...item, text: editText.trim() }
-            : item
-        )
-      );
+      updateWorkItem(editingId, editText);
       setEditingId(null);
       setEditText('');
     }
@@ -157,7 +153,7 @@ export function MonthlyWorkList() {
                     <Pencil size={16} />
                   </button>
                   <button
-                    onClick={() => handleDeleteItem(item.id)}
+                    onClick={() => deleteWorkItem(item.id)}
                     className="p-1 text-ink/40 hover:text-ink/70 transition-colors"
                   >
                     <X size={16} />
