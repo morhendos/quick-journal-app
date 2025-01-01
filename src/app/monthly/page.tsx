@@ -8,8 +8,8 @@ import { MonthlyLearningList } from '@/components/monthly/MonthlyLearningList';
 
 export default function MonthlyReview() {
   return (
-    <div className="h-screen bg-background transition-colors duration-200 flex flex-col">
-      <main className="container mx-auto flex-1 px-3 py-4 sm:px-4 sm:py-12 max-w-6xl flex flex-col">
+    <div className="h-full bg-background transition-colors duration-200 flex flex-col overflow-hidden">
+      <main className="container mx-auto flex-1 px-3 py-4 sm:px-4 sm:py-12 max-w-6xl flex flex-col overflow-hidden">
         <div className="flex-none">
           <PageHeader />
         </div>
