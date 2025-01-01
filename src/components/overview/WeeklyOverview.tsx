@@ -43,13 +43,13 @@ export function WeeklyOverview() {
 
   const isFutureDate = (date: Date) => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time component for accurate date comparison
+    today.setHours(0, 0, 0, 0);
     date.setHours(0, 0, 0, 0);
     return date > today;
   };
 
   const handleDayClick = (date: Date) => {
-    if (isFutureDate(date)) return; // Prevent clicks on future dates
+    if (isFutureDate(date)) return;
     
     const dateStr = date.toISOString().split('T')[0];
     const params = new URLSearchParams(window.location.search);
@@ -65,7 +65,6 @@ export function WeeklyOverview() {
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
 
-  // Show a loading state before client-side hydration
   if (!mounted) {
     return (
       <div className="flex flex-col items-center gap-4">
@@ -115,7 +114,7 @@ export function WeeklyOverview() {
                 ${hasEntry ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-paper text-ink/50 hover:bg-paper/80'}
                 ${isCurrentDay ? 'ring-2 ring-accent' : ''}
                 ${isSelected ? 'ring-2 ring-accent/50 shadow-sm' : ''}
-                ${isFuture ? 'opacity-50 cursor-not-allowed hover:bg-paper' : 'cursor-pointer hover:scale-105 active:scale-95'}
+                ${isFuture ? 'opacity-50 cursor-default' : 'cursor-pointer hover:scale-105 active:scale-95'}
                 `}
             >
               {date.getDate()}
