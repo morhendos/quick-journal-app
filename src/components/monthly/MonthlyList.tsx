@@ -45,8 +45,9 @@ export function MonthlyList<T extends BaseItem>({
   // Function to adjust textarea height
   const adjustTextareaHeight = (textarea: HTMLTextAreaElement | null) => {
     if (textarea) {
+      // Reset height to auto to get the correct scrollHeight
       textarea.style.height = 'auto';
-      const height = textarea.scrollHeight + 2;
+      const height = textarea.scrollHeight;
       textarea.style.height = `${height}px`;
     }
   };
@@ -152,11 +153,12 @@ export function MonthlyList<T extends BaseItem>({
             onChange={(e) => setNewItem(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder={placeholder}
-            className="flex-1 p-2 rounded-md bg-paper leading-normal
+            className="flex-1 px-2 py-1.5 rounded-md bg-paper leading-normal
               border border-accent/20
               focus:outline-none focus:border-accent/40
               placeholder:text-muted/40 text-ink/90
               transition-colors duration-200 resize-none overflow-hidden"
+            style={{ height: '36px' }} // Set initial height to one line
             autoFocus
           />
           <div className="flex flex-col gap-2">
@@ -203,11 +205,12 @@ export function MonthlyList<T extends BaseItem>({
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
                   onKeyDown={handleKeyPress}
-                  className="w-full p-1.5 rounded-md bg-paper leading-normal
+                  className="w-full px-2 py-1.5 rounded-md bg-paper leading-normal
                     border border-accent/20
                     focus:outline-none focus:border-accent/40
                     text-ink/90 transition-colors duration-200
                     resize-none overflow-hidden"
+                  style={{ height: '36px' }} // Set initial height to one line
                   autoFocus
                 />
                 <div className="flex flex-col gap-2">
@@ -235,7 +238,7 @@ export function MonthlyList<T extends BaseItem>({
               <>
                 <div 
                   onClick={() => handleStartEdit(item)}
-                  className="flex-1 p-1.5 rounded-md border border-transparent
+                  className="flex-1 px-2 py-1.5 rounded-md border border-transparent
                     hover:bg-paper/80 cursor-pointer transition-colors duration-200
                     whitespace-pre-wrap"
                 >
