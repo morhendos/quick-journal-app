@@ -27,6 +27,10 @@ export default function MonthlyReview() {
             <Section>
               <MonthlyProjectsList />
             </Section>
+            
+            <Section>
+              <MonthlyLearningList />
+            </Section>
 
             <Section>
               <MonthlyHealthList />
@@ -38,10 +42,6 @@ export default function MonthlyReview() {
 
             <Section>
               <MonthlyLearningsToRememberList />
-            </Section>
-
-            <Section>
-              <MonthlyLearningList />
             </Section>
 
             <Section>
