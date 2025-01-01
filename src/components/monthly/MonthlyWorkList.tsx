@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, Plus, X, Pencil } from 'lucide-react';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { WorkItem } from '@/types/monthly';
@@ -13,17 +13,24 @@ export function MonthlyWorkList() {
     deleteWorkItem
   } = useMonthlyStorage();
 
+  const [mounted, setMounted] = useState(false);
+  const [workItems, setWorkItems] = useState<WorkItem[]>([]);
   const [newItem, setNewItem] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
 
-  const currentMonthData = getCurrentMonthData();
-  const workItems = currentMonthData.workItems;
+  // Load data after component mounts
+  useEffect(() => {
+    const currentData = getCurrentMonthData();
+    setWorkItems(currentData.workItems);
+    setMounted(true);
+  }, [getCurrentMonthData]);
 
   const handleAddItem = () => {
     if (newItem.trim()) {
-      addWorkItem(newItem);
+      const item = addWorkItem(newItem);
+      setWorkItems(prev => [...prev, item]);
       setNewItem('');
       setIsAdding(false);
     }
@@ -37,9 +44,21 @@ export function MonthlyWorkList() {
   const handleSaveEdit = () => {
     if (editingId && editText.trim()) {
       updateWorkItem(editingId, editText);
+      setWorkItems(prev =>
+        prev.map(item =>
+          item.id === editingId
+            ? { ...item, text: editText.trim(), updatedAt: new Date().toISOString() }
+            : item
+        )
+      );
       setEditingId(null);
       setEditText('');
     }
+  };
+
+  const handleDeleteItem = (id: string) => {
+    deleteWorkItem(id);
+    setWorkItems(prev => prev.filter(item => item.id !== id));
   };
 
   const handleCancelEdit = () => {
@@ -57,6 +76,20 @@ export function MonthlyWorkList() {
       setNewItem('');
     }
   };
+
+  // Don't render anything until after mount to prevent hydration errors
+  if (!mounted) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-ink/90">Work I Got Done</h3>
+        </div>
+        <div className="text-center py-8 text-ink/50 bg-paper/50 rounded-md">
+          Loading...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -153,7 +186,7 @@ export function MonthlyWorkList() {
                     <Pencil size={16} />
                   </button>
                   <button
-                    onClick={() => deleteWorkItem(item.id)}
+                    onClick={() => handleDeleteItem(item.id)}
                     className="p-1 text-ink/40 hover:text-ink/70 transition-colors"
                   >
                     <X size={16} />
