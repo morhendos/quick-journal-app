@@ -54,3 +54,13 @@ export function formatShortDate(dateStr: string) {
     day: 'numeric'
   }).format(date);
 }
+
+export function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(date);
+}
