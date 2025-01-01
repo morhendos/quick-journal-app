@@ -78,7 +78,7 @@ export function MonthlyList<T extends BaseItem>({
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-ink/90">{title}</h3>
+          <h2 className="text-xl sm:text-2xl font-semibold text-ink/90 journal-heading">{title}</h2>
         </div>
         <div className="text-center py-8 text-ink/50 bg-paper/50 rounded-md">
           Loading...
@@ -90,7 +90,7 @@ export function MonthlyList<T extends BaseItem>({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-ink/90">{title}</h3>
+        <h2 className="text-xl sm:text-2xl font-semibold text-ink/90 journal-heading">{title}</h2>
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}

@@ -1,6 +1,5 @@
 'use client';
 
-import { Section } from '@/components/common/Section';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { MonthlyWorkList } from '@/components/monthly/MonthlyWorkList';
 import { MonthlyProjectsList } from '@/components/monthly/MonthlyProjectsList';
@@ -9,6 +8,21 @@ import { MonthlyHealthList } from '@/components/monthly/MonthlyHealthList';
 import { MonthlyLifeEventsList } from '@/components/monthly/MonthlyLifeEventsList';
 import { MonthlyLearningsToRememberList } from '@/components/monthly/MonthlyLearningsToRememberList';
 import { MonthlyHopesList } from '@/components/monthly/MonthlyHopesList';
+
+interface SectionContainerProps {
+  className?: string;
+  children: React.ReactNode;
+}
+
+function SectionContainer({ children, className = '' }: SectionContainerProps) {
+  return (
+    <div className={`paper-texture bg-paper rounded-lg p-4 sm:p-8 journal-shadow transition-colors duration-200 flex flex-col min-h-0 ${className}`}>
+      <div className="flex-1 min-h-0 overflow-auto">
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function MonthlyReview() {
   return (
@@ -20,33 +34,33 @@ export default function MonthlyReview() {
         
         <div className="flex-1 overflow-auto min-h-0">
           <div className="space-y-8">
-            <Section title="Work">
+            <SectionContainer>
               <MonthlyWorkList />
-            </Section>
+            </SectionContainer>
 
-            <Section title="Projects">
+            <SectionContainer>
               <MonthlyProjectsList />
-            </Section>
+            </SectionContainer>
             
-            <Section title="Learning">
+            <SectionContainer>
               <MonthlyLearningList />
-            </Section>
+            </SectionContainer>
 
-            <Section title="Health">
+            <SectionContainer>
               <MonthlyHealthList />
-            </Section>
+            </SectionContainer>
 
-            <Section title="Life Events">
+            <SectionContainer>
               <MonthlyLifeEventsList />
-            </Section>
+            </SectionContainer>
 
-            <Section title="Learnings to Remember">
+            <SectionContainer>
               <MonthlyLearningsToRememberList />
-            </Section>
+            </SectionContainer>
 
-            <Section title="Hopes & Dreams">
+            <SectionContainer>
               <MonthlyHopesList />
-            </Section>
+            </SectionContainer>
           </div>
         </div>
       </main>
