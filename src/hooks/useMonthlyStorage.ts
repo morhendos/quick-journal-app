@@ -25,6 +25,7 @@ export function useMonthlyStorage() {
         month: currentMonth, 
         workItems: [], 
         projectItems: [],
+        learningItems: [],
         healthItems: [],
         lifeEventItems: [],
         learningToRememberItems: [],
@@ -44,6 +45,7 @@ export function useMonthlyStorage() {
 
   const addWorkItem = (text: string) => addItem('workItems', text);
   const addProjectItem = (text: string) => addItem('projectItems', text);
+  const addLearningItem = (text: string) => addItem('learningItems', text);
   const addHealthItem = (text: string) => addItem('healthItems', text);
   const addLifeEventItem = (text: string) => addItem('lifeEventItems', text);
   const addLearningToRememberItem = (text: string) => addItem('learningToRememberItems', text);
@@ -51,6 +53,7 @@ export function useMonthlyStorage() {
 
   const updateWorkItem = (id: string, text: string) => updateItem('workItems', id, text);
   const updateProjectItem = (id: string, text: string) => updateItem('projectItems', id, text);
+  const updateLearningItem = (id: string, text: string) => updateItem('learningItems', id, text);
   const updateHealthItem = (id: string, text: string) => updateItem('healthItems', id, text);
   const updateLifeEventItem = (id: string, text: string) => updateItem('lifeEventItems', id, text);
   const updateLearningToRememberItem = (id: string, text: string) => updateItem('learningToRememberItems', id, text);
@@ -58,6 +61,7 @@ export function useMonthlyStorage() {
 
   const deleteWorkItem = (id: string) => deleteItem('workItems', id);
   const deleteProjectItem = (id: string) => deleteItem('projectItems', id);
+  const deleteLearningItem = (id: string) => deleteItem('learningItems', id);
   const deleteHealthItem = (id: string) => deleteItem('healthItems', id);
   const deleteLifeEventItem = (id: string) => deleteItem('lifeEventItems', id);
   const deleteLearningToRememberItem = (id: string) => deleteItem('learningToRememberItems', id);
@@ -158,6 +162,9 @@ export function useMonthlyStorage() {
     addProjectItem,
     updateProjectItem,
     deleteProjectItem,
+    addLearningItem,
+    updateLearningItem,
+    deleteLearningItem,
     addHealthItem,
     updateHealthItem,
     deleteHealthItem,
