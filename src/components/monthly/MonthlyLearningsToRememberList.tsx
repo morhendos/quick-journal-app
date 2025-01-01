@@ -1,19 +1,27 @@
 'use client';
 
-import { AddItemButton } from '@/components/common/AddItemButton';
-import { MonthlyEntryList } from './MonthlyEntryList';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
+import { MonthlyList } from './MonthlyList';
 
 export function MonthlyLearningsToRememberList() {
-  const { items: learningsToRemember, addItem, removeItem } = useMonthlyStorage('learningsToRemember');
+  const {
+    getCurrentMonthData,
+    addLearningToRememberItem,
+    updateLearningToRememberItem,
+    deleteLearningToRememberItem
+  } = useMonthlyStorage();
+
+  const currentData = getCurrentMonthData();
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl sm:text-2xl font-medium text-ink/90">Things I've learned and want to remember</h2>
-        <AddItemButton onClick={addItem} />
-      </div>
-      <MonthlyEntryList items={learningsToRemember} onRemoveItem={removeItem} />
-    </div>
+    <MonthlyList
+      title="Things I've learned and want to remember"
+      items={currentData.learningToRememberItems}
+      addItem={addLearningToRememberItem}
+      updateItem={updateLearningToRememberItem}
+      deleteItem={deleteLearningToRememberItem}
+      emptyMessage="Start adding learnings you want to remember"
+      placeholder="Enter something you learned..."
+    />
   );
 }
