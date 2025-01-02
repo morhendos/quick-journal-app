@@ -94,12 +94,12 @@ export function WeeklyOverview() {
   };
 
   const handlePreviousWeek = () => {
-    setWeekOffset((prev: number) => prev - 1);
+    setWeekOffset(prev => prev - 1);
   };
 
   const handleNextWeek = () => {
     if (weekOffset < 0) {
-      setWeekOffset((prev: number) => prev + 1);
+      setWeekOffset(prev => prev + 1);
     }
   };
 
