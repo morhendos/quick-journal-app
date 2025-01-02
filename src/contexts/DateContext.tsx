@@ -1,13 +1,13 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from 'react';
 import { getLocalISOString } from '@/utils/dates';
 
 interface DateContextType {
   selectedDate: string;
   setSelectedDate: (date: string) => void;
   weekOffset: number;
-  setWeekOffset: (offset: number) => void;
+  setWeekOffset: Dispatch<SetStateAction<number>>;
 }
 
 const DateContext = createContext<DateContextType | undefined>(undefined);
