@@ -6,11 +6,17 @@ A modern, minimalist journaling application that helps users track their daily l
 
 ### Core Functionality
 - Daily journal entries with learning and enjoyment sections
-- Edit functionality for today's entry
+- Edit functionality with optional empty entries to remove them
 - Chronological entry list with weekly view
-- Interactive week overview with entry indicators
+- Interactive week overview with multi-week navigation
 - Local storage for data persistence
 - User authentication (email/password)
+
+### Navigation
+- Weekly calendar with entry indicators
+- Past weeks navigation with date range display
+- Current week quick access
+- Prevention of future entries
 
 ### Data Management
 - Export journal to JSON with metadata
@@ -174,6 +180,7 @@ NODE_ENV=development
 
 - [x] User authentication
 - [x] Interactive week overview
+- [x] Multi-week navigation
 - [ ] MongoDB integration
 - [ ] Rich text editor
 - [ ] Search and filtering
