@@ -47,7 +47,6 @@ export function JournalEntryForm() {
         <AutoResizeTextarea
           value={learning}
           onChange={(e) => setLearning(e.target.value)}
-          required
           placeholder="Share something new you learned..."
           className="w-full"
         />
@@ -63,7 +62,6 @@ export function JournalEntryForm() {
         <AutoResizeTextarea
           value={enjoyment}
           onChange={(e) => setEnjoyment(e.target.value)}
-          required
           placeholder="Share something that made you happy..."
           className="w-full"
         />
