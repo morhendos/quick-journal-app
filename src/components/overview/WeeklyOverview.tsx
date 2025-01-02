@@ -3,14 +3,41 @@
 import { useJournalStorage } from '@/lib/storage';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
-import { getLocalISOString, getWeekDays, isFutureDate } from '@/utils/dates';
+import { getLocalISOString, getWeekDays, isFutureDate, getWeekRange } from '@/utils/dates';
 import { useDateContext } from '@/contexts/DateContext';
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+type NavigationButtonProps = {
+  direction: 'left' | 'right';
+  onClick: () => void;
+  disabled?: boolean;
+};
+
+function NavigationButton({ direction, onClick, disabled }: NavigationButtonProps) {
+  const Icon = direction === 'left' ? ChevronLeft : ChevronRight;
+  
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        'w-8 h-8 flex items-center justify-center rounded-full',
+        'transition-all duration-200',
+        'hover:bg-accent/10 active:bg-accent/20',
+        'focus:outline-none focus:ring-2 focus:ring-accent/30',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        'text-ink/70 hover:text-ink'
+      )}
+      aria-label={`${direction === 'left' ? 'Previous' : 'Next'} week`}
+    >
+      <Icon className="w-5 h-5" />
+    </button>
+  );
+}
 
 export function WeeklyOverview() {
   const { entries } = useJournalStorage();
-  const { selectedDate, setSelectedDate } = useDateContext();
-  const [weekOffset, setWeekOffset] = useState(0);
+  const { selectedDate, setSelectedDate, weekOffset, setWeekOffset } = useDateContext();
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
@@ -18,6 +45,7 @@ export function WeeklyOverview() {
   }, []);
 
   const weekDays = useMemo(() => getWeekDays(weekOffset), [weekOffset]);
+  const weekRange = useMemo(() => getWeekRange(weekOffset), [weekOffset]);
 
   const entryMap = useMemo(() => {
     const map = new Map<string, boolean>();
@@ -101,36 +129,30 @@ export function WeeklyOverview() {
 
   const today = new Date();
   const todayStr = getLocalISOString(today);
-  const monthYear = weekDays[0].toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
+      <div className="flex items-center gap-3">
+        <NavigationButton
+          direction="left"
           onClick={handlePreviousWeek}
-          className="w-8 h-8 rounded-full"
-          aria-label="Previous week"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
+        />
 
-        <h3 className="text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5">
-          <Calendar size={18} className="text-accent" strokeWidth={1.5} />
-          <span>{monthYear}</span>
-        </h3>
+        <div className="flex flex-col items-center min-w-[140px]">
+          <h3 className="text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5">
+            <Calendar size={18} className="text-accent" strokeWidth={1.5} />
+            <span>{weekRange.month} {weekRange.year}</span>
+          </h3>
+          <p className="text-xs text-ink/60 mt-0.5">
+            {weekRange.start} - {weekRange.end}
+          </p>
+        </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
+        <NavigationButton
+          direction="right"
           onClick={handleNextWeek}
           disabled={weekOffset === 0}
-          className="w-8 h-8 rounded-full"
-          aria-label="Next week"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        />
       </div>
       
       <div className="flex gap-2 items-center">
@@ -149,14 +171,14 @@ export function WeeklyOverview() {
               disabled={isFutureDay}
               aria-label={`${dayName} ${date.getDate()}${hasEntry ? ', has entry' : ''}${isCurrentDay ? ', current day' : ''}`}
               aria-pressed={isSelected}
-              className={`
-                w-8 h-8 rounded-md flex items-center justify-center text-xs
-                transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50
-                ${hasEntry ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-paper text-ink/50 hover:bg-paper/80'}
-                ${isCurrentDay ? 'ring-2 ring-accent' : ''}
-                ${isSelected ? 'ring-2 ring-accent/50 shadow-sm' : ''}
-                ${isFutureDay ? 'opacity-50 cursor-default' : 'cursor-pointer hover:scale-105 active:scale-95'}
-              `}
+              className={cn(
+                'w-8 h-8 rounded-md flex items-center justify-center text-xs',
+                'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50',
+                hasEntry ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-paper text-ink/50 hover:bg-paper/80',
+                isCurrentDay ? 'ring-2 ring-accent' : '',
+                isSelected ? 'ring-2 ring-accent/50 shadow-sm' : '',
+                isFutureDay ? 'opacity-50 cursor-default' : 'cursor-pointer hover:scale-105 active:scale-95'
+              )}
             >
               {date.getDate()}
             </button>
@@ -165,14 +187,18 @@ export function WeeklyOverview() {
       </div>
 
       {weekOffset !== 0 && (
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={handleCurrentWeek}
-          className="text-xs text-ink/70 hover:text-ink"
+          className={cn(
+            'text-xs text-ink/60 hover:text-ink',
+            'transition-colors duration-200',
+            'py-1 px-2 rounded-md',
+            'hover:bg-accent/10 active:bg-accent/20',
+            'focus:outline-none focus:ring-2 focus:ring-accent/30'
+          )}
         >
           Back to Current Week
-        </Button>
+        </button>
       )}
     </div>
   );
