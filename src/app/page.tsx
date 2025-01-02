@@ -47,3 +47,11 @@ function JournalContent() {
     </div>
   );
 }
+
+export default function Home() {
+  return (
+    <DateProvider>
+      <JournalContent />
+    </DateProvider>
+  );
+}
