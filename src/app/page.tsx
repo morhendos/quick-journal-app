@@ -20,7 +20,7 @@ function JournalContent() {
 
   const sectionTitle = isToday(selectedDate)
     ? 'Entry for Today'
-    : 'Selected Date';
+    : formatDate(selectedDate);
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-200 overflow-hidden">
