@@ -5,19 +5,26 @@ import { EntryDisplay } from './EntryDisplay';
 import { WeeklyGroupedView } from './WeeklyGroupedView';
 import { ViewToggle } from '@/components/common/ViewToggle';
 import { BookOpen } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getLocalISOString, getWeekBounds } from '@/utils/dates';
+import { useDateContext } from '@/contexts/DateContext';
 
 type ViewType = 'chronological' | 'weekly';
 
 export function EntryList() {
   const { entries } = useJournalStorage();
+  const { weekOffset } = useDateContext();
   const [mounted, setMounted] = useState(false);
   const [view, setView] = useState<ViewType>('weekly');
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Get week bounds based on the selected week offset
+  const weekBounds = useMemo(() => {
+    return getWeekBounds(weekOffset);
+  }, [weekOffset]);
 
   if (!mounted) {
     return null;
@@ -39,8 +46,8 @@ export function EntryList() {
     );
   }
 
-  // Filter entries for chronological view to only show current week
-  const { monday, sunday } = getWeekBounds();
+  // Filter entries for the selected week
+  const { monday, sunday } = weekBounds;
   
   const filteredEntries = view === 'chronological'
     ? entries.filter(entry => {
@@ -59,16 +66,24 @@ export function EntryList() {
 
   const noEntriesThisWeek = view === 'chronological' && sortedEntries.length === 0;
 
+  // Get formatted date range for the week
+  const weekRange = `${monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+
   return (
     <div className="flex flex-col min-h-0 h-full">
-      <div className="flex-none">
+      <div className="flex-none space-y-2">
         <ViewToggle view={view} onViewChange={setView} />
+        {view === 'chronological' && (
+          <p className="text-xs text-ink/60 text-center journal-text">
+            Showing entries for {weekRange}
+          </p>
+        )}
       </div>
       
-      <div className="flex-1 overflow-auto min-h-0">
+      <div className="flex-1 overflow-auto min-h-0 mt-4">
         {noEntriesThisWeek ? (
-          <div className="text-center py-8 text-muted text-sm journal-text">
-            No entries for this week yet
+          <div className="text-center py-8 text-muted text-sm journal-text border-2 border-dashed border-accent/10 rounded-lg">
+            No entries for {weekRange}
           </div>
         ) : view === 'chronological' ? (
           <div className="space-y-4 sm:space-y-6">
