@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { JournalEntryDisplayProps } from '@/types/journal';
-import { formatDate } from '@/utils/dates';
 import { BookOpen, Sparkles, Edit } from 'lucide-react';
 
 export function EntryDisplay({ entry, isToday, onEdit }: JournalEntryDisplayProps) {
@@ -20,13 +19,10 @@ export function EntryDisplay({ entry, isToday, onEdit }: JournalEntryDisplayProp
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
-        <h3 className="journal-heading text-lg font-medium text-ink transition-colors">
-          {formatDate(entry.date)}
-        </h3>
         {onEdit && (
           <button
             onClick={onEdit}
-            className="text-accent hover:text-accent/80 transition-colors"
+            className="text-accent hover:text-accent/80 transition-colors ml-auto"
             aria-label="Edit entry"
           >
             <Edit size={18} strokeWidth={1.5} />

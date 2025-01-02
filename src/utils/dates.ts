@@ -12,14 +12,17 @@ export function getLocalISOString(date: Date) {
   }
 }
 
-export function getWeekBounds() {
+export function getWeekBounds(weekOffset: number = 0) {
   try {
     const today = new Date();
-    const currentDay = today.getDay();
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + (weekOffset * 7)); // Adjust for week offset
+    
+    const currentDay = targetDate.getDay();
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
 
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + mondayOffset);
+    const monday = new Date(targetDate);
+    monday.setDate(targetDate.getDate() + mondayOffset);
     monday.setHours(0, 0, 0, 0);
 
     const sunday = new Date(monday);
@@ -50,24 +53,27 @@ export function isFutureDate(date: Date) {
       return false;
     }
     const today = new Date();
-    const todayStr = getLocalISOString(today);
-    const dateStr = getLocalISOString(date);
-    return dateStr > todayStr;
+    today.setHours(23, 59, 59, 999); // End of today
+    return date > today;
   } catch {
     return false;
   }
 }
 
-export function getCurrentWeekDays() {
+export function getWeekDays(weekOffset: number = 0) {
   try {
     const today = new Date();
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + (weekOffset * 7)); // Move weeks back/forward
+    
     const days: Date[] = [];
-    const currentDay = today.getDay();
+    const currentDay = targetDate.getDay();
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
     
     for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + mondayOffset + i);
+      const date = new Date(targetDate);
+      date.setDate(targetDate.getDate() + mondayOffset + i);
+      date.setHours(0, 0, 0, 0); // Start of day
       if (isNaN(date.getTime())) {
         throw new Error('Invalid date calculation');
       }
@@ -113,4 +119,14 @@ export function formatDate(dateStr: string) {
     console.error('Error formatting date:', error);
     return '';
   }
+}
+
+export function getWeekRange(weekOffset: number = 0) {
+  const { monday, sunday } = getWeekBounds(weekOffset);
+  return {
+    start: new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(monday),
+    end: new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(sunday),
+    month: new Intl.DateTimeFormat('en-US', { month: 'long' }).format(monday),
+    year: new Intl.DateTimeFormat('en-US', { year: 'numeric' }).format(monday)
+  };
 }

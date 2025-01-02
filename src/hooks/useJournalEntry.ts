@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useJournalStorage } from '@/lib/storage';
 
 export function useJournalEntry(selectedDate: string) {
-  const { addEntry, updateEntry, getEntryByDate } = useJournalStorage();
+  const { addEntry, updateEntry, deleteEntry, getEntryByDate } = useJournalStorage();
   const lastDateRef = useRef(selectedDate);
   
   const entry = getEntryByDate(selectedDate);
@@ -33,15 +33,23 @@ export function useJournalEntry(selectedDate: string) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const entryData = { date: selectedDate, learning, enjoyment };
-
-    if (entry) {
-      updateEntry(entry.id, entryData);
+    const isEmptyEntry = !learning.trim() && !enjoyment.trim();
+    
+    if (isEmptyEntry) {
+      if (entry) {
+        deleteEntry(entry.id);
+        setSubmitted(false);
+      }
     } else {
-      addEntry(entryData);
+      const entryData = { date: selectedDate, learning, enjoyment };
+      if (entry) {
+        updateEntry(entry.id, entryData);
+      } else {
+        addEntry(entryData);
+      }
+      setSubmitted(true);
     }
-
-    setSubmitted(true);
+    
     setIsEditing(false);
   };
 

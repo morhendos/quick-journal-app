@@ -35,25 +35,18 @@ export function JournalEntryForm() {
     return <EntryDisplay entry={entry} isToday={isToday(selectedDate)} onEdit={handleEdit} />;
   }
 
-  const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric'
-  });
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
       <div className="space-y-3">
         <label className="block text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5 transition-colors">
           <BookOpen size={18} className="text-accent" strokeWidth={1.5} />
           <span>
-            What did you learn {isToday(selectedDate) ? 'today' : `on ${formattedDate}`}?
+            What did you learn {isToday(selectedDate) ? 'today' : 'on this day'}?
           </span>
         </label>
         <AutoResizeTextarea
           value={learning}
           onChange={(e) => setLearning(e.target.value)}
-          required
           placeholder="Share something new you learned..."
           className="w-full"
         />
@@ -69,7 +62,6 @@ export function JournalEntryForm() {
         <AutoResizeTextarea
           value={enjoyment}
           onChange={(e) => setEnjoyment(e.target.value)}
-          required
           placeholder="Share something that made you happy..."
           className="w-full"
         />

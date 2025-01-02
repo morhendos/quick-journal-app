@@ -1,21 +1,51 @@
 'use client';
 
 import { useJournalStorage } from '@/lib/storage';
-import { Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
-import { getLocalISOString, getCurrentWeekDays, isFutureDate } from '@/utils/dates';
+import { getLocalISOString, getWeekDays, isFutureDate, getWeekRange } from '@/utils/dates';
 import { useDateContext } from '@/contexts/DateContext';
+import { cn } from '@/lib/utils';
+
+type NavigationButtonProps = {
+  direction: 'left' | 'right';
+  onClick: () => void;
+  disabled?: boolean;
+};
+
+function NavigationButton({ direction, onClick, disabled }: NavigationButtonProps) {
+  const Icon = direction === 'left' ? ChevronLeft : ChevronRight;
+  
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        'w-8 h-8 flex items-center justify-center rounded-full',
+        'transition-all duration-200',
+        'hover:bg-accent/10 active:bg-accent/20',
+        'focus:outline-none focus:ring-2 focus:ring-accent/30',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        'text-ink/70 hover:text-ink'
+      )}
+      aria-label={`${direction === 'left' ? 'Previous' : 'Next'} week`}
+    >
+      <Icon className="w-5 h-5" />
+    </button>
+  );
+}
 
 export function WeeklyOverview() {
   const { entries } = useJournalStorage();
-  const { selectedDate, setSelectedDate } = useDateContext();
+  const { selectedDate, setSelectedDate, weekOffset, setWeekOffset } = useDateContext();
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const weekDays = useMemo(() => getCurrentWeekDays(), []);
+  const weekDays = useMemo(() => getWeekDays(weekOffset), [weekOffset]);
+  const weekRange = useMemo(() => getWeekRange(weekOffset), [weekOffset]);
 
   const entryMap = useMemo(() => {
     const map = new Map<string, boolean>();
@@ -63,6 +93,20 @@ export function WeeklyOverview() {
     }
   };
 
+  const handlePreviousWeek = () => {
+    setWeekOffset(prev => prev - 1);
+  };
+
+  const handleNextWeek = () => {
+    if (weekOffset < 0) {
+      setWeekOffset(prev => prev + 1);
+    }
+  };
+
+  const handleCurrentWeek = () => {
+    setWeekOffset(0);
+  };
+
   if (!mounted) {
     return (
       <div className="flex flex-col items-center gap-4 animate-pulse">
@@ -88,10 +132,28 @@ export function WeeklyOverview() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <h3 className="text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5">
-        <Calendar size={18} className="text-accent" strokeWidth={1.5} />
-        <span>Week Overview</span>
-      </h3>
+      <div className="flex items-center gap-3">
+        <NavigationButton
+          direction="left"
+          onClick={handlePreviousWeek}
+        />
+
+        <div className="flex flex-col items-center min-w-[140px]">
+          <h3 className="text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5">
+            <Calendar size={18} className="text-accent" strokeWidth={1.5} />
+            <span>{weekRange.month} {weekRange.year}</span>
+          </h3>
+          <p className="text-xs text-ink/60 mt-0.5">
+            {weekRange.start} - {weekRange.end}
+          </p>
+        </div>
+
+        <NavigationButton
+          direction="right"
+          onClick={handleNextWeek}
+          disabled={weekOffset === 0}
+        />
+      </div>
       
       <div className="flex gap-2 items-center">
         {weekDays.map((date, index) => {
@@ -109,20 +171,35 @@ export function WeeklyOverview() {
               disabled={isFutureDay}
               aria-label={`${dayName} ${date.getDate()}${hasEntry ? ', has entry' : ''}${isCurrentDay ? ', current day' : ''}`}
               aria-pressed={isSelected}
-              className={`
-                w-8 h-8 rounded-md flex items-center justify-center text-xs
-                transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50
-                ${hasEntry ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-paper text-ink/50 hover:bg-paper/80'}
-                ${isCurrentDay ? 'ring-2 ring-accent' : ''}
-                ${isSelected ? 'ring-2 ring-accent/50 shadow-sm' : ''}
-                ${isFutureDay ? 'opacity-50 cursor-default' : 'cursor-pointer hover:scale-105 active:scale-95'}
-              `}
+              className={cn(
+                'w-8 h-8 rounded-md flex items-center justify-center text-xs',
+                'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50',
+                hasEntry ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-paper text-ink/50 hover:bg-paper/80',
+                isCurrentDay ? 'ring-2 ring-accent' : '',
+                isSelected ? 'ring-2 ring-accent/50 shadow-sm' : '',
+                isFutureDay ? 'opacity-50 cursor-default' : 'cursor-pointer hover:scale-105 active:scale-95'
+              )}
             >
               {date.getDate()}
             </button>
           );
         })}
       </div>
+
+      {weekOffset !== 0 && (
+        <button
+          onClick={handleCurrentWeek}
+          className={cn(
+            'text-xs text-ink/60 hover:text-ink',
+            'transition-colors duration-200',
+            'py-1 px-2 rounded-md',
+            'hover:bg-accent/10 active:bg-accent/20',
+            'focus:outline-none focus:ring-2 focus:ring-accent/30'
+          )}
+        >
+          Back to Current Week
+        </button>
+      )}
     </div>
   );
 }
