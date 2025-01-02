@@ -1,21 +1,23 @@
 'use client';
 
 import { useJournalStorage } from '@/lib/storage';
-import { Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
-import { getLocalISOString, getCurrentWeekDays, isFutureDate } from '@/utils/dates';
+import { getLocalISOString, getWeekDays, isFutureDate } from '@/utils/dates';
 import { useDateContext } from '@/contexts/DateContext';
+import { Button } from '@/components/ui/button';
 
 export function WeeklyOverview() {
   const { entries } = useJournalStorage();
   const { selectedDate, setSelectedDate } = useDateContext();
+  const [weekOffset, setWeekOffset] = useState(0);
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const weekDays = useMemo(() => getCurrentWeekDays(), []);
+  const weekDays = useMemo(() => getWeekDays(weekOffset), [weekOffset]);
 
   const entryMap = useMemo(() => {
     const map = new Map<string, boolean>();
@@ -63,6 +65,20 @@ export function WeeklyOverview() {
     }
   };
 
+  const handlePreviousWeek = () => {
+    setWeekOffset(prev => prev - 1);
+  };
+
+  const handleNextWeek = () => {
+    if (weekOffset < 0) {
+      setWeekOffset(prev => prev + 1);
+    }
+  };
+
+  const handleCurrentWeek = () => {
+    setWeekOffset(0);
+  };
+
   if (!mounted) {
     return (
       <div className="flex flex-col items-center gap-4 animate-pulse">
@@ -85,13 +101,37 @@ export function WeeklyOverview() {
 
   const today = new Date();
   const todayStr = getLocalISOString(today);
+  const monthYear = weekDays[0].toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <h3 className="text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5">
-        <Calendar size={18} className="text-accent" strokeWidth={1.5} />
-        <span>Week Overview</span>
-      </h3>
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handlePreviousWeek}
+          className="w-8 h-8 rounded-full"
+          aria-label="Previous week"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        <h3 className="text-sm font-medium text-ink/90 journal-text flex items-center gap-2.5">
+          <Calendar size={18} className="text-accent" strokeWidth={1.5} />
+          <span>{monthYear}</span>
+        </h3>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleNextWeek}
+          disabled={weekOffset === 0}
+          className="w-8 h-8 rounded-full"
+          aria-label="Next week"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
       
       <div className="flex gap-2 items-center">
         {weekDays.map((date, index) => {
@@ -123,6 +163,17 @@ export function WeeklyOverview() {
           );
         })}
       </div>
+
+      {weekOffset !== 0 && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleCurrentWeek}
+          className="text-xs text-ink/70 hover:text-ink"
+        >
+          Back to Current Week
+        </Button>
+      )}
     </div>
   );
 }
