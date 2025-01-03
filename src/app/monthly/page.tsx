@@ -1,6 +1,7 @@
 'use client';
 
 import { PageHeader } from '@/components/layout/PageHeader';
+import { MonthlyHeader } from '@/components/monthly/MonthlyHeader';
 import { MonthlyWorkList } from '@/components/monthly/MonthlyWorkList';
 import { MonthlyProjectsList } from '@/components/monthly/MonthlyProjectsList';
 import { MonthlyLearningList } from '@/components/monthly/MonthlyLearningList';
@@ -30,6 +31,10 @@ export default function MonthlyReview() {
       <main className="container mx-auto flex-1 px-3 py-4 sm:px-4 sm:py-12 max-w-6xl flex flex-col overflow-hidden">
         <div className="flex-none">
           <PageHeader />
+        </div>
+        
+        <div className="mb-8">
+          <MonthlyHeader />
         </div>
         
         <div className="flex-1 overflow-auto min-h-0">
