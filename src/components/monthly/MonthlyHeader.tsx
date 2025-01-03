@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useMonthlyContext } from '@/contexts/MonthlyContext';
 import { cn } from '@/lib/utils';
+import { MonthlyProvider } from '@/contexts/MonthlyContext';
 
 type NavigationButtonProps = {
   direction: 'left' | 'right';
@@ -32,7 +33,7 @@ function NavigationButton({ direction, onClick, disabled }: NavigationButtonProp
   );
 }
 
-export function MonthlyHeader() {
+function MonthlyHeaderContent() {
   const { selectedDate, monthOffset, setMonthOffset, isCurrentMonth } = useMonthlyContext();
 
   const handlePreviousMonth = () => {
@@ -89,5 +90,13 @@ export function MonthlyHeader() {
         </button>
       )}
     </div>
+  );
+}
+
+export function MonthlyHeader() {
+  return (
+    <MonthlyProvider>
+      <MonthlyHeaderContent />
+    </MonthlyProvider>
   );
 }
