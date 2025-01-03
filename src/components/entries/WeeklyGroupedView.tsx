@@ -1,5 +1,6 @@
 import { JournalEntry } from '@/types/journal';
 import { formatShortDate, getLocalISOString, getWeekBounds } from '@/utils/dates';
+import { useDateContext } from '@/contexts/DateContext';
 
 interface WeeklyGroupedViewProps {
   entries: JournalEntry[];
@@ -15,8 +16,8 @@ interface GroupedByType {
   learnings: GroupedEntry[];
 }
 
-function getCurrentWeekEntries(entries: JournalEntry[]): JournalEntry[] {
-  const { monday, sunday } = getWeekBounds();
+function getWeekEntries(entries: JournalEntry[], weekOffset: number): JournalEntry[] {
+  const { monday, sunday } = getWeekBounds(weekOffset);
   
   return entries.filter(entry => {
     const entryDate = new Date(entry.date + 'T00:00:00');
@@ -37,9 +38,11 @@ function groupEntriesByType(entries: JournalEntry[]): GroupedByType {
 }
 
 export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
-  // Filter entries for current week only and group by type
-  const currentWeekEntries = getCurrentWeekEntries(entries);
-  const { enjoyments, learnings } = groupEntriesByType(currentWeekEntries);
+  const { weekOffset } = useDateContext();
+  
+  // Filter entries for the selected week and group by type
+  const weekEntries = getWeekEntries(entries, weekOffset);
+  const { enjoyments, learnings } = groupEntriesByType(weekEntries);
   
   // Sort by date (newest first)
   const sortedEnjoyments = enjoyments.sort((a, b) => 
