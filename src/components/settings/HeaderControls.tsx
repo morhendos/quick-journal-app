@@ -17,8 +17,17 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   const pathname = usePathname();
   const isMonthlyPage = pathname === '/monthly';
   
+  // Only try to use monthly storage on the monthly page
+  let monthlyStorage;
+  try {
+    monthlyStorage = isMonthlyPage ? useMonthlyStorage() : null;
+  } catch {
+    monthlyStorage = null;
+  }
+  
   const storageActions = useMemo(() => {
-    if (!isMonthlyPage) {
+    // Journal page actions
+    if (!isMonthlyPage || !monthlyStorage) {
       return {
         importData: async (data: unknown) => {
           importEntries(data as ImportFormat | JournalEntry[]);
@@ -28,16 +37,14 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
       };
     }
 
-    // Only access monthly storage when on monthly page
-    const monthlyStorage = useMonthlyStorage();
-    
+    // Monthly page actions
     return {
       importData: async (data: unknown) => {
         await monthlyStorage.importData(data);
       },
       exportData: () => monthlyStorage.exportData()
     };
-  }, [isMonthlyPage, onEntriesUpdate]);
+  }, [isMonthlyPage, monthlyStorage, onEntriesUpdate]);
 
   const handleImport = useCallback(async () => {
     const input = document.createElement('input');
