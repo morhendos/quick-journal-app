@@ -1,38 +1,18 @@
 import { JournalEntry } from '@/types/journal';
 import { BookOpen, Sparkles } from 'lucide-react';
-import { useDateContext } from '@/contexts/DateContext';
-import { getWeekDays } from '@/utils/dates';
 
 type WeeklyGroupedViewProps = {
   entries: JournalEntry[];
 };
 
 export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
-  const { weekOffset } = useDateContext();
-  
-  // Get the dates for the selected week
-  const weekDays = getWeekDays(weekOffset);
-  // Create new Date objects to avoid mutating the original dates
-  const weekStart = new Date(weekDays[0]);
-  const weekEnd = new Date(weekDays[6]);
-  
-  // Set to start and end of day for proper comparison
-  weekStart.setHours(0, 0, 0, 0);
-  weekEnd.setHours(23, 59, 59, 999);
-  
-  // Filter entries for the selected week
-  const weeklyEntries = entries.filter(entry => {
-    const entryDate = new Date(entry.date);
-    return entryDate >= weekStart && entryDate <= weekEnd;
-  });
-
   return (
     <div className="space-y-4 sm:space-y-8">
       <Section 
         title="What I Learned This Week"
         icon={<BookOpen size={20} className="text-accent" strokeWidth={1.5} />}
       >
-        {weeklyEntries.map((entry) => (
+        {entries.map((entry) => (
           <EntryItem 
             key={entry.id}
             date={entry.date}
@@ -45,7 +25,7 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
         title="What Brought Me Joy"
         icon={<Sparkles size={20} className="text-accent" strokeWidth={1.5} />}
       >
-        {weeklyEntries.map((entry) => (
+        {entries.map((entry) => (
           <EntryItem 
             key={entry.id}
             date={entry.date}
