@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Check, Plus, X, Circle } from 'lucide-react';
 import { BaseItem } from '@/types/monthly';
 import { AutoResizeTextarea } from '@/components/common/AutoResizeTextarea';
+import { cn } from '@/lib/utils';
 
 interface MonthlyListProps<T extends BaseItem> {
   title: string;
@@ -126,7 +127,7 @@ export function MonthlyList<T extends BaseItem>({
             <button
               onClick={handleAddItem}
               disabled={!newItem.trim()}
-              className="p-2 text-accent hover:bg-accent/10 rounded-md transition-colors"
+              className="p-2 text-accent hover:bg-accent/10 rounded-md transition-colors disabled:opacity-50"
               title="Save (⌘+Enter)"
             >
               <Check size={20} />
@@ -175,7 +176,7 @@ export function MonthlyList<T extends BaseItem>({
                   <button
                     onClick={handleSaveEdit}
                     disabled={!editText.trim()}
-                    className="p-1 text-accent hover:bg-accent/10 rounded-md transition-colors"
+                    className="p-1 text-accent hover:bg-accent/10 rounded-md transition-colors disabled:opacity-50"
                     title="Save (⌘+Enter)"
                   >
                     <Check size={18} />
