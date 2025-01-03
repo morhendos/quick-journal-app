@@ -27,9 +27,6 @@ export type StorageKeyMap = {
 
 export type ItemsKey = StorageKeyMap[SectionKey];
 
-export type StorageMethodPrefix = 'add' | 'update' | 'delete';
-export type StorageMethod = `${StorageMethodPrefix}${Capitalize<SectionKey>}Item`;
-
 export interface MonthlyData {
   month: string;
   workItems: BaseItem[];
@@ -41,10 +38,45 @@ export interface MonthlyData {
   hopeItems: BaseItem[];
 }
 
-export interface ItemOperations {
-  add: (text: string) => BaseItem;
-  update: (id: string, text: string) => void;
-  delete: (id: string) => void;
+export interface MonthlyStorageMethods {
+  getSelectedMonthData: () => MonthlyData;
+  exportData: () => void;
+  importData: (importedData: unknown) => Promise<void>;
+  
+  // Work items
+  addWorkItem: (text: string) => BaseItem;
+  updateWorkItem: (id: string, text: string) => void;
+  deleteWorkItem: (id: string) => void;
+  
+  // Project items
+  addProjectItem: (text: string) => BaseItem;
+  updateProjectItem: (id: string, text: string) => void;
+  deleteProjectItem: (id: string) => void;
+  
+  // Learning items
+  addLearningItem: (text: string) => BaseItem;
+  updateLearningItem: (id: string, text: string) => void;
+  deleteLearningItem: (id: string) => void;
+  
+  // Health items
+  addHealthItem: (text: string) => BaseItem;
+  updateHealthItem: (id: string, text: string) => void;
+  deleteHealthItem: (id: string) => void;
+  
+  // Life events
+  addLifeEventItem: (text: string) => BaseItem;
+  updateLifeEventItem: (id: string, text: string) => void;
+  deleteLifeEventItem: (id: string) => void;
+  
+  // Learnings to remember
+  addLearningToRememberItem: (text: string) => BaseItem;
+  updateLearningToRememberItem: (id: string, text: string) => void;
+  deleteLearningToRememberItem: (id: string) => void;
+  
+  // Hope items
+  addHopeItem: (text: string) => BaseItem;
+  updateHopeItem: (id: string, text: string) => void;
+  deleteHopeItem: (id: string) => void;
 }
 
 export interface ExportFormat {
@@ -52,16 +84,3 @@ export interface ExportFormat {
   exportDate: string;
   data: MonthlyData[];
 }
-
-// Helper type to get strongly-typed storage methods
-export type MonthlyStorageMethods = {
-  getSelectedMonthData: () => MonthlyData;
-  exportData: () => void;
-  importData: (importedData: unknown) => Promise<void>;
-} & {
-  [K in StorageMethod]: K extends `add${string}Item` 
-    ? (text: string) => BaseItem
-    : K extends `update${string}Item`
-    ? (id: string, text: string) => void
-    : (id: string) => void
-};
