@@ -1,5 +1,5 @@
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { MonthlyData, BaseItem, ItemsKey, ItemActions, ExportFormat } from '@/types/monthly';
+import { MonthlyData, BaseItem, ItemsKey, ItemActions, ExportFormat, MonthlyStorageMethods } from '@/types/monthly';
 import { useMonthlyContext } from '@/contexts/MonthlyContext';
 
 const STORAGE_KEY = 'monthly_reviews';
@@ -13,7 +13,7 @@ function ensureArrayField<T>(value: T[] | undefined | null): T[] {
   return [];
 }
 
-export function useMonthlyStorage() {
+export function useMonthlyStorage(): MonthlyStorageMethods {
   const [monthlyReviews, setMonthlyReviews] = useLocalStorage<MonthlyData[]>(STORAGE_KEY, []);
   const { selectedDate } = useMonthlyContext();
   const selectedMonthKey = getMonthKey(selectedDate);
@@ -203,5 +203,5 @@ export function useMonthlyStorage() {
     // Data import/export
     exportData,
     importData
-  };
+  } as const;
 }
