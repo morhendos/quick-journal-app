@@ -37,18 +37,18 @@ export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
   const itemsKey = getStorageKey(sectionKey);
   const capitalizedKey = capitalize(section.key);
 
-  // Explicitly type each method to avoid union type inference
-  const addMethod = `add${capitalizedKey}Item` as StorageMethod;
-  const updateMethod = `update${capitalizedKey}Item` as StorageMethod;
-  const deleteMethod = `delete${capitalizedKey}Item` as StorageMethod;
+  // Explicitly type each method
+  const addMethod = monthlyStorage[`add${capitalizedKey}Item` as StorageMethod] as (text: string) => BaseItem;
+  const updateMethod = monthlyStorage[`update${capitalizedKey}Item` as StorageMethod] as (id: string, text: string) => void;
+  const deleteMethod = monthlyStorage[`delete${capitalizedKey}Item` as StorageMethod] as (id: string) => void;
 
   return (
     <MonthlyList
       title={section.title}
       items={currentData[itemsKey]}
-      addItem={monthlyStorage[addMethod]}
-      updateItem={monthlyStorage[updateMethod]}
-      deleteItem={monthlyStorage[deleteMethod]}
+      addItem={addMethod}
+      updateItem={updateMethod}
+      deleteItem={deleteMethod}
       emptyMessage={section.emptyMessage}
       placeholder={section.placeholder}
     />
