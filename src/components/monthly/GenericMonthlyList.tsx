@@ -2,7 +2,7 @@
 
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { MonthlyList } from './MonthlyList';
-import { SectionKey, StorageMethod, StorageKeyMap } from '@/types/monthly';
+import { SectionKey, StorageMethod, StorageKeyMap, MonthlyData } from '@/types/monthly';
 import { MONTHLY_SECTIONS } from '@/config/monthlyReview';
 
 interface GenericMonthlyListProps {
