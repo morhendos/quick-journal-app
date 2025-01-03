@@ -26,16 +26,10 @@ export function MonthlyList<T extends BaseItem>({
   placeholder
 }: MonthlyListProps<T>) {
   const [mounted, setMounted] = useState(false);
-  const [listItems, setListItems] = useState<T[]>(items);
   const [newItem, setNewItem] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
-
-  // Update listItems when items prop changes
-  useEffect(() => {
-    setListItems(items);
-  }, [items]);
 
   useEffect(() => {
     setMounted(true);
@@ -43,10 +37,7 @@ export function MonthlyList<T extends BaseItem>({
 
   const handleAddItem = () => {
     if (newItem.trim() && addItem) {
-      const item = addItem(newItem);
-      if (item) {
-        setListItems(prev => [item, ...prev]);
-      }
+      addItem(newItem);
       setNewItem('');
       setIsAdding(false);
     }
@@ -62,13 +53,6 @@ export function MonthlyList<T extends BaseItem>({
   const handleSaveEdit = () => {
     if (editingId && editText.trim() && updateItem) {
       updateItem(editingId, editText);
-      setListItems(prev =>
-        prev.map(item =>
-          item.id === editingId
-            ? { ...item, text: editText.trim(), updatedAt: new Date().toISOString() }
-            : item
-        )
-      );
       setEditingId(null);
       setEditText('');
     }
@@ -77,7 +61,6 @@ export function MonthlyList<T extends BaseItem>({
   const handleDeleteItem = (id: string) => {
     if (deleteItem) {
       deleteItem(id);
-      setListItems(prev => prev.filter(item => item.id !== id));
     }
   };
 
@@ -147,7 +130,7 @@ export function MonthlyList<T extends BaseItem>({
       )}
 
       <ul className="space-y-3">
-        {listItems.map(item => (
+        {items.map(item => (
           <li
             key={item.id}
             className="group flex items-start gap-3 p-3 rounded-md bg-paper/50 hover:bg-paper transition-colors"
@@ -220,7 +203,7 @@ export function MonthlyList<T extends BaseItem>({
         ))}
       </ul>
 
-      {listItems.length === 0 && !isAdding && (
+      {items.length === 0 && !isAdding && (
         <div className="text-center py-8 text-ink/50 bg-paper/50 rounded-md">
           {emptyMessage}
         </div>
