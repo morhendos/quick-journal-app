@@ -11,11 +11,25 @@ import { useDateContext } from '@/contexts/DateContext';
 
 type ViewType = 'chronological' | 'weekly';
 
+const STORAGE_KEY_VIEW = 'journal_view_preference';
+
 export function EntryList() {
   const { entries } = useJournalStorage();
   const { weekOffset } = useDateContext();
   const [mounted, setMounted] = useState(false);
-  const [view, setView] = useState<ViewType>('chronological');
+  
+  // Initialize view from localStorage or default to chronological
+  const [view, setView] = useState<ViewType>(() => {
+    if (typeof window === 'undefined') return 'chronological';
+    return (localStorage.getItem(STORAGE_KEY_VIEW) as ViewType) || 'chronological';
+  });
+
+  // Persist view preference
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem(STORAGE_KEY_VIEW, view);
+    }
+  }, [view, mounted]);
 
   useEffect(() => {
     setMounted(true);
@@ -56,18 +70,10 @@ export function EntryList() {
   // Always filter entries for the selected week for both views
   const filteredEntries = entries.filter(entry => {
     const entryDate = new Date(entry.date + 'T00:00:00');
-    const entryLocalDate = getLocalISOString(entryDate);
-    const mondayLocal = getLocalISOString(monday);
-    const sundayLocal = getLocalISOString(sunday);
+    entryDate.setHours(0, 0, 0, 0); // Normalize to start of day
 
-    const result = entryLocalDate >= mondayLocal && entryLocalDate <= sundayLocal;
-    console.log(`Entry ${entry.date} in week ${weekOffset}:`, { 
-      entryLocalDate, 
-      mondayLocal, 
-      sundayLocal, 
-      result 
-    });
-    return result;
+    // Use UTC comparison to avoid timezone issues
+    return entryDate >= monday && entryDate <= sunday;
   });
 
   // Sort entries with newest first
