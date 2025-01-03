@@ -3,7 +3,6 @@
 import { Download, Upload, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { downloadEntries, importEntries } from '@/lib/storage';
-import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { usePathname } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 import { JournalEntry, ImportFormat } from '@/types/journal';
@@ -12,40 +11,59 @@ interface HeaderControlsProps {
   onEntriesUpdate?: () => void;
 }
 
-export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
+// Storage actions type
+type StorageActions = {
+  importData: (data: unknown) => Promise<void>;
+  exportData: () => void;
+};
+
+function MonthlyControls() {
   const { theme, toggleTheme } = useTheme();
-  const pathname = usePathname();
-  const isMonthlyPage = pathname === '/monthly';
+  const { exportData, importData } = useMonthlyStorage();
   
-  // Only try to use monthly storage on the monthly page
-  let monthlyStorage;
-  try {
-    monthlyStorage = isMonthlyPage ? useMonthlyStorage() : null;
-  } catch {
-    monthlyStorage = null;
-  }
+  const storageActions: StorageActions = {
+    importData: async (data: unknown) => importData(data),
+    exportData
+  };
+
+  return (
+    <Controls
+      theme={theme}
+      toggleTheme={toggleTheme}
+      storageActions={storageActions}
+    />
+  );
+}
+
+function JournalControls({ onEntriesUpdate }: HeaderControlsProps) {
+  const { theme, toggleTheme } = useTheme();
   
-  const storageActions = useMemo(() => {
-    // Journal page actions
-    if (!isMonthlyPage || !monthlyStorage) {
-      return {
-        importData: async (data: unknown) => {
-          importEntries(data as ImportFormat | JournalEntry[]);
-          onEntriesUpdate?.();
-        },
-        exportData: () => downloadEntries()
-      };
-    }
+  const storageActions: StorageActions = {
+    importData: async (data: unknown) => {
+      importEntries(data as ImportFormat | JournalEntry[]);
+      onEntriesUpdate?.();
+    },
+    exportData: () => downloadEntries()
+  };
 
-    // Monthly page actions
-    return {
-      importData: async (data: unknown) => {
-        await monthlyStorage.importData(data);
-      },
-      exportData: () => monthlyStorage.exportData()
-    };
-  }, [isMonthlyPage, monthlyStorage, onEntriesUpdate]);
+  return (
+    <Controls
+      theme={theme}
+      toggleTheme={toggleTheme}
+      storageActions={storageActions}
+    />
+  );
+}
 
+function Controls({
+  theme,
+  toggleTheme,
+  storageActions
+}: {
+  theme: string;
+  toggleTheme: () => void;
+  storageActions: StorageActions;
+}) {
   const handleImport = useCallback(async () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -111,4 +129,15 @@ function HeaderButton({
       {children}
     </button>
   );
+}
+
+export function HeaderControls(props: HeaderControlsProps) {
+  const pathname = usePathname();
+  const isMonthlyPage = pathname === '/monthly';
+  
+  if (isMonthlyPage) {
+    return <MonthlyControls />;
+  }
+  
+  return <JournalControls {...props} />;
 }
