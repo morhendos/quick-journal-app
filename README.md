@@ -1,11 +1,12 @@
 # Daily Journal App
 
-A modern, minimalist journaling application that helps users track their daily learnings and enjoyable moments. Focus on what matters with a clean interface and intuitive data management.
+A modern, minimalist journaling application that helps users track their daily learnings and enjoyable moments, with monthly reviews. Focus on what matters with a clean interface and intuitive data management.
 
 ## Features
 
 ### Core Functionality
 - Daily journal entries with learning and enjoyment sections
+- Monthly reviews with multiple categories
 - Edit functionality with optional empty entries to remove them
 - Chronological entry list with weekly view
 - Interactive week overview with multi-week navigation
@@ -16,10 +17,20 @@ A modern, minimalist journaling application that helps users track their daily l
 - Weekly calendar with entry indicators
 - Past weeks navigation with date range display
 - Current week quick access
+- Monthly review navigation with month selection
 - Prevention of future entries
 
+### Monthly Reviews
+- Work accomplishments tracking
+- Project updates and progress
+- Learning and personal growth
+- Health and wellness monitoring
+- Life events documentation
+- Future hopes and aspirations
+- Import/export functionality
+
 ### Data Management
-- Export journal to JSON with metadata
+- Export journal and monthly reviews to JSON with metadata
 - Import entries with smart merging
 - Data validation and error handling
 - Secure user data isolation
@@ -75,15 +86,18 @@ src/
 ├── app/              # Next.js app router files
 │   ├── api/         # API routes
 │   ├── auth/        # Authentication pages
+│   ├── monthly/     # Monthly review pages
 │   └── login/       # Login page
 ├── components/       # React components
 │   ├── auth/        # Authentication components
 │   ├── journal/     # Journal components
+│   ├── monthly/     # Monthly review components
 │   ├── overview/    # Overview components
 │   ├── settings/    # Settings components
 │   ├── layout/      # Layout components
 │   └── ui/          # Shared UI components
 ├── contexts/        # React contexts
+├── config/          # Configuration files
 ├── hooks/           # Custom React hooks
 ├── lib/             # Utilities and configurations
 │   ├── auth/        # Authentication utilities
@@ -93,7 +107,7 @@ src/
 
 ## Data Management
 
-### Export Format
+### Journal Export Format
 ```json
 {
   "version": "1.0.0",
@@ -110,12 +124,33 @@ src/
 }
 ```
 
+### Monthly Review Export Format
+```json
+{
+  "version": "1.0",
+  "exportDate": "2024-12-25T12:00:00.000Z",
+  "data": [
+    {
+      "month": "2024-12",
+      "workItems": [],
+      "projectItems": [],
+      "learningItems": [],
+      "healthItems": [],
+      "lifeEventItems": [],
+      "learningToRememberItems": [],
+      "hopeItems": []
+    }
+  ]
+}
+```
+
 ### Import Features
 - Validates data structure and content
 - Merges with existing entries
 - Newer entries take precedence
 - Supports both current and legacy formats
 - User data isolation
+- Array validation for monthly reviews
 
 ## Development Guidelines
 
@@ -126,6 +161,14 @@ src/
 4. Add JSDoc documentation
 5. Implement loading states
 6. Handle errors gracefully
+7. Use shared components for consistency
+
+### Code Organization
+1. Use config files for feature configuration
+2. Implement factory patterns for similar functionality
+3. Create shared hooks for common logic
+4. Extract UI components for reusability
+5. Follow DRY and SOLID principles
 
 ### Styling Guidelines
 1. Use Tailwind utility classes
@@ -181,6 +224,7 @@ NODE_ENV=development
 - [x] User authentication
 - [x] Interactive week overview
 - [x] Multi-week navigation
+- [x] Monthly reviews
 - [ ] MongoDB integration
 - [ ] Rich text editor
 - [ ] Search and filtering
@@ -198,6 +242,10 @@ NODE_ENV=development
 2. Authentication errors
    - Check environment variables
    - Ensure proper NextAuth configuration
+
+3. Monthly review storage issues
+   - Clear localStorage if data becomes corrupted
+   - Check array initialization in monthly data
 
 ## License
 
