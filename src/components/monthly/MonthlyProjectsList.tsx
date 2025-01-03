@@ -5,23 +5,23 @@ import { MonthlyList } from './MonthlyList';
 
 export function MonthlyProjectsList() {
   const {
-    getCurrentMonthData,
+    getSelectedMonthData,
     addProjectItem,
     updateProjectItem,
     deleteProjectItem
   } = useMonthlyStorage();
 
-  const currentData = getCurrentMonthData();
+  const currentData = getSelectedMonthData();
 
   return (
     <MonthlyList
-      title="Projects I've Moved Forward"
-      items={currentData.projectItems || []}
+      title="Projects & Goals"
+      items={currentData.projectItems}
       addItem={addProjectItem}
       updateItem={updateProjectItem}
       deleteItem={deleteProjectItem}
-      emptyMessage="Start adding your project progress for this month"
-      placeholder="Enter project progress..."
+      emptyMessage="Start adding your projects and goals for this month"
+      placeholder="Enter a project or goal..."
     />
   );
 }

@@ -1,27 +1,27 @@
 'use client';
 
-import { MonthlyList } from './MonthlyList';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
+import { MonthlyList } from './MonthlyList';
 
 export function MonthlyHealthList() {
   const {
-    getCurrentMonthData,
+    getSelectedMonthData,
     addHealthItem,
     updateHealthItem,
     deleteHealthItem
   } = useMonthlyStorage();
 
-  const currentData = getCurrentMonthData();
+  const currentData = getSelectedMonthData();
 
   return (
     <MonthlyList
-      title="Health and fitness challenges I've been doing"
+      title="Health & Well-being"
       items={currentData.healthItems}
       addItem={addHealthItem}
       updateItem={updateHealthItem}
       deleteItem={deleteHealthItem}
-      emptyMessage="Start adding your health and fitness activities for this month"
-      placeholder="Enter a health/fitness activity..."
+      emptyMessage="Start adding health-related items for this month"
+      placeholder="Enter a health-related item..."
     />
   );
 }

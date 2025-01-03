@@ -5,13 +5,13 @@ import { MonthlyList } from './MonthlyList';
 
 export function MonthlyWorkList() {
   const {
-    getCurrentMonthData,
+    getSelectedMonthData,
     addWorkItem,
     updateWorkItem,
     deleteWorkItem
   } = useMonthlyStorage();
 
-  const currentData = getCurrentMonthData();
+  const currentData = getSelectedMonthData();
 
   return (
     <MonthlyList

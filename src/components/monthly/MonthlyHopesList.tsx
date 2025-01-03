@@ -1,26 +1,26 @@
 'use client';
 
-import { MonthlyList } from './MonthlyList';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
+import { MonthlyList } from './MonthlyList';
 
 export function MonthlyHopesList() {
   const {
-    getCurrentMonthData,
+    getSelectedMonthData,
     addHopeItem,
     updateHopeItem,
     deleteHopeItem
   } = useMonthlyStorage();
 
-  const currentData = getCurrentMonthData();
+  const currentData = getSelectedMonthData();
 
   return (
     <MonthlyList
-      title="Hopes for the next month"
+      title="Hopes for Next Month"
       items={currentData.hopeItems}
       addItem={addHopeItem}
       updateItem={updateHopeItem}
       deleteItem={deleteHopeItem}
-      emptyMessage="Start adding your hopes for next month"
+      emptyMessage="Start adding hopes for next month"
       placeholder="Enter a hope for next month..."
     />
   );

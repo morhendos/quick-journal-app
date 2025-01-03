@@ -1,21 +1,21 @@
 'use client';
 
-import { MonthlyList } from './MonthlyList';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
+import { MonthlyList } from './MonthlyList';
 
 export function MonthlyLifeEventsList() {
   const {
-    getCurrentMonthData,
+    getSelectedMonthData,
     addLifeEventItem,
     updateLifeEventItem,
     deleteLifeEventItem
   } = useMonthlyStorage();
 
-  const currentData = getCurrentMonthData();
+  const currentData = getSelectedMonthData();
 
   return (
     <MonthlyList
-      title="Other big life events (some of them unexpected)"
+      title="Life Events"
       items={currentData.lifeEventItems}
       addItem={addLifeEventItem}
       updateItem={updateLifeEventItem}

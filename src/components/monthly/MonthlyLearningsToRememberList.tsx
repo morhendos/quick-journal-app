@@ -1,27 +1,27 @@
 'use client';
 
-import { MonthlyList } from './MonthlyList';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
+import { MonthlyList } from './MonthlyList';
 
 export function MonthlyLearningsToRememberList() {
   const {
-    getCurrentMonthData,
+    getSelectedMonthData,
     addLearningToRememberItem,
     updateLearningToRememberItem,
     deleteLearningToRememberItem
   } = useMonthlyStorage();
 
-  const currentData = getCurrentMonthData();
+  const currentData = getSelectedMonthData();
 
   return (
     <MonthlyList
-      title="Things I've learned and want to remember"
+      title="Learnings to Remember"
       items={currentData.learningToRememberItems}
       addItem={addLearningToRememberItem}
       updateItem={updateLearningToRememberItem}
       deleteItem={deleteLearningToRememberItem}
-      emptyMessage="Start adding learnings you want to remember"
-      placeholder="Enter something you learned..."
+      emptyMessage="Start adding important learnings to remember"
+      placeholder="Enter a learning to remember..."
     />
   );
 }

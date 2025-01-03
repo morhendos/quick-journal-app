@@ -5,18 +5,67 @@ import { useTheme } from '@/hooks/useTheme';
 import { downloadEntries, importEntries } from '@/lib/storage';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { usePathname } from 'next/navigation';
+import { useCallback } from 'react';
+import { JournalEntry, ImportFormat } from '@/types/journal';
 
 interface HeaderControlsProps {
   onEntriesUpdate?: () => void;
 }
 
-export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
+// Storage actions type
+type StorageActions = {
+  importData: (data: unknown) => Promise<void>;
+  exportData: () => void;
+};
+
+function MonthlyControls() {
   const { theme, toggleTheme } = useTheme();
   const { exportData, importData } = useMonthlyStorage();
-  const pathname = usePathname();
-  const isMonthlyPage = pathname === '/monthly';
+  
+  const storageActions: StorageActions = {
+    importData: async (data: unknown) => importData(data),
+    exportData
+  };
 
-  const handleImport = async () => {
+  return (
+    <Controls
+      theme={theme}
+      toggleTheme={toggleTheme}
+      storageActions={storageActions}
+    />
+  );
+}
+
+function JournalControls({ onEntriesUpdate }: HeaderControlsProps) {
+  const { theme, toggleTheme } = useTheme();
+  
+  const storageActions: StorageActions = {
+    importData: async (data: unknown) => {
+      importEntries(data as ImportFormat | JournalEntry[]);
+      onEntriesUpdate?.();
+    },
+    exportData: () => downloadEntries()
+  };
+
+  return (
+    <Controls
+      theme={theme}
+      toggleTheme={toggleTheme}
+      storageActions={storageActions}
+    />
+  );
+}
+
+function Controls({
+  theme,
+  toggleTheme,
+  storageActions
+}: {
+  theme: string;
+  toggleTheme: () => void;
+  storageActions: StorageActions;
+}) {
+  const handleImport = useCallback(async () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
@@ -28,13 +77,7 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
       try {
         const text = await file.text();
         const data = JSON.parse(text);
-        
-        if (isMonthlyPage) {
-          await importData(data);
-        } else {
-          importEntries(data);
-          onEntriesUpdate?.();
-        }
+        await storageActions.importData(data);
       } catch (error) {
         console.error('Error importing data:', error);
         alert('Error importing data. Please check the file format.');
@@ -42,15 +85,7 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
     };
 
     input.click();
-  };
-
-  const handleExport = () => {
-    if (isMonthlyPage) {
-      exportData();
-    } else {
-      downloadEntries();
-    }
-  };
+  }, [storageActions]);
 
   return (
     <div className="flex justify-end gap-2">
@@ -62,7 +97,7 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
       </HeaderButton>
 
       <HeaderButton
-        onClick={handleExport}
+        onClick={storageActions.exportData}
         aria-label="Export entries"
       >
         <Download size={20} strokeWidth={1.5} />
@@ -95,4 +130,15 @@ function HeaderButton({
       {children}
     </button>
   );
+}
+
+export function HeaderControls(props: HeaderControlsProps) {
+  const pathname = usePathname();
+  const isMonthlyPage = pathname === '/monthly';
+  
+  if (isMonthlyPage) {
+    return <MonthlyControls />;
+  }
+  
+  return <JournalControls {...props} />;
 }

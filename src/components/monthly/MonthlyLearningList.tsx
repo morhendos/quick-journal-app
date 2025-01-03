@@ -1,20 +1,27 @@
 'use client';
 
+import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { MonthlyList } from './MonthlyList';
-import { useMonthlyStorage } from '@/lib/storage';
 
 export function MonthlyLearningList() {
-  const { learningItems, addLearningItem, updateLearningItem, deleteLearningItem } = useMonthlyStorage();
-  
+  const {
+    getSelectedMonthData,
+    addLearningItem,
+    updateLearningItem,
+    deleteLearningItem
+  } = useMonthlyStorage();
+
+  const currentData = getSelectedMonthData();
+
   return (
     <MonthlyList
-      title="Personal Learning"
-      items={learningItems}
+      title="What I Learned"
+      items={currentData.learningItems}
       addItem={addLearningItem}
       updateItem={updateLearningItem}
       deleteItem={deleteLearningItem}
-      emptyMessage="No personal learning items yet"
-      placeholder="What have you been learning this month?"
+      emptyMessage="Start adding your learnings for this month"
+      placeholder="Enter something you learned..."
     />
   );
 }

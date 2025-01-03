@@ -1,13 +1,8 @@
 'use client';
 
 import { PageHeader } from '@/components/layout/PageHeader';
-import { MonthlyWorkList } from '@/components/monthly/MonthlyWorkList';
-import { MonthlyProjectsList } from '@/components/monthly/MonthlyProjectsList';
-import { MonthlyLearningList } from '@/components/monthly/MonthlyLearningList';
-import { MonthlyHealthList } from '@/components/monthly/MonthlyHealthList';
-import { MonthlyLifeEventsList } from '@/components/monthly/MonthlyLifeEventsList';
-import { MonthlyLearningsToRememberList } from '@/components/monthly/MonthlyLearningsToRememberList';
-import { MonthlyHopesList } from '@/components/monthly/MonthlyHopesList';
+import { MonthlyHeader } from '@/components/monthly/MonthlyHeader';
+import { MONTHLY_SECTIONS } from '@/config/monthlyReview';
 
 interface SectionContainerProps {
   className?: string;
@@ -32,35 +27,17 @@ export default function MonthlyReview() {
           <PageHeader />
         </div>
         
+        <div className="mb-8">
+          <MonthlyHeader />
+        </div>
+        
         <div className="flex-1 overflow-auto min-h-0">
           <div className="space-y-8">
-            <SectionContainer>
-              <MonthlyWorkList />
-            </SectionContainer>
-
-            <SectionContainer>
-              <MonthlyProjectsList />
-            </SectionContainer>
-            
-            <SectionContainer>
-              <MonthlyLearningList />
-            </SectionContainer>
-
-            <SectionContainer>
-              <MonthlyHealthList />
-            </SectionContainer>
-
-            <SectionContainer>
-              <MonthlyLifeEventsList />
-            </SectionContainer>
-
-            <SectionContainer>
-              <MonthlyLearningsToRememberList />
-            </SectionContainer>
-
-            <SectionContainer>
-              <MonthlyHopesList />
-            </SectionContainer>
+            {MONTHLY_SECTIONS.map(({ key, component: Component }) => (
+              <SectionContainer key={key}>
+                <Component />
+              </SectionContainer>
+            ))}
           </div>
         </div>
       </main>

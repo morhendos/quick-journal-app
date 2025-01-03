@@ -12,3 +12,9 @@ export interface JournalEntryDisplayProps {
   isToday?: boolean;
   onEdit?: () => void;
 }
+
+export interface ImportFormat {
+  version: string;
+  timestamp: string;
+  entries: JournalEntry[];
+}
