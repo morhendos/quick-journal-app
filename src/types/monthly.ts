@@ -41,7 +41,7 @@ export interface MonthlyData {
   hopeItems: BaseItem[];
 }
 
-export interface ItemActions {
+export interface ItemOperations {
   add: (text: string) => BaseItem;
   update: (id: string, text: string) => void;
   delete: (id: string) => void;
@@ -55,13 +55,13 @@ export interface ExportFormat {
 
 // Helper type to get strongly-typed storage methods
 export type MonthlyStorageMethods = {
+  getSelectedMonthData: () => MonthlyData;
+  exportData: () => void;
+  importData: (importedData: unknown) => Promise<void>;
+} & {
   [K in StorageMethod]: K extends `add${string}Item` 
     ? (text: string) => BaseItem
     : K extends `update${string}Item`
     ? (id: string, text: string) => void
     : (id: string) => void
-} & {
-  getSelectedMonthData: () => MonthlyData;
-  exportData: () => void;
-  importData: (importedData: unknown) => Promise<void>;
-}
+};

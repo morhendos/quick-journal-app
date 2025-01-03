@@ -10,7 +10,7 @@ import { MonthlyListItem } from './MonthlyListItem';
 interface MonthlyListProps<T extends BaseItem> {
   title: string;
   items: T[];
-  addItem?: (text: string) => T | null;
+  addItem?: (text: string) => T;
   updateItem?: (id: string, text: string) => void;
   deleteItem?: (id: string) => void;
   emptyMessage: string;
