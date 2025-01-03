@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useMonthlyContext } from '@/contexts/MonthlyContext';
 import { cn } from '@/lib/utils';
 
 type NavigationButtonProps = {
@@ -33,27 +33,15 @@ function NavigationButton({ direction, onClick, disabled }: NavigationButtonProp
 }
 
 export function MonthlyHeader() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [monthOffset, setMonthOffset] = useState(0);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const date = new Date();
-    date.setMonth(date.getMonth() + monthOffset);
-    setCurrentDate(date);
-  }, [monthOffset]);
+  const { selectedDate, monthOffset, setMonthOffset, isCurrentMonth } = useMonthlyContext();
 
   const handlePreviousMonth = () => {
-    setMonthOffset(prev => prev - 1);
+    setMonthOffset(monthOffset - 1);
   };
 
   const handleNextMonth = () => {
-    if (monthOffset < 0) {
-      setMonthOffset(prev => prev + 1);
+    if (!isCurrentMonth) {
+      setMonthOffset(monthOffset + 1);
     }
   };
 
@@ -61,20 +49,10 @@ export function MonthlyHeader() {
     setMonthOffset(0);
   };
 
-  if (!mounted) {
-    return (
-      <div className="flex items-center justify-center gap-3 animate-pulse">
-        <div className="w-8 h-8 bg-accent/10 rounded-full" />
-        <div className="w-40 h-8 bg-paper rounded-md" />
-        <div className="w-8 h-8 bg-accent/10 rounded-full" />
-      </div>
-    );
-  }
-
   const monthName = new Intl.DateTimeFormat('en-US', { 
     month: 'long',
     year: 'numeric'
-  }).format(currentDate);
+  }).format(selectedDate);
 
   return (
     <div className="flex flex-col items-center gap-4 relative pb-10">
@@ -91,11 +69,11 @@ export function MonthlyHeader() {
         <NavigationButton
           direction="right"
           onClick={handleNextMonth}
-          disabled={monthOffset === 0}
+          disabled={isCurrentMonth}
         />
       </div>
 
-      {monthOffset !== 0 && (
+      {!isCurrentMonth && (
         <button
           onClick={handleCurrentMonth}
           className={cn(
