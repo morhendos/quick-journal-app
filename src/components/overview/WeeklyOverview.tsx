@@ -131,7 +131,7 @@ export function WeeklyOverview() {
   const todayStr = getLocalISOString(today);
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 relative pb-10"> {/* Added pb-10 for button space */}
       <div className="flex items-center gap-3">
         <NavigationButton
           direction="left"
@@ -190,8 +190,9 @@ export function WeeklyOverview() {
         <button
           onClick={handleCurrentWeek}
           className={cn(
+            'absolute bottom-0 left-1/2 transform -translate-x-1/2',
             'text-xs text-ink/60 hover:text-ink',
-            'transition-colors duration-200',
+            'transition-all duration-200',
             'py-1 px-2 rounded-md',
             'hover:bg-accent/10 active:bg-accent/20',
             'focus:outline-none focus:ring-2 focus:ring-accent/30'
