@@ -1,18 +1,29 @@
 import { JournalEntry } from '@/types/journal';
 import { BookOpen, Sparkles } from 'lucide-react';
+import { useDateContext } from '@/contexts/DateContext';
+import { getWeekDays } from '@/utils/dates';
 
 type WeeklyGroupedViewProps = {
   entries: JournalEntry[];
 };
 
 export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
-  // Get entries from the last 7 days
-  const today = new Date();
-  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const { weekOffset } = useDateContext();
   
+  // Get the dates for the selected week
+  const weekDays = getWeekDays(weekOffset);
+  const weekStart = weekDays[0];
+  const weekEnd = weekDays[6];
+  
+  // Filter entries for the selected week
   const weeklyEntries = entries.filter(entry => {
     const entryDate = new Date(entry.date);
-    return entryDate >= weekAgo && entryDate <= today;
+    // Set time to midnight for proper date comparison
+    entryDate.setHours(0, 0, 0, 0);
+    weekStart.setHours(0, 0, 0, 0);
+    weekEnd.setHours(0, 0, 0, 0);
+    
+    return entryDate >= weekStart && entryDate <= weekEnd;
   });
 
   return (
