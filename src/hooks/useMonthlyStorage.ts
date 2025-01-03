@@ -43,36 +43,31 @@ export function useMonthlyStorage() {
     });
   };
 
-  // Check if we're in December 2024
-  const isDecember2024 = selectedDate.getMonth() === 11 && selectedDate.getFullYear() === 2024;
+  const addWorkItem = (text: string) => addItem('workItems', text);
+  const addProjectItem = (text: string) => addItem('projectItems', text);
+  const addLearningItem = (text: string) => addItem('learningItems', text);
+  const addHealthItem = (text: string) => addItem('healthItems', text);
+  const addLifeEventItem = (text: string) => addItem('lifeEventItems', text);
+  const addLearningToRememberItem = (text: string) => addItem('learningToRememberItems', text);
+  const addHopeItem = (text: string) => addItem('hopeItems', text);
 
-  const addWorkItem = (text: string) => isDecember2024 ? addItem('workItems', text) : null;
-  const addProjectItem = (text: string) => isDecember2024 ? addItem('projectItems', text) : null;
-  const addLearningItem = (text: string) => isDecember2024 ? addItem('learningItems', text) : null;
-  const addHealthItem = (text: string) => isDecember2024 ? addItem('healthItems', text) : null;
-  const addLifeEventItem = (text: string) => isDecember2024 ? addItem('lifeEventItems', text) : null;
-  const addLearningToRememberItem = (text: string) => isDecember2024 ? addItem('learningToRememberItems', text) : null;
-  const addHopeItem = (text: string) => isDecember2024 ? addItem('hopeItems', text) : null;
+  const updateWorkItem = (id: string, text: string) => updateItem('workItems', id, text);
+  const updateProjectItem = (id: string, text: string) => updateItem('projectItems', id, text);
+  const updateLearningItem = (id: string, text: string) => updateItem('learningItems', id, text);
+  const updateHealthItem = (id: string, text: string) => updateItem('healthItems', id, text);
+  const updateLifeEventItem = (id: string, text: string) => updateItem('lifeEventItems', id, text);
+  const updateLearningToRememberItem = (id: string, text: string) => updateItem('learningToRememberItems', id, text);
+  const updateHopeItem = (id: string, text: string) => updateItem('hopeItems', id, text);
 
-  const updateWorkItem = (id: string, text: string) => isDecember2024 ? updateItem('workItems', id, text) : null;
-  const updateProjectItem = (id: string, text: string) => isDecember2024 ? updateItem('projectItems', id, text) : null;
-  const updateLearningItem = (id: string, text: string) => isDecember2024 ? updateItem('learningItems', id, text) : null;
-  const updateHealthItem = (id: string, text: string) => isDecember2024 ? updateItem('healthItems', id, text) : null;
-  const updateLifeEventItem = (id: string, text: string) => isDecember2024 ? updateItem('lifeEventItems', id, text) : null;
-  const updateLearningToRememberItem = (id: string, text: string) => isDecember2024 ? updateItem('learningToRememberItems', id, text) : null;
-  const updateHopeItem = (id: string, text: string) => isDecember2024 ? updateItem('hopeItems', id, text) : null;
+  const deleteWorkItem = (id: string) => deleteItem('workItems', id);
+  const deleteProjectItem = (id: string) => deleteItem('projectItems', id);
+  const deleteLearningItem = (id: string) => deleteItem('learningItems', id);
+  const deleteHealthItem = (id: string) => deleteItem('healthItems', id);
+  const deleteLifeEventItem = (id: string) => deleteItem('lifeEventItems', id);
+  const deleteLearningToRememberItem = (id: string) => deleteItem('learningToRememberItems', id);
+  const deleteHopeItem = (id: string) => deleteItem('hopeItems', id);
 
-  const deleteWorkItem = (id: string) => isDecember2024 ? deleteItem('workItems', id) : null;
-  const deleteProjectItem = (id: string) => isDecember2024 ? deleteItem('projectItems', id) : null;
-  const deleteLearningItem = (id: string) => isDecember2024 ? deleteItem('learningItems', id) : null;
-  const deleteHealthItem = (id: string) => isDecember2024 ? deleteItem('healthItems', id) : null;
-  const deleteLifeEventItem = (id: string) => isDecember2024 ? deleteItem('lifeEventItems', id) : null;
-  const deleteLearningToRememberItem = (id: string) => isDecember2024 ? deleteItem('learningToRememberItems', id) : null;
-  const deleteHopeItem = (id: string) => isDecember2024 ? deleteItem('hopeItems', id) : null;
-
-  function addItem<K extends keyof MonthlyData>(itemType: K, text: string): BaseItem | null {
-    if (!isDecember2024) return null;
-    
+  function addItem<K extends keyof MonthlyData>(itemType: K, text: string): BaseItem {
     const newItem: BaseItem = {
       id: Date.now().toString(),
       text: text.trim(),
@@ -89,8 +84,6 @@ export function useMonthlyStorage() {
   }
 
   function updateItem<K extends keyof MonthlyData>(itemType: K, id: string, text: string) {
-    if (!isDecember2024) return null;
-    
     updateSelectedMonth(current => ({
       ...current,
       [itemType]: ((current[itemType] as BaseItem[]) || []).map(item =>
@@ -102,8 +95,6 @@ export function useMonthlyStorage() {
   }
 
   function deleteItem<K extends keyof MonthlyData>(itemType: K, id: string) {
-    if (!isDecember2024) return null;
-    
     updateSelectedMonth(current => ({
       ...current,
       [itemType]: ((current[itemType] as BaseItem[]) || []).filter(item => item.id !== id)
