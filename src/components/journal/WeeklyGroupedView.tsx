@@ -12,17 +12,17 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
   
   // Get the dates for the selected week
   const weekDays = getWeekDays(weekOffset);
-  const weekStart = weekDays[0];
-  const weekEnd = weekDays[6];
+  // Create new Date objects to avoid mutating the original dates
+  const weekStart = new Date(weekDays[0]);
+  const weekEnd = new Date(weekDays[6]);
+  
+  // Set to start and end of day for proper comparison
+  weekStart.setHours(0, 0, 0, 0);
+  weekEnd.setHours(23, 59, 59, 999);
   
   // Filter entries for the selected week
   const weeklyEntries = entries.filter(entry => {
     const entryDate = new Date(entry.date);
-    // Set time to midnight for proper date comparison
-    entryDate.setHours(0, 0, 0, 0);
-    weekStart.setHours(0, 0, 0, 0);
-    weekEnd.setHours(0, 0, 0, 0);
-    
     return entryDate >= weekStart && entryDate <= weekEnd;
   });
 
