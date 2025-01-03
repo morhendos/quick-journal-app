@@ -2,11 +2,15 @@
 
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { MonthlyList } from './MonthlyList';
-import { SectionKey } from '@/types/monthly';
+import { SectionKey, StorageMethod } from '@/types/monthly';
 import { MONTHLY_SECTIONS } from '@/config/monthlyReview';
 
 interface GenericMonthlyListProps {
   sectionKey: SectionKey;
+}
+
+function capitalize<T extends string>(s: T): Capitalize<T> {
+  return (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<T>;
 }
 
 export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
@@ -17,12 +21,13 @@ export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
   if (!section) return null;
 
   const itemsKey = `${sectionKey}Items` as const;
+  const capitalizedKey = capitalize(section.key);
 
   // Get the appropriate action methods based on section key
   const actions = {
-    add: monthlyStorage[`add${section.key.charAt(0).toUpperCase() + section.key.slice(1)}Item`],
-    update: monthlyStorage[`update${section.key.charAt(0).toUpperCase() + section.key.slice(1)}Item`],
-    delete: monthlyStorage[`delete${section.key.charAt(0).toUpperCase() + section.key.slice(1)}Item`]
+    add: monthlyStorage[`add${capitalizedKey}Item` as StorageMethod],
+    update: monthlyStorage[`update${capitalizedKey}Item` as StorageMethod],
+    delete: monthlyStorage[`delete${capitalizedKey}Item` as StorageMethod]
   };
 
   return (

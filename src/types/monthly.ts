@@ -16,6 +16,9 @@ export type SectionKey =
 
 export type ItemsKey = `${SectionKey}Items`;
 
+export type StorageMethodPrefix = 'add' | 'update' | 'delete';
+export type StorageMethod = `${StorageMethodPrefix}${Capitalize<SectionKey>}Item`;
+
 export interface MonthlyData {
   month: string;
   workItems: BaseItem[];
@@ -37,4 +40,17 @@ export interface ExportFormat {
   version: string;
   exportDate: string;
   data: MonthlyData[];
+}
+
+// Helper type to get strongly-typed storage methods
+export type MonthlyStorageMethods = {
+  [K in StorageMethod]: K extends `add${string}Item` 
+    ? (text: string) => BaseItem
+    : K extends `update${string}Item`
+    ? (id: string, text: string) => void
+    : (id: string) => void
+} & {
+  getSelectedMonthData: () => MonthlyData;
+  exportData: () => void;
+  importData: (importedData: unknown) => Promise<void>;
 }
