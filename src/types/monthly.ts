@@ -14,7 +14,18 @@ export type SectionKey =
   | 'learningsToRemember'
   | 'hopes';
 
-export type ItemsKey = `${SectionKey}Items`;
+// Maps section keys to storage keys
+export type StorageKeyMap = {
+  work: 'workItems';
+  projects: 'projectItems';
+  learning: 'learningItems';
+  health: 'healthItems';
+  lifeEvents: 'lifeEventItems';
+  learningsToRemember: 'learningToRememberItems';
+  hopes: 'hopeItems';
+};
+
+export type ItemsKey = StorageKeyMap[SectionKey];
 
 export type StorageMethodPrefix = 'add' | 'update' | 'delete';
 export type StorageMethod = `${StorageMethodPrefix}${Capitalize<SectionKey>}Item`;

@@ -2,7 +2,7 @@
 
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { MonthlyList } from './MonthlyList';
-import { SectionKey, StorageMethod } from '@/types/monthly';
+import { SectionKey, StorageMethod, StorageKeyMap } from '@/types/monthly';
 import { MONTHLY_SECTIONS } from '@/config/monthlyReview';
 
 interface GenericMonthlyListProps {
@@ -13,6 +13,20 @@ function capitalize<T extends string>(s: T): Capitalize<T> {
   return (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<T>;
 }
 
+const getStorageKey = (sectionKey: SectionKey): keyof MonthlyData => {
+  const storageKeyMap: StorageKeyMap = {
+    work: 'workItems',
+    projects: 'projectItems',
+    learning: 'learningItems',
+    health: 'healthItems',
+    lifeEvents: 'lifeEventItems',
+    learningsToRemember: 'learningToRememberItems',
+    hopes: 'hopeItems'
+  };
+  
+  return storageKeyMap[sectionKey];
+};
+
 export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
   const monthlyStorage = useMonthlyStorage();
   const currentData = monthlyStorage.getSelectedMonthData();
@@ -20,7 +34,7 @@ export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
   const section = MONTHLY_SECTIONS.find(s => s.key === sectionKey);
   if (!section) return null;
 
-  const itemsKey = `${sectionKey}Items` as const;
+  const itemsKey = getStorageKey(sectionKey);
   const capitalizedKey = capitalize(section.key);
 
   // Get the appropriate action methods based on section key
