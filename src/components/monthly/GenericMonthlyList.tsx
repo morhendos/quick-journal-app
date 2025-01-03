@@ -2,7 +2,7 @@
 
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { MonthlyList } from './MonthlyList';
-import { SectionKey, StorageMethod, StorageKeyMap, MonthlyData, ItemsKey } from '@/types/monthly';
+import { SectionKey, StorageMethod, StorageKeyMap, MonthlyData, BaseItem } from '@/types/monthly';
 import { MONTHLY_SECTIONS } from '@/config/monthlyReview';
 
 interface GenericMonthlyListProps {
@@ -13,7 +13,7 @@ function capitalize<T extends string>(s: T): Capitalize<T> {
   return (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<T>;
 }
 
-const getStorageKey = (sectionKey: SectionKey): ItemsKey => {
+const getStorageKey = (sectionKey: SectionKey): StorageKeyMap[SectionKey] => {
   const storageKeyMap: StorageKeyMap = {
     work: 'workItems',
     projects: 'projectItems',
@@ -37,20 +37,18 @@ export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
   const itemsKey = getStorageKey(sectionKey);
   const capitalizedKey = capitalize(section.key);
 
-  // Get the appropriate action methods based on section key
-  const actions = {
-    add: monthlyStorage[`add${capitalizedKey}Item` as StorageMethod],
-    update: monthlyStorage[`update${capitalizedKey}Item` as StorageMethod],
-    delete: monthlyStorage[`delete${capitalizedKey}Item` as StorageMethod]
-  };
+  // Explicitly type each method to avoid union type inference
+  const addMethod = `add${capitalizedKey}Item` as StorageMethod;
+  const updateMethod = `update${capitalizedKey}Item` as StorageMethod;
+  const deleteMethod = `delete${capitalizedKey}Item` as StorageMethod;
 
   return (
     <MonthlyList
       title={section.title}
       items={currentData[itemsKey]}
-      addItem={actions.add}
-      updateItem={actions.update}
-      deleteItem={actions.delete}
+      addItem={monthlyStorage[addMethod]}
+      updateItem={monthlyStorage[updateMethod]}
+      deleteItem={monthlyStorage[deleteMethod]}
       emptyMessage={section.emptyMessage}
       placeholder={section.placeholder}
     />
