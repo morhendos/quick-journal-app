@@ -5,18 +5,39 @@ import { useTheme } from '@/hooks/useTheme';
 import { downloadEntries, importEntries } from '@/lib/storage';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { usePathname } from 'next/navigation';
+import { useCallback } from 'react';
 
 interface HeaderControlsProps {
   onEntriesUpdate?: () => void;
 }
 
+type StorageActions = {
+  importData: (data: unknown) => Promise<void>;
+  exportData: () => void;
+};
+
 export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   const { theme, toggleTheme } = useTheme();
-  const { exportData, importData } = useMonthlyStorage();
   const pathname = usePathname();
   const isMonthlyPage = pathname === '/monthly';
+  
+  // Only use monthly storage on the monthly page
+  let storageActions: StorageActions;
+  
+  if (isMonthlyPage) {
+    const { exportData, importData } = useMonthlyStorage();
+    storageActions = { exportData, importData };
+  } else {
+    storageActions = {
+      importData: async (data: unknown) => {
+        importEntries(data);
+        onEntriesUpdate?.();
+      },
+      exportData: () => downloadEntries()
+    };
+  }
 
-  const handleImport = async () => {
+  const handleImport = useCallback(async () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
@@ -28,13 +49,7 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
       try {
         const text = await file.text();
         const data = JSON.parse(text);
-        
-        if (isMonthlyPage) {
-          await importData(data);
-        } else {
-          importEntries(data);
-          onEntriesUpdate?.();
-        }
+        await storageActions.importData(data);
       } catch (error) {
         console.error('Error importing data:', error);
         alert('Error importing data. Please check the file format.');
@@ -42,15 +57,7 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
     };
 
     input.click();
-  };
-
-  const handleExport = () => {
-    if (isMonthlyPage) {
-      exportData();
-    } else {
-      downloadEntries();
-    }
-  };
+  }, [storageActions]);
 
   return (
     <div className="flex justify-end gap-2">
@@ -62,7 +69,7 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
       </HeaderButton>
 
       <HeaderButton
-        onClick={handleExport}
+        onClick={storageActions.exportData}
         aria-label="Export entries"
       >
         <Download size={20} strokeWidth={1.5} />
