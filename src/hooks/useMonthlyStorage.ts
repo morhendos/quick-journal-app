@@ -8,32 +8,63 @@ function getMonthKey(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
+function ensureArrayField<T>(value: T[] | undefined | null): T[] {
+  if (Array.isArray(value)) return value;
+  return [];
+}
+
 export function useMonthlyStorage() {
   const [monthlyReviews, setMonthlyReviews] = useLocalStorage<MonthlyData[]>(STORAGE_KEY, []);
   const { selectedDate } = useMonthlyContext();
   const selectedMonthKey = getMonthKey(selectedDate);
   
   const getSelectedMonthData = (): MonthlyData => {
-    return (
-      monthlyReviews.find(review => review.month === selectedMonthKey) || 
-      { 
-        month: selectedMonthKey, 
-        workItems: [], 
-        projectItems: [],
-        learningItems: [],
-        healthItems: [],
-        lifeEventItems: [],
-        learningToRememberItems: [],
-        hopeItems: []
-      }
-    );
+    const currentMonth = monthlyReviews.find(review => review.month === selectedMonthKey);
+    if (currentMonth) {
+      // Ensure all array fields exist
+      return {
+        month: currentMonth.month,
+        workItems: ensureArrayField(currentMonth.workItems),
+        projectItems: ensureArrayField(currentMonth.projectItems),
+        learningItems: ensureArrayField(currentMonth.learningItems),
+        healthItems: ensureArrayField(currentMonth.healthItems),
+        lifeEventItems: ensureArrayField(currentMonth.lifeEventItems),
+        learningToRememberItems: ensureArrayField(currentMonth.learningToRememberItems),
+        hopeItems: ensureArrayField(currentMonth.hopeItems)
+      };
+    }
+    
+    // Return new empty month data
+    return { 
+      month: selectedMonthKey, 
+      workItems: [], 
+      projectItems: [],
+      learningItems: [],
+      healthItems: [],
+      lifeEventItems: [],
+      learningToRememberItems: [],
+      hopeItems: []
+    };
   };
 
   const updateSelectedMonth = (updater: (data: MonthlyData) => MonthlyData) => {
     setMonthlyReviews(prev => {
       const otherMonths = prev.filter(review => review.month !== selectedMonthKey);
       const updatedData = updater(getSelectedMonthData());
-      return [...otherMonths, updatedData].sort((a, b) => b.month.localeCompare(a.month));
+
+      // Ensure all arrays exist before saving
+      const validatedData: MonthlyData = {
+        ...updatedData,
+        workItems: ensureArrayField(updatedData.workItems),
+        projectItems: ensureArrayField(updatedData.projectItems),
+        learningItems: ensureArrayField(updatedData.learningItems),
+        healthItems: ensureArrayField(updatedData.healthItems),
+        lifeEventItems: ensureArrayField(updatedData.lifeEventItems),
+        learningToRememberItems: ensureArrayField(updatedData.learningToRememberItems),
+        hopeItems: ensureArrayField(updatedData.hopeItems)
+      };
+
+      return [...otherMonths, validatedData].sort((a, b) => b.month.localeCompare(a.month));
     });
   };
 
@@ -49,7 +80,7 @@ export function useMonthlyStorage() {
 
         updateSelectedMonth(current => ({
           ...current,
-          [itemType]: [newItem, ...(current[itemType] as BaseItem[])]
+          [itemType]: [newItem, ...ensureArrayField(current[itemType] as BaseItem[])]
         }));
 
         return newItem;
@@ -58,7 +89,7 @@ export function useMonthlyStorage() {
       update: (id: string, text: string) => {
         updateSelectedMonth(current => ({
           ...current,
-          [itemType]: (current[itemType] as BaseItem[]).map(item =>
+          [itemType]: ensureArrayField(current[itemType] as BaseItem[]).map(item =>
             item.id === id
               ? { ...item, text: text.trim(), updatedAt: new Date().toISOString() }
               : item
@@ -69,7 +100,7 @@ export function useMonthlyStorage() {
       delete: (id: string) => {
         updateSelectedMonth(current => ({
           ...current,
-          [itemType]: (current[itemType] as BaseItem[]).filter(item => item.id !== id)
+          [itemType]: ensureArrayField(current[itemType] as BaseItem[]).filter(item => item.id !== id)
         }));
       }
     };
@@ -119,17 +150,19 @@ export function useMonthlyStorage() {
         throw new Error('Unrecognized data format');
       }
 
-      const isValidMonthlyData = (data: unknown): data is MonthlyData => {
-        if (typeof data !== 'object' || !data) return false;
-        const d = data as any;
-        return typeof d.month === 'string';
-      };
+      // Validate and ensure arrays exist in imported data
+      const validatedData = dataToImport.map((month): MonthlyData => ({
+        month: month.month,
+        workItems: ensureArrayField(month.workItems),
+        projectItems: ensureArrayField(month.projectItems),
+        learningItems: ensureArrayField(month.learningItems),
+        healthItems: ensureArrayField(month.healthItems),
+        lifeEventItems: ensureArrayField(month.lifeEventItems),
+        learningToRememberItems: ensureArrayField(month.learningToRememberItems),
+        hopeItems: ensureArrayField(month.hopeItems)
+      }));
 
-      if (!Array.isArray(dataToImport) || !dataToImport.every(isValidMonthlyData)) {
-        throw new Error('Invalid data structure');
-      }
-
-      setMonthlyReviews(dataToImport);
+      setMonthlyReviews(validatedData);
 
     } catch (error) {
       console.error('Error importing data:', error);
