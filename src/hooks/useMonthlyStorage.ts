@@ -4,22 +4,22 @@ import { useMonthlyContext } from '@/contexts/MonthlyContext';
 
 const STORAGE_KEY = 'monthly_reviews';
 
-function getMonthKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-}
-
 export interface ExportFormat {
   version: string;
   exportDate: string;
   data: MonthlyData[];
 }
 
+function getMonthKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
 export function useMonthlyStorage() {
   const [monthlyReviews, setMonthlyReviews] = useLocalStorage<MonthlyData[]>(STORAGE_KEY, []);
   const { selectedDate } = useMonthlyContext();
-
+  const selectedMonthKey = getMonthKey(selectedDate);
+  
   const getSelectedMonthData = (): MonthlyData => {
-    const selectedMonthKey = getMonthKey(selectedDate);
     return (
       monthlyReviews.find(review => review.month === selectedMonthKey) || 
       { 
@@ -36,7 +36,6 @@ export function useMonthlyStorage() {
   };
 
   const updateSelectedMonth = (updater: (data: MonthlyData) => MonthlyData) => {
-    const selectedMonthKey = getMonthKey(selectedDate);
     setMonthlyReviews(prev => {
       const otherMonths = prev.filter(review => review.month !== selectedMonthKey);
       const updatedData = updater(getSelectedMonthData());
@@ -44,6 +43,7 @@ export function useMonthlyStorage() {
     });
   };
 
+  // Check if we're in December 2024
   const isDecember2024 = selectedDate.getMonth() === 11 && selectedDate.getFullYear() === 2024;
 
   const addWorkItem = (text: string) => isDecember2024 ? addItem('workItems', text) : null;
