@@ -14,11 +14,16 @@ export function getLocalISOString(date: Date) {
 
 export function getWeekBounds(weekOffset: number = 0) {
   try {
+    // Start with current date in local timezone
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Calculate target date based on week offset
     const targetDate = new Date(today);
-    targetDate.setDate(today.getDate() + (weekOffset * 7)); // Adjust for week offset
+    targetDate.setDate(today.getDate() + (weekOffset * 7));
     
-    const currentDay = targetDate.getDay();
+    // Calculate Monday of the week
+    const currentDay = targetDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
 
     const monday = new Date(targetDate);
@@ -28,6 +33,14 @@ export function getWeekBounds(weekOffset: number = 0) {
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
     sunday.setHours(23, 59, 59, 999);
+
+    console.log('Week bounds:', { 
+      weekOffset,
+      monday: monday.toISOString(),
+      sunday: sunday.toISOString(),
+      mondayLocal: getLocalISOString(monday),
+      sundayLocal: getLocalISOString(sunday)
+    });
 
     return { monday, sunday };
   } catch (error) {
@@ -63,6 +76,8 @@ export function isFutureDate(date: Date) {
 export function getWeekDays(weekOffset: number = 0) {
   try {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
     const targetDate = new Date(today);
     targetDate.setDate(today.getDate() + (weekOffset * 7)); // Move weeks back/forward
     
