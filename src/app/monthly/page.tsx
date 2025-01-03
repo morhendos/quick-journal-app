@@ -3,6 +3,7 @@
 import { PageHeader } from '@/components/layout/PageHeader';
 import { MonthlyHeader } from '@/components/monthly/MonthlyHeader';
 import { MONTHLY_SECTIONS } from '@/config/monthlyReview';
+import { GenericMonthlyList } from '@/components/monthly/GenericMonthlyList';
 
 interface SectionContainerProps {
   className?: string;
@@ -33,9 +34,9 @@ export default function MonthlyReview() {
         
         <div className="flex-1 overflow-auto min-h-0">
           <div className="space-y-8">
-            {MONTHLY_SECTIONS.map(({ key, component: Component }) => (
+            {MONTHLY_SECTIONS.map(({ key }) => (
               <SectionContainer key={key}>
-                <Component />
+                <GenericMonthlyList sectionKey={key} />
               </SectionContainer>
             ))}
           </div>
