@@ -3,8 +3,9 @@
 import { Download, Upload, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { downloadEntries, importEntries } from '@/lib/storage';
+import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { usePathname } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { JournalEntry, ImportFormat } from '@/types/journal';
 
 interface HeaderControlsProps {
