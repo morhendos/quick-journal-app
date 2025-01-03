@@ -11,31 +11,29 @@ interface HeaderControlsProps {
   onEntriesUpdate?: () => void;
 }
 
-type StorageActions = {
-  importData: (data: unknown) => Promise<void>;
-  exportData: () => void;
-};
-
 export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
+  const monthlyStorage = useMonthlyStorage();
   const isMonthlyPage = pathname === '/monthly';
   
-  // Only use monthly storage on the monthly page
-  let storageActions: StorageActions;
-  
-  if (isMonthlyPage) {
-    const { exportData, importData } = useMonthlyStorage();
-    storageActions = { exportData, importData };
-  } else {
-    storageActions = {
-      importData: async (data: unknown) => {
+  const storageActions = {
+    importData: async (data: unknown) => {
+      if (isMonthlyPage) {
+        await monthlyStorage.importData(data);
+      } else {
         importEntries(data);
         onEntriesUpdate?.();
-      },
-      exportData: () => downloadEntries()
-    };
-  }
+      }
+    },
+    exportData: () => {
+      if (isMonthlyPage) {
+        monthlyStorage.exportData();
+      } else {
+        downloadEntries();
+      }
+    }
+  };
 
   const handleImport = useCallback(async () => {
     const input = document.createElement('input');
