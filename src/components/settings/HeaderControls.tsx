@@ -5,7 +5,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { downloadEntries, importEntries } from '@/lib/storage';
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { usePathname } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import { JournalEntry, ImportFormat } from '@/types/journal';
 
 interface HeaderControlsProps {
   onEntriesUpdate?: () => void;
@@ -17,12 +18,13 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   const monthlyStorage = useMonthlyStorage();
   const isMonthlyPage = pathname === '/monthly';
   
-  const storageActions = {
+  const storageActions = useMemo(() => ({
     importData: async (data: unknown) => {
       if (isMonthlyPage) {
         await monthlyStorage.importData(data);
       } else {
-        importEntries(data);
+        // Type assertion since we know the format from the file input
+        importEntries(data as ImportFormat | JournalEntry[]);
         onEntriesUpdate?.();
       }
     },
@@ -33,7 +35,7 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
         downloadEntries();
       }
     }
-  };
+  }), [isMonthlyPage, monthlyStorage, onEntriesUpdate]);
 
   const handleImport = useCallback(async () => {
     const input = document.createElement('input');
