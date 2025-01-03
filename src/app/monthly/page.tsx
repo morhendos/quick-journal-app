@@ -9,6 +9,7 @@ import { MonthlyHealthList } from '@/components/monthly/MonthlyHealthList';
 import { MonthlyLifeEventsList } from '@/components/monthly/MonthlyLifeEventsList';
 import { MonthlyLearningsToRememberList } from '@/components/monthly/MonthlyLearningsToRememberList';
 import { MonthlyHopesList } from '@/components/monthly/MonthlyHopesList';
+import { MonthlyProvider } from '@/contexts/MonthlyContext';
 
 interface SectionContainerProps {
   className?: string;
@@ -25,7 +26,7 @@ function SectionContainer({ children, className = '' }: SectionContainerProps) {
   );
 }
 
-export default function MonthlyReview() {
+function MonthlyContent() {
   return (
     <div className="h-full bg-background transition-colors duration-200 flex flex-col overflow-hidden">
       <main className="container mx-auto flex-1 px-3 py-4 sm:px-4 sm:py-12 max-w-6xl flex flex-col overflow-hidden">
@@ -70,5 +71,13 @@ export default function MonthlyReview() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function MonthlyReview() {
+  return (
+    <MonthlyProvider>
+      <MonthlyContent />
+    </MonthlyProvider>
   );
 }
