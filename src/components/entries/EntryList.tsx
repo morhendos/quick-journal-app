@@ -53,22 +53,21 @@ export function EntryList() {
   // Filter entries for the selected week
   const { monday, sunday } = weekBounds;
   
-  const filteredEntries = view === 'chronological'
-    ? entries.filter(entry => {
-        const entryDate = new Date(entry.date + 'T00:00:00');
-        const entryLocalDate = getLocalISOString(entryDate);
-        const mondayLocal = getLocalISOString(monday);
-        const sundayLocal = getLocalISOString(sunday);
-        return entryLocalDate >= mondayLocal && entryLocalDate <= sundayLocal;
-      })
-    : entries;
+  // Always filter entries for the current week, regardless of view type
+  const filteredEntries = entries.filter(entry => {
+    const entryDate = new Date(entry.date + 'T00:00:00');
+    const entryLocalDate = getLocalISOString(entryDate);
+    const mondayLocal = getLocalISOString(monday);
+    const sundayLocal = getLocalISOString(sunday);
+    return entryLocalDate >= mondayLocal && entryLocalDate <= sundayLocal;
+  });
 
   // Sort entries with newest first for chronological view
   const sortedEntries = view === 'chronological' 
     ? [...filteredEntries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     : [...filteredEntries];
 
-  const noEntriesThisWeek = view === 'chronological' && sortedEntries.length === 0;
+  const noEntriesThisWeek = sortedEntries.length === 0;
   const currentWeekText = weekOffset === 0 ? 'this week' : `week of ${weekRange.start}`;
 
   return (
