@@ -2,11 +2,11 @@
 
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { MonthlyList } from './MonthlyList';
-import { ItemsKey } from '@/types/monthly';
+import { SectionKey } from '@/types/monthly';
 import { MONTHLY_SECTIONS } from '@/config/monthlyReview';
 
 interface GenericMonthlyListProps {
-  sectionKey: ItemsKey;
+  sectionKey: SectionKey;
 }
 
 export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
@@ -15,6 +15,8 @@ export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
   
   const section = MONTHLY_SECTIONS.find(s => s.key === sectionKey);
   if (!section) return null;
+
+  const itemsKey = `${sectionKey}Items` as const;
 
   // Get the appropriate action methods based on section key
   const actions = {
@@ -26,7 +28,7 @@ export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
   return (
     <MonthlyList
       title={section.title}
-      items={currentData[`${section.key}Items`]}
+      items={currentData[itemsKey]}
       addItem={actions.add}
       updateItem={actions.update}
       deleteItem={actions.delete}

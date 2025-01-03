@@ -5,14 +5,16 @@ export interface BaseItem {
   updatedAt: string;
 }
 
-export type ItemsKey =
-  | 'workItems'
-  | 'projectItems'
-  | 'learningItems'
-  | 'healthItems'
-  | 'lifeEventItems'
-  | 'learningToRememberItems'
-  | 'hopeItems';
+export type SectionKey =
+  | 'work'
+  | 'projects'
+  | 'learning'
+  | 'health'
+  | 'lifeEvents'
+  | 'learningsToRemember'
+  | 'hopes';
+
+export type ItemsKey = `${SectionKey}Items`;
 
 export interface MonthlyData {
   month: string;
