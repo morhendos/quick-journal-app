@@ -15,27 +15,29 @@ interface HeaderControlsProps {
 export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
-  const monthlyStorage = useMonthlyStorage();
   const isMonthlyPage = pathname === '/monthly';
   
-  const storageActions = useMemo(() => ({
-    importData: async (data: unknown) => {
-      if (isMonthlyPage) {
-        await monthlyStorage.importData(data);
-      } else {
-        // Type assertion since we know the format from the file input
-        importEntries(data as ImportFormat | JournalEntry[]);
-        onEntriesUpdate?.();
-      }
-    },
-    exportData: () => {
-      if (isMonthlyPage) {
-        monthlyStorage.exportData();
-      } else {
-        downloadEntries();
-      }
+  const storageActions = useMemo(() => {
+    if (!isMonthlyPage) {
+      return {
+        importData: async (data: unknown) => {
+          importEntries(data as ImportFormat | JournalEntry[]);
+          onEntriesUpdate?.();
+        },
+        exportData: () => downloadEntries()
+      };
     }
-  }), [isMonthlyPage, monthlyStorage, onEntriesUpdate]);
+
+    // Only access monthly storage when on monthly page
+    const monthlyStorage = useMonthlyStorage();
+    
+    return {
+      importData: async (data: unknown) => {
+        await monthlyStorage.importData(data);
+      },
+      exportData: () => monthlyStorage.exportData()
+    };
+  }, [isMonthlyPage, onEntriesUpdate]);
 
   const handleImport = useCallback(async () => {
     const input = document.createElement('input');
