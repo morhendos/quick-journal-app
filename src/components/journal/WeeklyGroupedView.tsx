@@ -6,22 +6,13 @@ type WeeklyGroupedViewProps = {
 };
 
 export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
-  // Get entries from the last 7 days
-  const today = new Date();
-  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-  
-  const weeklyEntries = entries.filter(entry => {
-    const entryDate = new Date(entry.date);
-    return entryDate >= weekAgo && entryDate <= today;
-  });
-
   return (
     <div className="space-y-4 sm:space-y-8">
       <Section 
         title="What I Learned This Week"
         icon={<BookOpen size={20} className="text-accent" strokeWidth={1.5} />}
       >
-        {weeklyEntries.map((entry) => (
+        {entries.map((entry) => (
           <EntryItem 
             key={entry.id}
             date={entry.date}
@@ -34,7 +25,7 @@ export function WeeklyGroupedView({ entries }: WeeklyGroupedViewProps) {
         title="What Brought Me Joy"
         icon={<Sparkles size={20} className="text-accent" strokeWidth={1.5} />}
       >
-        {weeklyEntries.map((entry) => (
+        {entries.map((entry) => (
           <EntryItem 
             key={entry.id}
             date={entry.date}
