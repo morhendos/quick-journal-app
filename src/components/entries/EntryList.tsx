@@ -53,19 +53,27 @@ export function EntryList() {
   // Filter entries for the selected week
   const { monday, sunday } = weekBounds;
   
-  // Always filter entries for the current week, regardless of view type
+  // Always filter entries for the selected week for both views
   const filteredEntries = entries.filter(entry => {
     const entryDate = new Date(entry.date + 'T00:00:00');
     const entryLocalDate = getLocalISOString(entryDate);
     const mondayLocal = getLocalISOString(monday);
     const sundayLocal = getLocalISOString(sunday);
-    return entryLocalDate >= mondayLocal && entryLocalDate <= sundayLocal;
+
+    const result = entryLocalDate >= mondayLocal && entryLocalDate <= sundayLocal;
+    console.log(`Entry ${entry.date} in week ${weekOffset}:`, { 
+      entryLocalDate, 
+      mondayLocal, 
+      sundayLocal, 
+      result 
+    });
+    return result;
   });
 
-  // Sort entries with newest first for chronological view
-  const sortedEntries = view === 'chronological' 
-    ? [...filteredEntries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    : [...filteredEntries];
+  // Sort entries with newest first
+  const sortedEntries = [...filteredEntries].sort((a, b) => 
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 
   const noEntriesThisWeek = sortedEntries.length === 0;
   const currentWeekText = weekOffset === 0 ? 'this week' : `week of ${weekRange.start}`;
@@ -74,11 +82,9 @@ export function EntryList() {
     <div className="flex flex-col min-h-0 h-full">
       <div className="flex-none space-y-2">
         <ViewToggle view={view} onViewChange={setView} />
-        {view === 'chronological' && (
-          <p className="text-xs text-ink/60 text-center journal-text">
-            {weekOffset === 0 ? 'Current Week' : `Week of ${weekRange.start} - ${weekRange.end}`}
-          </p>
-        )}
+        <p className="text-xs text-ink/60 text-center journal-text">
+          {weekOffset === 0 ? 'Current Week' : `Week of ${weekRange.start} - ${weekRange.end}`}
+        </p>
       </div>
       
       <div className="flex-1 overflow-auto min-h-0 mt-4">
