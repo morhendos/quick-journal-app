@@ -2,7 +2,7 @@
 
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { MonthlyList } from './MonthlyList';
-import { SectionKey, StorageMethod, StorageKeyMap, MonthlyData } from '@/types/monthly';
+import { SectionKey, StorageMethod, StorageKeyMap, MonthlyData, ItemsKey } from '@/types/monthly';
 import { MONTHLY_SECTIONS } from '@/config/monthlyReview';
 
 interface GenericMonthlyListProps {
@@ -13,7 +13,7 @@ function capitalize<T extends string>(s: T): Capitalize<T> {
   return (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<T>;
 }
 
-const getStorageKey = (sectionKey: SectionKey): keyof MonthlyData => {
+const getStorageKey = (sectionKey: SectionKey): ItemsKey => {
   const storageKeyMap: StorageKeyMap = {
     work: 'workItems',
     projects: 'projectItems',
