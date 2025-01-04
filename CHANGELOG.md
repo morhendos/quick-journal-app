@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.3.2] - 2025-01-04
+
+### Added
+- Enhanced monthly review page layout with fixed header
+- Collapsible header that compacts on scroll
+- Smooth animations for header transitions
 
 ### Changed
-- Removed redundant individual list components in favor of GenericMonthlyList
-- Simplified component architecture by removing duplication
+- Updated page scrolling behavior to only scroll content
+- Improved monthly navigation UX in compact mode
 
 ## [0.3.1] - 2025-01-04
 
