@@ -13,7 +13,7 @@ interface SectionContainerProps {
 function SectionContainer({ children, className = '' }: SectionContainerProps) {
   return (
     <div className={`paper-texture bg-paper rounded-lg p-4 sm:p-8 journal-shadow transition-colors duration-200 flex flex-col min-h-0 ${className}`}>
-      <div className="flex-1 min-h-0 overflow-auto">
+      <div className="flex-1 min-h-0">
         {children}
       </div>
     </div>
@@ -23,16 +23,19 @@ function SectionContainer({ children, className = '' }: SectionContainerProps) {
 export default function MonthlyReview() {
   return (
     <div className="h-full bg-background transition-colors duration-200 flex flex-col overflow-hidden">
-      <main className="container mx-auto flex-1 px-3 py-4 sm:px-4 sm:py-12 max-w-6xl flex flex-col overflow-hidden">
-        <div className="flex-none">
+      {/* Fixed header section */}
+      <div className="flex-none bg-background">
+        <div className="container mx-auto px-3 py-4 sm:px-4 sm:pt-12 max-w-6xl">
           <PageHeader />
+          <div className="mt-8">
+            <MonthlyHeader />
+          </div>
         </div>
-        
-        <div className="mb-8">
-          <MonthlyHeader />
-        </div>
-        
-        <div className="flex-1 overflow-auto min-h-0">
+      </div>
+      
+      {/* Scrollable content section */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="container mx-auto px-3 pb-4 sm:px-4 sm:pb-12 max-w-6xl">
           <div className="space-y-8">
             {MONTHLY_SECTIONS.map(({ key }) => (
               <SectionContainer key={key}>
@@ -41,7 +44,7 @@ export default function MonthlyReview() {
             ))}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
