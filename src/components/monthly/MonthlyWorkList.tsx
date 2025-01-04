@@ -2,6 +2,7 @@
 
 import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { MonthlyList } from './MonthlyList';
+import { MONTHLY_SECTIONS } from '@/config/monthlyReview';
 
 export function MonthlyWorkList() {
   const {
@@ -12,16 +13,17 @@ export function MonthlyWorkList() {
   } = useMonthlyStorage();
 
   const currentData = getSelectedMonthData();
+  const config = MONTHLY_SECTIONS.find(section => section.key === 'work')!;
 
   return (
     <MonthlyList
-      title="Work I Got Done"
+      title={config.title}
       items={currentData.workItems}
       addItem={addWorkItem}
       updateItem={updateWorkItem}
       deleteItem={deleteWorkItem}
-      emptyMessage="Start adding your accomplishments for this month"
-      placeholder="Enter an accomplishment..."
+      emptyMessage={config.emptyMessage}
+      placeholder={config.placeholder}
     />
   );
 }
