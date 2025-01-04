@@ -31,8 +31,10 @@ function HeaderButton({
 export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
-  const monthlyStorage = useMonthlyStorage();
   const isMonthlyPage = pathname === '/monthly';
+  
+  // Conditionally use monthly storage only on monthly page
+  const monthlyStorage = isMonthlyPage ? useMonthlyStorage() : null;
 
   const handleImport = useCallback(async () => {
     const input = document.createElement('input');
@@ -46,7 +48,7 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
       try {
         const text = await file.text();
         const data = JSON.parse(text);
-        if (isMonthlyPage) {
+        if (isMonthlyPage && monthlyStorage) {
           await monthlyStorage.importData(data);
         } else {
           importEntries(data as ImportFormat | JournalEntry[]);
@@ -62,7 +64,7 @@ export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   }, [isMonthlyPage, monthlyStorage, onEntriesUpdate]);
 
   const handleExport = useCallback(() => {
-    if (isMonthlyPage) {
+    if (isMonthlyPage && monthlyStorage) {
       monthlyStorage.exportData();
     } else {
       downloadEntries();
