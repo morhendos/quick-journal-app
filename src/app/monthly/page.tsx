@@ -48,15 +48,15 @@ export default function MonthlyReview() {
         <div className="container mx-auto px-3 sm:px-4 max-w-6xl">
           <div className={cn(
             "transition-all duration-300",
-            isHeaderCompact ? "py-2" : "py-3 sm:py-4 md:py-8"
+            isHeaderCompact ? "py-2" : "py-3 sm:py-4 md:py-6"
           )}>
-            <PageHeader />
+            <PageHeader compact={isHeaderCompact} />
           </div>
           <div className={cn(
             "transition-all duration-300 transform-gpu",
             isHeaderCompact 
               ? "scale-90 opacity-0 -mt-8 h-0 overflow-hidden" 
-              : "mt-4 sm:mt-6 md:mt-8 mb-4 sm:mb-6 md:mb-8 opacity-100"
+              : "mt-2 sm:mt-4 md:mt-6 mb-3 sm:mb-4 md:mb-6 opacity-100"
           )}>
             <MonthlyHeader />
           </div>
