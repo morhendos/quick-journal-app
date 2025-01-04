@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2025-01-04
+
+### Changed
+- Enhanced mobile experience throughout the monthly review page
+  - Optimized padding and spacing for different screen sizes
+  - Improved text sizes and readability on mobile
+  - Added better touch interactions and scroll behavior
+  - Refined header layout and transitions for mobile
+- Improved list component layouts for mobile
+  - Simplified "Add Item" button on mobile
+  - Adjusted text areas and buttons for better touch targets
+  - Fixed spacing between list items for mobile
+- Added proper overscroll behavior for iOS devices
+
 ## [0.3.2] - 2025-01-04
 
 ### Added
