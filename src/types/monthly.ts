@@ -27,13 +27,6 @@ export type StorageKeyMap = {
 
 export type ItemsKey = StorageKeyMap[SectionKey];
 
-// Operations that can be performed on items
-export interface ItemOperations {
-  add: (text: string) => BaseItem;
-  update: (id: string, text: string) => void;
-  delete: (id: string) => void;
-}
-
 export interface MonthlyData {
   month: string;
   workItems: BaseItem[];
@@ -52,7 +45,7 @@ export interface ExportFormat {
 }
 
 // Helper type to get strongly-typed storage methods
-export type MonthlyStorageMethods = {
+export interface MonthlyStorageMethods {
   getSelectedMonthData: () => MonthlyData;
   exportData: () => void;
   importData: (importedData: unknown) => Promise<void>;

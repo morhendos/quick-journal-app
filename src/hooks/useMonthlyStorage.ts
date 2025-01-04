@@ -1,5 +1,5 @@
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { MonthlyData, BaseItem, ItemsKey, ItemOperations, ExportFormat, MonthlyStorageMethods } from '@/types/monthly';
+import { MonthlyData, BaseItem, ItemsKey, ExportFormat, MonthlyStorageMethods } from '@/types/monthly';
 import { useMonthlyContext } from '@/contexts/MonthlyContext';
 
 const STORAGE_KEY = 'monthly_reviews';
@@ -68,52 +68,39 @@ export function useMonthlyStorage(): MonthlyStorageMethods {
     });
   };
 
-  function createItemActions(itemType: ItemsKey): ItemOperations {
-    return {
-      add: (text: string) => {
-        const newItem: BaseItem = {
-          id: Date.now().toString(),
-          text: text.trim(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-
-        updateSelectedMonth(current => ({
-          ...current,
-          [itemType]: [newItem, ...ensureArrayField(current[itemType] as BaseItem[])]
-        }));
-
-        return newItem;
-      },
-
-      update: (id: string, text: string) => {
-        updateSelectedMonth(current => ({
-          ...current,
-          [itemType]: ensureArrayField(current[itemType] as BaseItem[]).map(item =>
-            item.id === id
-              ? { ...item, text: text.trim(), updatedAt: new Date().toISOString() }
-              : item
-          )
-        }));
-      },
-
-      delete: (id: string) => {
-        updateSelectedMonth(current => ({
-          ...current,
-          [itemType]: ensureArrayField(current[itemType] as BaseItem[]).filter(item => item.id !== id)
-        }));
-      }
+  function addItem(itemType: ItemsKey, text: string): BaseItem {
+    const newItem: BaseItem = {
+      id: Date.now().toString(),
+      text: text.trim(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
+
+    updateSelectedMonth(current => ({
+      ...current,
+      [itemType]: [newItem, ...ensureArrayField(current[itemType] as BaseItem[])]
+    }));
+
+    return newItem;
   }
 
-  // Create actions for each item type
-  const workActions = createItemActions('workItems');
-  const projectActions = createItemActions('projectItems');
-  const learningActions = createItemActions('learningItems');
-  const healthActions = createItemActions('healthItems');
-  const lifeEventActions = createItemActions('lifeEventItems');
-  const learningToRememberActions = createItemActions('learningToRememberItems');
-  const hopeActions = createItemActions('hopeItems');
+  function updateItem(itemType: ItemsKey, id: string, text: string): void {
+    updateSelectedMonth(current => ({
+      ...current,
+      [itemType]: ensureArrayField(current[itemType] as BaseItem[]).map(item =>
+        item.id === id
+          ? { ...item, text: text.trim(), updatedAt: new Date().toISOString() }
+          : item
+      )
+    }));
+  }
+
+  function deleteItem(itemType: ItemsKey, id: string): void {
+    updateSelectedMonth(current => ({
+      ...current,
+      [itemType]: ensureArrayField(current[itemType] as BaseItem[]).filter(item => item.id !== id)
+    }));
+  }
 
   const exportData = () => {
     const exportData: ExportFormat = {
@@ -173,33 +160,33 @@ export function useMonthlyStorage(): MonthlyStorageMethods {
   return {
     getSelectedMonthData,
     // Work items
-    addWorkItem: workActions.add,
-    updateWorkItem: workActions.update,
-    deleteWorkItem: workActions.delete,
+    addWorkItem: (text: string) => addItem('workItems', text),
+    updateWorkItem: (id: string, text: string) => updateItem('workItems', id, text),
+    deleteWorkItem: (id: string) => deleteItem('workItems', id),
     // Project items
-    addProjectItem: projectActions.add,
-    updateProjectItem: projectActions.update,
-    deleteProjectItem: projectActions.delete,
+    addProjectItem: (text: string) => addItem('projectItems', text),
+    updateProjectItem: (id: string, text: string) => updateItem('projectItems', id, text),
+    deleteProjectItem: (id: string) => deleteItem('projectItems', id),
     // Learning items
-    addLearningItem: learningActions.add,
-    updateLearningItem: learningActions.update,
-    deleteLearningItem: learningActions.delete,
+    addLearningItem: (text: string) => addItem('learningItems', text),
+    updateLearningItem: (id: string, text: string) => updateItem('learningItems', id, text),
+    deleteLearningItem: (id: string) => deleteItem('learningItems', id),
     // Health items
-    addHealthItem: healthActions.add,
-    updateHealthItem: healthActions.update,
-    deleteHealthItem: healthActions.delete,
+    addHealthItem: (text: string) => addItem('healthItems', text),
+    updateHealthItem: (id: string, text: string) => updateItem('healthItems', id, text),
+    deleteHealthItem: (id: string) => deleteItem('healthItems', id),
     // Life events
-    addLifeEventItem: lifeEventActions.add,
-    updateLifeEventItem: lifeEventActions.update,
-    deleteLifeEventItem: lifeEventActions.delete,
+    addLifeEventItem: (text: string) => addItem('lifeEventItems', text),
+    updateLifeEventItem: (id: string, text: string) => updateItem('lifeEventItems', id, text),
+    deleteLifeEventItem: (id: string) => deleteItem('lifeEventItems', id),
     // Learnings to remember
-    addLearningToRememberItem: learningToRememberActions.add,
-    updateLearningToRememberItem: learningToRememberActions.update,
-    deleteLearningToRememberItem: learningToRememberActions.delete,
+    addLearningToRememberItem: (text: string) => addItem('learningToRememberItems', text),
+    updateLearningToRememberItem: (id: string, text: string) => updateItem('learningToRememberItems', id, text),
+    deleteLearningToRememberItem: (id: string) => deleteItem('learningToRememberItems', id),
     // Hope items
-    addHopeItem: hopeActions.add,
-    updateHopeItem: hopeActions.update,
-    deleteHopeItem: hopeActions.delete,
+    addHopeItem: (text: string) => addItem('hopeItems', text),
+    updateHopeItem: (id: string, text: string) => updateItem('hopeItems', id, text),
+    deleteHopeItem: (id: string) => deleteItem('hopeItems', id),
     // Data import/export
     exportData,
     importData
