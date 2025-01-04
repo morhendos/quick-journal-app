@@ -1,5 +1,5 @@
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { MonthlyData, BaseItem, ItemsKey, ItemActions, ExportFormat, MonthlyStorageMethods } from '@/types/monthly';
+import { MonthlyData, BaseItem, ItemsKey, ItemOperations, ExportFormat, MonthlyStorageMethods } from '@/types/monthly';
 import { useMonthlyContext } from '@/contexts/MonthlyContext';
 
 const STORAGE_KEY = 'monthly_reviews';
@@ -68,7 +68,7 @@ export function useMonthlyStorage(): MonthlyStorageMethods {
     });
   };
 
-  function createItemActions(itemType: ItemsKey): ItemActions {
+  function createItemActions(itemType: ItemsKey): ItemOperations {
     return {
       add: (text: string) => {
         const newItem: BaseItem = {
@@ -203,5 +203,5 @@ export function useMonthlyStorage(): MonthlyStorageMethods {
     // Data import/export
     exportData,
     importData
-  } as const;
+  };
 }
