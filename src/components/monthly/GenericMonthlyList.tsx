@@ -9,10 +9,6 @@ interface GenericMonthlyListProps {
   sectionKey: SectionKey;
 }
 
-function capitalize<T extends string>(s: T): Capitalize<T> {
-  return (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<T>;
-}
-
 const getStorageKey = (sectionKey: SectionKey): StorageKeyMap[SectionKey] => {
   const storageKeyMap: StorageKeyMap = {
     work: 'workItems',
@@ -27,6 +23,17 @@ const getStorageKey = (sectionKey: SectionKey): StorageKeyMap[SectionKey] => {
   return storageKeyMap[sectionKey];
 };
 
+// Map from section key to the base method name (without 'Item' suffix)
+const methodBaseName: Record<SectionKey, string> = {
+  work: 'Work',
+  projects: 'Project',
+  learning: 'Learning',
+  health: 'Health',
+  lifeEvents: 'LifeEvent',
+  learningsToRemember: 'LearningToRemember',
+  hopes: 'Hope'
+};
+
 export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
   const monthlyStorage = useMonthlyStorage();
   const currentData = monthlyStorage.getSelectedMonthData();
@@ -35,12 +42,12 @@ export function GenericMonthlyList({ sectionKey }: GenericMonthlyListProps) {
   if (!section) return null;
 
   const itemsKey = getStorageKey(sectionKey);
-  const capitalizedKey = capitalize(section.key);
+  const baseName = methodBaseName[sectionKey];
 
   // Helper to get the method name
   type ActionType = 'add' | 'update' | 'delete';
   const getMethodName = (action: ActionType) => 
-    `${action}${capitalizedKey}Item` as keyof MonthlyStorageMethods;
+    `${action}${baseName}Item` as keyof MonthlyStorageMethods;
 
   return (
     <MonthlyList
