@@ -6,6 +6,7 @@ import { AutoResizeTextarea } from '@/components/common/AutoResizeTextarea';
 import { useMonthlyList } from '@/hooks/useMonthlyList';
 import { ActionButtons, HeaderButton } from './MonthlyListButtons';
 import { MonthlyListItem } from './MonthlyListItem';
+import { cn } from '@/lib/utils';
 
 interface MonthlyListProps<T extends BaseItem> {
   title: string;
@@ -58,10 +59,10 @@ export function MonthlyList<T extends BaseItem>({
   if (!mounted) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl sm:text-2xl font-semibold text-ink/90 journal-heading">{title}</h2>
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-ink/90 journal-heading truncate pr-2">{title}</h2>
         </div>
-        <div className="text-center py-8 text-ink/50 bg-paper/50 rounded-md">
+        <div className="text-center py-6 sm:py-8 text-ink/50 bg-paper/50 rounded-md text-sm sm:text-base">
           Loading...
         </div>
       </div>
@@ -70,12 +71,12 @@ export function MonthlyList<T extends BaseItem>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl sm:text-2xl font-semibold text-ink/90 journal-heading">{title}</h2>
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-ink/90 journal-heading truncate pr-2">{title}</h2>
         {!isAdding && addItem && (
-          <HeaderButton onClick={startAdding}>
-            <Plus size={16} />
-            <span>Add Item</span>
+          <HeaderButton onClick={startAdding} className="shrink-0">
+            <Plus size={16} className="sm:mr-1" />
+            <span className="hidden sm:inline">Add Item</span>
           </HeaderButton>
         )}
       </div>
@@ -88,18 +89,20 @@ export function MonthlyList<T extends BaseItem>({
             onSave={handleAddItem}
             onCancel={cancelAdding}
             placeholder={placeholder}
-            className="flex-1"
+            className="flex-1 text-sm sm:text-base"
             autoFocus
           />
-          <ActionButtons
-            onSave={handleAddItem}
-            onCancel={cancelAdding}
-            disabled={!newItem.trim()}
-          />
+          <div className="shrink-0">
+            <ActionButtons
+              onSave={handleAddItem}
+              onCancel={cancelAdding}
+              disabled={!newItem.trim()}
+            />
+          </div>
         </div>
       )}
 
-      <ul className="space-y-3">
+      <ul className="space-y-2 sm:space-y-3">
         {items.map(item => (
           <MonthlyListItem
             key={item.id}
@@ -116,7 +119,7 @@ export function MonthlyList<T extends BaseItem>({
       </ul>
 
       {items.length === 0 && !isAdding && (
-        <div className="text-center py-8 text-ink/50 bg-paper/50 rounded-md">
+        <div className="text-center py-6 sm:py-8 text-ink/50 bg-paper/50 rounded-md text-sm sm:text-base">
           {emptyMessage}
         </div>
       )}
