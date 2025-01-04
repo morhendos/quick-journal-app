@@ -19,11 +19,11 @@ export default function LogoutButton() {
   return (
     <button
       onClick={handleSignOut}
-      className="flex items-center gap-2 text-sm text-ink/70 hover:text-ink
-        transition-colors duration-200 journal-text"
+      className="flex items-center text-sm text-ink/70 hover:text-ink
+        transition-colors duration-200 journal-text whitespace-nowrap"
     >
-      <LogOut size={18} strokeWidth={1.5} />
-      <span>Sign Out</span>
+      <LogOut className="w-3.5 h-3.5 sm:w-[18px] sm:h-[18px]" strokeWidth={1.5} />
+      <span className="ml-1 sm:ml-2">Sign Out</span>
     </button>
   );
 }

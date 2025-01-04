@@ -7,64 +7,35 @@ import { useMonthlyStorage } from '@/hooks/useMonthlyStorage';
 import { usePathname } from 'next/navigation';
 import { useCallback } from 'react';
 import { JournalEntry, ImportFormat } from '@/types/journal';
+import { cn } from '@/lib/utils';
 
 interface HeaderControlsProps {
   onEntriesUpdate?: () => void;
 }
 
-// Storage actions type
-type StorageActions = {
-  importData: (data: unknown) => Promise<void>;
-  exportData: () => void;
-};
-
-function MonthlyControls() {
-  const { theme, toggleTheme } = useTheme();
-  const { exportData, importData } = useMonthlyStorage();
-  
-  const storageActions: StorageActions = {
-    importData: async (data: unknown) => importData(data),
-    exportData
-  };
-
+function HeaderButton({
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <Controls
-      theme={theme}
-      toggleTheme={toggleTheme}
-      storageActions={storageActions}
-    />
+    <button
+      {...props}
+      className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center
+        text-ink/70 hover:text-ink transition-colors duration-200"
+    >
+      {children}
+    </button>
   );
 }
 
-function JournalControls({ onEntriesUpdate }: HeaderControlsProps) {
+export function HeaderControls({ onEntriesUpdate }: HeaderControlsProps) {
   const { theme, toggleTheme } = useTheme();
+  const pathname = usePathname();
+  const isMonthlyPage = pathname === '/monthly';
   
-  const storageActions: StorageActions = {
-    importData: async (data: unknown) => {
-      importEntries(data as ImportFormat | JournalEntry[]);
-      onEntriesUpdate?.();
-    },
-    exportData: () => downloadEntries()
-  };
+  // Conditionally use monthly storage only on monthly page
+  const monthlyStorage = isMonthlyPage ? useMonthlyStorage() : null;
 
-  return (
-    <Controls
-      theme={theme}
-      toggleTheme={toggleTheme}
-      storageActions={storageActions}
-    />
-  );
-}
-
-function Controls({
-  theme,
-  toggleTheme,
-  storageActions
-}: {
-  theme: string;
-  toggleTheme: () => void;
-  storageActions: StorageActions;
-}) {
   const handleImport = useCallback(async () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -77,7 +48,12 @@ function Controls({
       try {
         const text = await file.text();
         const data = JSON.parse(text);
-        await storageActions.importData(data);
+        if (isMonthlyPage && monthlyStorage) {
+          await monthlyStorage.importData(data);
+        } else {
+          importEntries(data as ImportFormat | JournalEntry[]);
+          onEntriesUpdate?.();
+        }
       } catch (error) {
         console.error('Error importing data:', error);
         alert('Error importing data. Please check the file format.');
@@ -85,22 +61,30 @@ function Controls({
     };
 
     input.click();
-  }, [storageActions]);
+  }, [isMonthlyPage, monthlyStorage, onEntriesUpdate]);
+
+  const handleExport = useCallback(() => {
+    if (isMonthlyPage && monthlyStorage) {
+      monthlyStorage.exportData();
+    } else {
+      downloadEntries();
+    }
+  }, [isMonthlyPage, monthlyStorage]);
 
   return (
-    <div className="flex justify-end gap-2">
+    <div className="flex justify-end gap-1 sm:gap-2">
       <HeaderButton
         onClick={handleImport}
         aria-label="Import entries"
       >
-        <Upload size={20} strokeWidth={1.5} />
+        <Upload className="w-3.5 h-3.5 sm:w-5 sm:h-5" strokeWidth={1.5} />
       </HeaderButton>
 
       <HeaderButton
-        onClick={storageActions.exportData}
+        onClick={handleExport}
         aria-label="Export entries"
       >
-        <Download size={20} strokeWidth={1.5} />
+        <Download className="w-3.5 h-3.5 sm:w-5 sm:h-5" strokeWidth={1.5} />
       </HeaderButton>
 
       <HeaderButton
@@ -108,37 +92,11 @@ function Controls({
         aria-label="Toggle theme"
       >
         {theme === 'dark' ? (
-          <Sun size={20} strokeWidth={1.5} />
+          <Sun className="w-3.5 h-3.5 sm:w-5 sm:h-5" strokeWidth={1.5} />
         ) : (
-          <Moon size={20} strokeWidth={1.5} />
+          <Moon className="w-3.5 h-3.5 sm:w-5 sm:h-5" strokeWidth={1.5} />
         )}
       </HeaderButton>
     </div>
   );
-}
-
-function HeaderButton({
-  children,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      {...props}
-      className="w-10 h-10 rounded-full flex items-center justify-center
-        text-ink/70 hover:text-ink transition-colors duration-200"
-    >
-      {children}
-    </button>
-  );
-}
-
-export function HeaderControls(props: HeaderControlsProps) {
-  const pathname = usePathname();
-  const isMonthlyPage = pathname === '/monthly';
-  
-  if (isMonthlyPage) {
-    return <MonthlyControls />;
-  }
-  
-  return <JournalControls {...props} />;
 }
