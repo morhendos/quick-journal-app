@@ -1,5 +1,6 @@
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { Subscription, SubscriptionFormData, SubscriptionSummary } from '@/types/subscriptions';
+import { Subscription, SubscriptionFormData, SubscriptionSummary, Currency } from '@/types/subscriptions';
+import { convertToEur } from '@/utils/format';
 
 const STORAGE_KEY = 'subscriptions';
 
@@ -43,23 +44,27 @@ export function useSubscriptionStorage() {
   const calculateSummary = (): SubscriptionSummary => {
     const summary = subscriptions.reduce(
       (acc, sub) => {
-        const { price, billingPeriod } = sub;
-        switch (billingPeriod) {
+        const priceInEur = convertToEur(sub.price, sub.currency);
+
+        // Track original currency amounts
+        acc.originalAmounts[sub.currency] = (acc.originalAmounts[sub.currency] || 0) + sub.price;
+
+        switch (sub.billingPeriod) {
           case 'monthly':
-            acc.totalMonthly += price;
-            acc.grandTotalMonthly += price;
+            acc.totalMonthly += priceInEur;
+            acc.grandTotalMonthly += priceInEur;
             break;
           case 'yearly':
-            acc.totalYearly += price;
-            acc.grandTotalMonthly += price / 12;
+            acc.totalYearly += priceInEur;
+            acc.grandTotalMonthly += priceInEur / 12;
             break;
           case 'weekly':
-            acc.totalWeekly += price;
-            acc.grandTotalMonthly += price * 4.33; // Average weeks per month
+            acc.totalWeekly += priceInEur;
+            acc.grandTotalMonthly += priceInEur * 4.33; // Average weeks per month
             break;
           case 'quarterly':
-            acc.totalQuarterly += price;
-            acc.grandTotalMonthly += price / 3;
+            acc.totalQuarterly += priceInEur;
+            acc.grandTotalMonthly += priceInEur / 3;
             break;
         }
         return acc;
@@ -69,14 +74,30 @@ export function useSubscriptionStorage() {
         totalYearly: 0,
         totalWeekly: 0,
         totalQuarterly: 0,
-        grandTotalMonthly: 0
+        grandTotalMonthly: 0,
+        originalAmounts: {
+          EUR: 0,
+          USD: 0,
+          PLN: 0
+        }
       }
     );
 
     // Round all values to 2 decimal places
-    return Object.fromEntries(
-      Object.entries(summary).map(([key, value]) => [key, Math.round(value * 100) / 100])
-    ) as SubscriptionSummary;
+    return {
+      ...summary,
+      totalMonthly: Math.round(summary.totalMonthly * 100) / 100,
+      totalYearly: Math.round(summary.totalYearly * 100) / 100,
+      totalWeekly: Math.round(summary.totalWeekly * 100) / 100,
+      totalQuarterly: Math.round(summary.totalQuarterly * 100) / 100,
+      grandTotalMonthly: Math.round(summary.grandTotalMonthly * 100) / 100,
+      originalAmounts: Object.fromEntries(
+        Object.entries(summary.originalAmounts).map(([key, value]) => [
+          key,
+          Math.round(value * 100) / 100
+        ])
+      ) as Record<Currency, number>
+    };
   };
 
   return {
