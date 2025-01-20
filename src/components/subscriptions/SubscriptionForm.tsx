@@ -37,25 +37,20 @@ export function SubscriptionForm({
     onSubmit(formData);
   };
 
-  const inputWrapperClassName = "relative mt-1 overflow-visible";
-  const inputClassName = "w-full rounded-md border border-input bg-paper px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ink/50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-paper disabled:cursor-not-allowed disabled:opacity-50";
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 p-1">
       <div className="space-y-2">
         <label className="block text-sm font-medium text-ink/90 journal-text">
           Service Name
         </label>
-        <div className={inputWrapperClassName}>
-          <input
-            type="text"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            className={inputClassName}
-            placeholder="Netflix, Spotify, etc."
-          />
-        </div>
+        <input
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+          className="flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder="Netflix, Spotify, etc."
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -63,35 +58,31 @@ export function SubscriptionForm({
           <label className="block text-sm font-medium text-ink/90 journal-text">
             Price
           </label>
-          <div className={inputWrapperClassName}>
-            <input
-              type="number"
-              value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-              required
-              min="0"
-              step="0.01"
-              className={inputClassName}
-            />
-          </div>
+          <input
+            type="number"
+            value={formData.price}
+            onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+            required
+            min="0"
+            step="0.01"
+            className="flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          />
         </div>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-ink/90 journal-text">
             Billing Period
           </label>
-          <div className={inputWrapperClassName}>
-            <select
-              value={formData.billingPeriod}
-              onChange={(e) => setFormData({ ...formData, billingPeriod: e.target.value as BillingPeriod })}
-              required
-              className={inputClassName}
-            >
-              {BILLING_PERIODS.map(({ value, label }) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
-          </div>
+          <select
+            value={formData.billingPeriod}
+            onChange={(e) => setFormData({ ...formData, billingPeriod: e.target.value as BillingPeriod })}
+            required
+            className="flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {BILLING_PERIODS.map(({ value, label }) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -99,29 +90,25 @@ export function SubscriptionForm({
         <label className="block text-sm font-medium text-ink/90 journal-text">
           Start Date
         </label>
-        <div className={inputWrapperClassName}>
-          <input
-            type="date"
-            value={formData.startDate}
-            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-            required
-            className={inputClassName}
-          />
-        </div>
+        <input
+          type="date"
+          value={formData.startDate}
+          onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+          required
+          className="flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        />
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-ink/90 journal-text">
           Description (Optional)
         </label>
-        <div className={inputWrapperClassName}>
-          <textarea
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className={`min-h-[80px] ${inputClassName}`}
-            placeholder="Add any notes about this subscription..."
-          />
-        </div>
+        <textarea
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          className="min-h-[80px] w-full rounded-md border border-input bg-paper px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder="Add any notes about this subscription..."
+        />
       </div>
 
       <div className="flex gap-4 pt-2">
@@ -129,9 +116,7 @@ export function SubscriptionForm({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 bg-paper text-ink/70 hover:text-ink
-              py-3 px-6 rounded-md transition-all duration-200 
-              flex items-center justify-center gap-2 group journal-text journal-button"
+            className="flex-1 bg-paper text-ink/70 hover:text-ink py-3 px-6 rounded-md transition-all duration-200 flex items-center justify-center gap-2 group journal-text journal-button"
           >
             <X size={18} className="group-hover:scale-105 transition-transform" strokeWidth={1.5} />
             <span>Cancel</span>
@@ -139,9 +124,7 @@ export function SubscriptionForm({
         )}
         <button 
           type="submit"
-          className="flex-1 bg-accent/10 text-accent hover:bg-accent/15
-            py-3 px-6 rounded-md transition-all duration-200
-            flex items-center justify-center gap-2 group journal-text journal-button"
+          className="flex-1 bg-accent/10 text-accent hover:bg-accent/15 py-3 px-6 rounded-md transition-all duration-200 flex items-center justify-center gap-2 group journal-text journal-button"
         >
           {initialData ? (
             <>
