@@ -39,12 +39,26 @@ export function SubscriptionForm({
     description: initialData?.description || ''
   });
 
+  // Keep track of price input value as string to allow for partial input like decimal points
+  const [priceInput, setPriceInput] = useState(formData.price.toString());
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    const finalPrice = parseFloat(priceInput) || 0;
+    onSubmit({ ...formData, price: finalPrice });
   };
 
-  const inputWrapperClassName = "relative mt-1 p-[3px]";
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPriceInput(value);
+    
+    // Only update the formData if we have a valid number
+    if (value && !isNaN(parseFloat(value))) {
+      setFormData(prev => ({ ...prev, price: parseFloat(value) }));
+    }
+  };
+
+  const inputWrapperClassName = "relative mt-1 p-[5px]";
   const inputClassName = "w-full rounded-md border border-input bg-paper px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ink/50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-paper disabled:cursor-not-allowed disabled:opacity-50";
 
   return (
@@ -73,12 +87,13 @@ export function SubscriptionForm({
           <div className="grid grid-cols-2 gap-2">
             <div className={inputWrapperClassName}>
               <input
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                type="text"
+                pattern="^\d*\.?\d*$"
+                value={priceInput}
+                onChange={handlePriceChange}
                 required
                 min="0"
-                step="0.01"
+                placeholder="0.00"
                 className={inputClassName}
               />
             </div>
