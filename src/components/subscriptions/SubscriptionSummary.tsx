@@ -1,6 +1,6 @@
 'use client';
 
-import { SubscriptionSummary as Summary } from '@/types/subscriptions';
+import { Currency, SubscriptionSummary as Summary } from '@/types/subscriptions';
 import { formatCurrency } from '@/utils/format';
 
 interface SubscriptionSummaryProps {
@@ -17,25 +17,21 @@ export function SubscriptionSummary({ summary }: SubscriptionSummaryProps) {
           title="Monthly"
           amount={summary.totalMonthly}
           period="per month"
-          currency="EUR"
         />
         <SummaryCard
           title="Yearly"
           amount={summary.totalYearly}
           period="per year"
-          currency="EUR"
         />
         <SummaryCard
           title="Weekly"
           amount={summary.totalWeekly}
           period="per week"
-          currency="EUR"
         />
         <SummaryCard
           title="Quarterly"
           amount={summary.totalQuarterly}
           period="per quarter"
-          currency="EUR"
         />
       </div>
 
@@ -47,7 +43,9 @@ export function SubscriptionSummary({ summary }: SubscriptionSummaryProps) {
               .filter(([_, amount]) => amount > 0)
               .map(([currency, amount]) => (
                 <div key={currency}>
-                  <p className="text-lg font-semibold journal-text">{formatCurrency(amount, currency as any)}</p>
+                  <p className="text-lg font-semibold journal-text">
+                    {formatCurrency(amount, currency as Currency)}
+                  </p>
                   <p className="text-sm text-ink/60">Total in {currency}</p>
                 </div>
               ))}
@@ -74,14 +72,13 @@ interface SummaryCardProps {
   title: string;
   amount: number;
   period: string;
-  currency: string;
 }
 
-function SummaryCard({ title, amount, period, currency }: SummaryCardProps) {
+function SummaryCard({ title, amount, period }: SummaryCardProps) {
   return (
     <div className="bg-paper border border-border rounded-lg p-4">
       <h4 className="text-sm font-medium text-ink/60 mb-1">{title}</h4>
-      <p className="text-xl font-semibold journal-text">{formatCurrency(amount, currency as any)}</p>
+      <p className="text-xl font-semibold journal-text">{formatCurrency(amount, 'EUR')}</p>
       <p className="text-sm text-ink/60">{period}</p>
     </div>
   );
