@@ -4,8 +4,20 @@ import { convertToEur } from '@/utils/format';
 
 const STORAGE_KEY = 'subscriptions';
 
+function migrateSubscriptions(subscriptions: any[]): Subscription[] {
+  return subscriptions.map(sub => ({
+    ...sub,
+    currency: sub.currency || 'EUR' // Default old subscriptions to EUR
+  }));
+}
+
 export function useSubscriptionStorage() {
-  const [subscriptions, setSubscriptions] = useLocalStorage<Subscription[]>(STORAGE_KEY, []);
+  const [subscriptions, setSubscriptions] = useLocalStorage<Subscription[]>(STORAGE_KEY, [], {
+    deserialize: (value) => {
+      const parsed = JSON.parse(value);
+      return migrateSubscriptions(parsed);
+    }
+  });
 
   const addSubscription = (data: SubscriptionFormData): Subscription => {
     const newSubscription: Subscription = {
@@ -44,10 +56,11 @@ export function useSubscriptionStorage() {
   const calculateSummary = (): SubscriptionSummary => {
     const summary = subscriptions.reduce(
       (acc, sub) => {
-        const priceInEur = convertToEur(sub.price, sub.currency);
+        const priceInEur = convertToEur(sub.price, sub.currency || 'EUR');
 
         // Track original currency amounts
-        acc.originalAmounts[sub.currency] = (acc.originalAmounts[sub.currency] || 0) + sub.price;
+        const currency = (sub.currency || 'EUR') as Currency;
+        acc.originalAmounts[currency] = (acc.originalAmounts[currency] || 0) + sub.price;
 
         switch (sub.billingPeriod) {
           case 'monthly':
