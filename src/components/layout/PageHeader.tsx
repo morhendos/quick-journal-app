@@ -25,8 +25,8 @@ export function PageHeader({ onEntriesUpdate }: PageHeaderProps) {
   };
 
   return (
-    <header className="flex items-center justify-between gap-4">
-      <nav className="flex items-center gap-2">
+    <header className="flex items-center justify-between gap-4 flex-wrap">
+      <nav className="flex items-center gap-2 flex-wrap">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href;
           return (
