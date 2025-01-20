@@ -37,7 +37,8 @@ export function SubscriptionForm({
     onSubmit(formData);
   };
 
-  const inputClassName = "flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ink/50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-paper disabled:cursor-not-allowed disabled:opacity-50";
+  const inputWrapperClassName = "relative mt-1 overflow-visible";
+  const inputClassName = "w-full rounded-md border border-input bg-paper px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ink/50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-paper disabled:cursor-not-allowed disabled:opacity-50";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -45,14 +46,16 @@ export function SubscriptionForm({
         <label className="block text-sm font-medium text-ink/90 journal-text">
           Service Name
         </label>
-        <input
-          type="text"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          required
-          className={inputClassName}
-          placeholder="Netflix, Spotify, etc."
-        />
+        <div className={inputWrapperClassName}>
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+            className={inputClassName}
+            placeholder="Netflix, Spotify, etc."
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -60,31 +63,35 @@ export function SubscriptionForm({
           <label className="block text-sm font-medium text-ink/90 journal-text">
             Price
           </label>
-          <input
-            type="number"
-            value={formData.price}
-            onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-            required
-            min="0"
-            step="0.01"
-            className={inputClassName}
-          />
+          <div className={inputWrapperClassName}>
+            <input
+              type="number"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+              required
+              min="0"
+              step="0.01"
+              className={inputClassName}
+            />
+          </div>
         </div>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-ink/90 journal-text">
             Billing Period
           </label>
-          <select
-            value={formData.billingPeriod}
-            onChange={(e) => setFormData({ ...formData, billingPeriod: e.target.value as BillingPeriod })}
-            required
-            className={inputClassName}
-          >
-            {BILLING_PERIODS.map(({ value, label }) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
+          <div className={inputWrapperClassName}>
+            <select
+              value={formData.billingPeriod}
+              onChange={(e) => setFormData({ ...formData, billingPeriod: e.target.value as BillingPeriod })}
+              required
+              className={inputClassName}
+            >
+              {BILLING_PERIODS.map(({ value, label }) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -92,25 +99,29 @@ export function SubscriptionForm({
         <label className="block text-sm font-medium text-ink/90 journal-text">
           Start Date
         </label>
-        <input
-          type="date"
-          value={formData.startDate}
-          onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-          required
-          className={inputClassName}
-        />
+        <div className={inputWrapperClassName}>
+          <input
+            type="date"
+            value={formData.startDate}
+            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+            required
+            className={inputClassName}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-ink/90 journal-text">
           Description (Optional)
         </label>
-        <textarea
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className={`min-h-[80px] ${inputClassName}`}
-          placeholder="Add any notes about this subscription..."
-        />
+        <div className={inputWrapperClassName}>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            className={`min-h-[80px] ${inputClassName}`}
+            placeholder="Add any notes about this subscription..."
+          />
+        </div>
       </div>
 
       <div className="flex gap-4 pt-2">
