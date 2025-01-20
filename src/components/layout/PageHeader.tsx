@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button } from '@/components/common/Button';
-import { cn } from '@/lib/utils';
 import { Calendar, Book, CreditCard, LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
@@ -31,32 +29,26 @@ export function PageHeader({ onEntriesUpdate }: PageHeaderProps) {
           const isActive = pathname === href;
           return (
             <Link key={href} href={href}>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  'gap-2',
-                  isActive && 'bg-accent/10 text-accent hover:bg-accent/15'
-                )}
+              <button
+                className={`flex items-center gap-2 py-2 px-3 rounded-md transition-colors 
+                  ${isActive ? 'bg-accent/10 text-accent hover:bg-accent/15' : 'hover:bg-accent/10'}`}
                 onClick={onEntriesUpdate}
               >
                 <Icon size={18} strokeWidth={1.5} />
                 <span>{label}</span>
-              </Button>
+              </button>
             </Link>
           );
         })}
       </nav>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        className="gap-2"
+      <button
+        className="flex items-center gap-2 py-2 px-3 rounded-md transition-colors hover:bg-accent/10"
         onClick={handleSignOut}
       >
         <LogOut size={18} strokeWidth={1.5} />
         <span>Sign Out</span>
-      </Button>
+      </button>
     </header>
   );
 }
