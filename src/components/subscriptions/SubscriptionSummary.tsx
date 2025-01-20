@@ -56,7 +56,7 @@ interface SummaryCardProps {
 
 function SummaryCard({ title, amount, period }: SummaryCardProps) {
   return (
-    <div className="bg-background border border-border rounded-lg p-4">
+    <div className="bg-paper border border-border rounded-lg p-4">
       <h4 className="text-sm font-medium text-ink/60 mb-1">{title}</h4>
       <p className="text-xl font-semibold journal-text">{formatCurrency(amount)}</p>
       <p className="text-sm text-ink/60">{period}</p>
