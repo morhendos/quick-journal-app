@@ -6,18 +6,19 @@ const CURRENCY_LOCALES: Record<Currency, string> = {
   PLN: 'pl-PL'  // Polish locale for PLN
 };
 
-export function formatCurrency(amount: number, currency: Currency): string {
-  if (!amount) return new Intl.NumberFormat(CURRENCY_LOCALES[currency], {
-    style: 'currency',
-    currency: currency
-  }).format(0);
+export function formatCurrency(amount: number | null | undefined, currency: Currency | null | undefined): string {
+  // Default to EUR if no currency provided
+  const currencyCode = currency || 'EUR';
+  
+  // Default to 0 if no amount provided
+  const value = typeof amount === 'number' ? amount : 0;
 
-  return new Intl.NumberFormat(CURRENCY_LOCALES[currency], {
+  return new Intl.NumberFormat(CURRENCY_LOCALES[currencyCode], {
     style: 'currency',
-    currency: currency,
+    currency: currencyCode,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(amount);
+  }).format(value);
 }
 
 export function convertToEur(amount: number, fromCurrency: Currency): number {
