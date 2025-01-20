@@ -37,11 +37,7 @@ export function SubscriptionForm({
     onSubmit(formData);
   };
 
-  const inputClassName = "flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm
-    file:border-0 file:bg-transparent file:text-sm file:font-medium
-    placeholder:text-ink/50
-    focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-paper
-    disabled:cursor-not-allowed disabled:opacity-50";
+  const inputClassName = "flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ink/50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-paper disabled:cursor-not-allowed disabled:opacity-50";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
