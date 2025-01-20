@@ -37,6 +37,12 @@ export function SubscriptionForm({
     onSubmit(formData);
   };
 
+  const inputClassName = "flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm
+    file:border-0 file:bg-transparent file:text-sm file:font-medium
+    placeholder:text-ink/50
+    focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-paper
+    disabled:cursor-not-allowed disabled:opacity-50";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -48,7 +54,7 @@ export function SubscriptionForm({
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
-          className="flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className={inputClassName}
           placeholder="Netflix, Spotify, etc."
         />
       </div>
@@ -65,7 +71,7 @@ export function SubscriptionForm({
             required
             min="0"
             step="0.01"
-            className="flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className={inputClassName}
           />
         </div>
 
@@ -77,7 +83,7 @@ export function SubscriptionForm({
             value={formData.billingPeriod}
             onChange={(e) => setFormData({ ...formData, billingPeriod: e.target.value as BillingPeriod })}
             required
-            className="flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className={inputClassName}
           >
             {BILLING_PERIODS.map(({ value, label }) => (
               <option key={value} value={value}>{label}</option>
@@ -95,7 +101,7 @@ export function SubscriptionForm({
           value={formData.startDate}
           onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
           required
-          className="flex h-10 w-full rounded-md border border-input bg-paper px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className={inputClassName}
         />
       </div>
 
@@ -106,7 +112,7 @@ export function SubscriptionForm({
         <textarea
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="flex min-h-[80px] w-full rounded-md border border-input bg-paper px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className={`min-h-[80px] ${inputClassName}`}
           placeholder="Add any notes about this subscription..."
         />
       </div>
