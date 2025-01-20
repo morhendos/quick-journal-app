@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, BookOpen } from 'lucide-react';
+import { CalendarDays, BookOpen, CreditCard } from 'lucide-react';
 
 export function Navigation() {
   const pathname = usePathname();
@@ -24,6 +24,14 @@ export function Navigation() {
       >
         <CalendarDays size={18} strokeWidth={1.5} />
         <span>Monthly Review</span>
+      </Link>
+      <Link
+        href="/subscriptions"
+        className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-accent
+          ${pathname === '/subscriptions' ? 'text-accent' : 'text-ink/70'}`}
+      >
+        <CreditCard size={18} strokeWidth={1.5} />
+        <span>Subscriptions</span>
       </Link>
     </nav>
   );
