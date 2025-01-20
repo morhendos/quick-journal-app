@@ -44,6 +44,27 @@ export function SubscriptionForm({
     onSubmit(formData);
   };
 
+  const handlePriceChange = (value: string) => {
+    // Remove any non-numeric characters except decimal point
+    const sanitizedValue = value.replace(/[^0-9.]/g, '');
+    
+    // Only allow one decimal point
+    const parts = sanitizedValue.split('.');
+    let finalValue = parts[0];
+    if (parts.length > 1) {
+      // Limit to 2 decimal places
+      finalValue += '.' + parts[1].slice(0, 2);
+    }
+    
+    // Convert to number or 0 if empty
+    const numericValue = finalValue ? parseFloat(finalValue) : 0;
+    
+    setFormData(prev => ({
+      ...prev,
+      price: numericValue
+    }));
+  };
+
   const inputWrapperClassName = "relative mt-1 overflow-visible";
   const inputClassName = "w-full rounded-md border border-input bg-paper px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ink/50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-paper disabled:cursor-not-allowed disabled:opacity-50";
 
@@ -73,12 +94,13 @@ export function SubscriptionForm({
           <div className="grid grid-cols-2 gap-2">
             <div className={inputWrapperClassName}>
               <input
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                type="text"
+                inputMode="decimal"
+                pattern="\d*\.?\d*"
+                value={formData.price === 0 ? '' : formData.price.toString()}
+                onChange={(e) => handlePriceChange(e.target.value)}
+                placeholder="0.00"
                 required
-                min="0"
-                step="0.01"
                 className={inputClassName}
               />
             </div>
