@@ -1,6 +1,6 @@
 'use client';
 
-import { Subscription } from '@/types/subscriptions';
+import { Subscription, Currency } from '@/types/subscriptions';
 import { useState } from 'react';
 import { CreditCard, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { formatCurrency } from '@/utils/format';
@@ -42,7 +42,7 @@ export function SubscriptionList({ subscriptions, onEdit, onDelete }: Subscripti
               <div>
                 <h3 className="font-medium journal-text">{subscription.name}</h3>
                 <p className="text-sm text-ink/60">
-                  {formatCurrency(subscription.price)} / {formatBillingPeriod(subscription.billingPeriod)}
+                  {formatCurrency(subscription.price, subscription.currency)} / {formatBillingPeriod(subscription.billingPeriod)}
                 </p>
               </div>
             </div>
