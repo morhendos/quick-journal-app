@@ -1,0 +1,123 @@
+subscription-tracker/
+├── CHANGELOG.md
+├── README.md
+├── next-env.d.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── public
+│   └── assets
+│       ├── quick-journal-logo-white.png
+│       └── quick-journal-logo.png
+├── scripts
+│   └── tree.js
+├── src
+│   ├── app
+│   │   ├── api
+│   │   │   ├── auth
+│   │   │   │   ├── [...nextauth]
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── session
+│   │   │   │       └── route.ts
+│   │   │   └── entries
+│   │   │       └── route.ts
+│   │   ├── assets
+│   │   │   └── logo.png
+│   │   ├── auth
+│   │   │   ├── error
+│   │   │   │   ├── loading.tsx
+│   │   │   │   └── page.tsx
+│   │   │   └── signout
+│   │   │       └── page.tsx
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── login
+│   │   │   ├── loading.tsx
+│   │   │   └── page.tsx
+│   │   ├── monthly
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── page.tsx
+│   │   ├── providers.tsx
+│   │   └── signup
+│   │       └── page.tsx
+│   ├── components
+│   │   ├── README.md
+│   │   ├── ThemeToggle.tsx
+│   │   ├── ViewToggle.tsx
+│   │   ├── auth
+│   │   │   ├── AuthLogo.tsx
+│   │   │   ├── AuthProvider.tsx
+│   │   │   └── LogoutButton.tsx
+│   │   ├── common
+│   │   │   ├── AddItemButton.tsx
+│   │   │   ├── AutoResizeTextarea.tsx
+│   │   │   ├── Button.tsx
+│   │   │   ├── EditableList.tsx
+│   │   │   ├── Section.tsx
+│   │   │   └── ViewToggle.tsx
+│   │   ├── entries
+│   │   │   ├── EntryDisplay.tsx
+│   │   │   ├── EntryList.tsx
+│   │   │   └── WeeklyGroupedView.tsx
+│   │   ├── forms
+│   │   │   └── JournalEntryForm.tsx
+│   │   ├── journal
+│   │   │   ├── ExportImport.tsx
+│   │   │   └── WeeklyGroupedView.tsx
+│   │   ├── layout
+│   │   │   ├── Navigation.tsx
+│   │   │   └── PageHeader.tsx
+│   │   ├── monthly
+│   │   │   ├── ExportImportControls.tsx
+│   │   │   ├── GenericMonthlyList.tsx
+│   │   │   ├── MonthlyEntryList.tsx
+│   │   │   ├── MonthlyHeader.tsx
+│   │   │   ├── MonthlyList.tsx
+│   │   │   ├── MonthlyListButtons.tsx
+│   │   │   └── MonthlyListItem.tsx
+│   │   ├── overview
+│   │   │   └── WeeklyOverview.tsx
+│   │   ├── providers.tsx
+│   │   ├── settings
+│   │   │   └── HeaderControls.tsx
+│   │   └── ui
+│   │       ├── IconButton.tsx
+│   │       ├── toast.tsx
+│   │       ├── toaster.tsx
+│   │       └── use-toast.ts
+│   ├── config
+│   │   └── monthlyReview.ts
+│   ├── contexts
+│   │   ├── DateContext.tsx
+│   │   └── MonthlyContext.tsx
+│   ├── hooks
+│   │   ├── useJournalEntry.ts
+│   │   ├── useLocalStorage.ts
+│   │   ├── useMonthlyList.ts
+│   │   ├── useMonthlyStorage.ts
+│   │   ├── useSelectedDate.ts
+│   │   └── useTheme.ts
+│   ├── lib
+│   │   ├── README.md
+│   │   ├── auth
+│   │   │   ├── auth-options.ts
+│   │   │   ├── auth-service.ts
+│   │   │   ├── config.ts
+│   │   │   └── validation.ts
+│   │   ├── exportImport.ts
+│   │   ├── storage.ts
+│   │   └── utils.ts
+│   ├── middleware.ts
+│   ├── types
+│   │   ├── auth.ts
+│   │   ├── index.ts
+│   │   ├── journal.ts
+│   │   ├── monthly.d.ts
+│   │   ├── monthly.ts
+│   │   └── next-auth.d.ts
+│   └── utils
+│       └── dates.ts
+├── tailwind.config.js
+├── tailwind.config.ts
+└── tsconfig.json
