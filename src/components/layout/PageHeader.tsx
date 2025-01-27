@@ -11,7 +11,11 @@ interface PageHeaderProps {
 
 export function PageHeader({ onEntriesUpdate }: PageHeaderProps) {
   const pathname = usePathname();
-  const title = pathname === '/monthly' ? 'Monthly Review' : 'Daily Journal';
+  const title = pathname === '/monthly' 
+    ? 'Monthly Review' 
+    : pathname === '/subscriptions'
+      ? 'Subscriptions'
+      : 'Daily Journal';
 
   return (
     <div className="mb-8 animate-fade-in">
