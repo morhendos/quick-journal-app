@@ -5,6 +5,7 @@ subscription-tracker/
 ├── package-lock.json
 ├── package.json
 ├── postcss.config.js
+├── project-structure.txt
 ├── public
 │   └── assets
 │       ├── quick-journal-logo-white.png
