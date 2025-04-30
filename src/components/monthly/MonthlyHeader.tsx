@@ -25,11 +25,11 @@ function NavigationButton({ direction, onClick, disabled, compact }: NavigationB
         'focus:outline-none focus:ring-2 focus:ring-accent/30',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         'text-ink/70 hover:text-ink',
-        compact ? 'w-6 h-6' : 'w-8 h-8'
+        compact ? 'w-6 h-6' : 'w-7 h-7 sm:w-8 sm:h-8'
       )}
       aria-label={`${direction === 'left' ? 'Previous' : 'Next'} month`}
     >
-      <Icon className={compact ? "w-4 h-4" : "w-5 h-5"} />
+      <Icon className={compact ? "w-4 h-4" : "w-4 h-4 sm:w-5 sm:h-5"} />
     </button>
   );
 }
@@ -62,10 +62,10 @@ export function MonthlyHeader({ compact }: MonthlyHeaderProps) {
 
   return (
     <div className={cn(
-      "flex items-center gap-3",
-      !compact && "flex-col pb-10 relative"
+      "relative",
+      !compact && "pb-6 sm:pb-8"
     )}>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 justify-center">
         <NavigationButton
           direction="left"
           onClick={handlePreviousMonth}
@@ -73,8 +73,9 @@ export function MonthlyHeader({ compact }: MonthlyHeaderProps) {
         />
 
         <h2 className={cn(
-          "journal-heading min-w-[180px] text-center",
-          compact ? "text-lg text-ink/90" : "text-xl sm:text-2xl font-semibold text-ink/90"
+          "journal-heading text-center",
+          compact ? "text-base sm:text-lg text-ink/90" : "text-lg sm:text-xl md:text-2xl font-semibold text-ink/90",
+          compact ? "min-w-[120px] sm:min-w-[140px]" : "min-w-[140px] sm:min-w-[180px]"
         )}>
           {monthName}
         </h2>
@@ -92,7 +93,7 @@ export function MonthlyHeader({ compact }: MonthlyHeaderProps) {
           onClick={handleCurrentMonth}
           className={cn(
             'absolute bottom-0 left-1/2 transform -translate-x-1/2',
-            'text-xs text-ink/60 hover:text-ink',
+            'text-xs sm:text-sm text-ink/60 hover:text-ink',
             'transition-all duration-200',
             'py-1 px-2 rounded-md',
             'hover:bg-accent/10 active:bg-accent/20',

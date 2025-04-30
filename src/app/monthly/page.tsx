@@ -14,7 +14,7 @@ interface SectionContainerProps {
 
 function SectionContainer({ children, className = '' }: SectionContainerProps) {
   return (
-    <div className={`paper-texture bg-paper rounded-lg p-4 sm:p-8 journal-shadow transition-colors duration-200 flex flex-col ${className}`}>
+    <div className={`paper-texture bg-paper rounded-lg p-3 sm:p-4 md:p-8 journal-shadow transition-colors duration-200 flex flex-col ${className}`}>
       {children}
     </div>
   );
@@ -25,7 +25,7 @@ export default function MonthlyReview() {
 
   const handleScroll = useCallback((e: Event) => {
     const target = e.target as HTMLDivElement;
-    setIsHeaderCompact(target.scrollTop > 20);
+    setIsHeaderCompact(target.scrollTop > 10);
   }, []);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function MonthlyReview() {
   }, [handleScroll]);
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background">
+    <div className="fixed inset-0 flex flex-col bg-background overscroll-none">
       {/* Fixed header section */}
       <div 
         className={cn(
@@ -48,15 +48,15 @@ export default function MonthlyReview() {
         <div className="container mx-auto px-3 sm:px-4 max-w-6xl">
           <div className={cn(
             "transition-all duration-300",
-            isHeaderCompact ? "py-2" : "py-4 sm:pt-12"
+            isHeaderCompact ? "py-2" : "py-3 sm:py-4 md:py-6"
           )}>
-            <PageHeader />
+            <PageHeader compact={isHeaderCompact} />
           </div>
           <div className={cn(
             "transition-all duration-300 transform-gpu",
             isHeaderCompact 
               ? "scale-90 opacity-0 -mt-8 h-0 overflow-hidden" 
-              : "mt-8 mb-8 opacity-100"
+              : "mt-2 sm:mt-4 md:mt-6 mb-3 sm:mb-4 md:mb-6 opacity-100"
           )}>
             <MonthlyHeader />
           </div>
@@ -64,9 +64,12 @@ export default function MonthlyReview() {
       </div>
       
       {/* Scrollable content section */}
-      <div id="monthly-content" className="flex-1 overflow-auto">
-        <div className="container mx-auto px-3 pb-4 sm:px-4 sm:pb-12 max-w-6xl">
-          <div className="space-y-8">
+      <div 
+        id="monthly-content" 
+        className="flex-1 overflow-auto overscroll-contain -mx-3 px-3 sm:-mx-4 sm:px-4"
+      >
+        <div className="container mx-auto pb-3 sm:pb-4 md:pb-8 max-w-6xl">
+          <div className="space-y-4 sm:space-y-6 md:space-y-8">
             {MONTHLY_SECTIONS.map(({ key }) => (
               <SectionContainer key={key}>
                 <GenericMonthlyList sectionKey={key} />
