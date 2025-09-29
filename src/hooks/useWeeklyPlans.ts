@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { WeeklyPlan, WeeklyPlanFormData, Habit, WeeklyReview, HabitProgress } from '@/types/weekly';
-import { startOfWeek, format, addDays, isWithinInterval, parseISO } from 'date-fns';
 
 const STORAGE_KEY = 'weekly_plans';
 
@@ -10,7 +9,27 @@ export function useWeeklyPlans() {
 
   // Get the Monday of a given week
   const getWeekStart = (date: Date = new Date()): string => {
-    return format(startOfWeek(date, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when Sunday
+    const monday = new Date(d.setDate(diff));
+    return monday.toISOString().split('T')[0];
+  };
+
+  // Get the end of the week (Sunday)
+  const getWeekEnd = (weekStartDate: string): Date => {
+    const start = new Date(weekStartDate);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    return end;
+  };
+
+  // Check if a date is within a week
+  const isDateInWeek = (date: string, weekStartDate: string): boolean => {
+    const checkDate = new Date(date);
+    const weekStart = new Date(weekStartDate);
+    const weekEnd = getWeekEnd(weekStartDate);
+    return checkDate >= weekStart && checkDate <= weekEnd;
   };
 
   // Get plan for a specific week
@@ -31,7 +50,7 @@ export function useWeeklyPlans() {
 
     const habits: Habit[] = formData.habits.map(h => ({
       ...h,
-      id: h.id || Date.now().toString() + Math.random(),
+      id: h.id || `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       completedDates: existingPlan?.habits.find(eh => eh.name === h.name)?.completedDates || []
     }));
 
@@ -106,15 +125,13 @@ export function useWeeklyPlans() {
 
   // Calculate habit progress
   const calculateHabitProgress = useCallback((habit: Habit, weekStartDate: string): HabitProgress => {
-    const weekStart = parseISO(weekStartDate);
-    const weekEnd = addDays(weekStart, 6);
     const today = new Date();
+    const weekEnd = getWeekEnd(weekStartDate);
     
     // Count completed days within this week
-    const completedInWeek = habit.completedDates.filter(dateStr => {
-      const date = parseISO(dateStr);
-      return isWithinInterval(date, { start: weekStart, end: weekEnd });
-    }).length;
+    const completedInWeek = habit.completedDates.filter(dateStr => 
+      isDateInWeek(dateStr, weekStartDate)
+    ).length;
 
     const progress = (completedInWeek / habit.targetDays) * 100;
     const isCompleted = completedInWeek >= habit.targetDays;
@@ -145,6 +162,18 @@ export function useWeeklyPlans() {
     setPlans(current => current.filter(p => p.id !== planId));
   }, [setPlans]);
 
+  // Check if a date has any habit completions
+  const getHabitsForDate = useCallback((date: string, planId?: string): Habit[] => {
+    const weekStart = getWeekStart(new Date(date));
+    const plan = planId ? plans.find(p => p.id === planId) : getPlanByWeek(weekStart);
+    
+    if (!plan) return [];
+    
+    return plan.habits.filter(habit => 
+      habit.completedDates.includes(date)
+    );
+  }, [plans, getPlanByWeek]);
+
   return {
     plans: getAllPlans(),
     currentWeekPlan: getCurrentWeekPlan(),
@@ -154,6 +183,8 @@ export function useWeeklyPlans() {
     saveReview,
     calculateHabitProgress,
     deletePlan,
-    getWeekStart
+    getWeekStart,
+    getWeekEnd,
+    getHabitsForDate
   };
 }
