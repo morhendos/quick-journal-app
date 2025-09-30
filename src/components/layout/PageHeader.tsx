@@ -11,7 +11,12 @@ interface PageHeaderProps {
 
 export function PageHeader({ onEntriesUpdate }: PageHeaderProps) {
   const pathname = usePathname();
-  const title = pathname === '/monthly' ? 'Monthly Review' : 'Daily Journal';
+  
+  const getTitle = () => {
+    if (pathname === '/monthly') return 'Monthly Review';
+    if (pathname === '/weekly') return 'Weekly Planning';
+    return 'Daily Journal';
+  };
 
   return (
     <div className="mb-8 animate-fade-in">
@@ -20,7 +25,7 @@ export function PageHeader({ onEntriesUpdate }: PageHeaderProps) {
           <LogoutButton />
         </div>
         <h1 className="journal-heading text-4xl sm:text-5xl font-bold text-ink tracking-tight">
-          {title}
+          {getTitle()}
         </h1>
         <div className="w-32">
           <HeaderControls onEntriesUpdate={onEntriesUpdate} />
