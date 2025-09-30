@@ -35,7 +35,7 @@ export function HabitTracker({
 
   if (habits.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+      <div className="text-center py-8 text-ink opacity-60">
         <Target className="w-12 h-12 mx-auto mb-3 opacity-50" />
         <p>No habits to track this week</p>
       </div>
@@ -62,8 +62,8 @@ export function HabitTracker({
               `}
               onClick={() => !readonly && onToggleHabit('', date)}
             >
-              <div className="text-xs text-gray-600 dark:text-gray-400">{dayNames[index]}</div>
-              <div className={`text-sm font-medium ${isPast ? 'text-gray-500' : 'text-gray-900 dark:text-gray-100'}`}>
+              <div className="text-xs text-ink opacity-60">{dayNames[index]}</div>
+              <div className={`text-sm font-medium ${isPast ? 'text-ink opacity-40' : 'text-ink'}`}>
                 {new Date(date).getDate()}
               </div>
             </div>
@@ -82,11 +82,11 @@ export function HabitTracker({
             <div key={habit.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                  <h4 className="font-medium text-ink">
                     {habit.name}
                   </h4>
                   {habit.notes && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-ink opacity-70 mt-1">
                       {habit.notes}
                     </p>
                   )}
@@ -116,10 +116,10 @@ export function HabitTracker({
               {/* Progress Bar */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-ink opacity-70">
                     {completedCount} / {habit.targetDays} days
                   </span>
-                  <span className={`font-medium ${progress.isCompleted ? 'text-green-600' : 'text-gray-600 dark:text-gray-400'}`}>
+                  <span className={`font-medium ${progress.isCompleted ? 'text-green-600' : 'text-ink opacity-70'}`}>
                     {Math.round(progress.progress)}%
                   </span>
                 </div>
@@ -178,15 +178,15 @@ export function HabitTracker({
 
       {/* Daily Summary */}
       <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <h4 className="text-sm font-medium text-ink opacity-80 mb-2">
           {currentDate === today ? "Today's" : `${new Date(currentDate).toLocaleDateString()}'s`} Progress
         </h4>
         <div className="flex items-center gap-4">
           <div className="flex-1">
-            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <div className="text-2xl font-bold text-ink">
               {habits.filter(h => h.completedDates.includes(currentDate)).length} / {habits.length}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-ink opacity-70">
               Habits completed
             </div>
           </div>
