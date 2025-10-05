@@ -25,12 +25,12 @@ export function useWeeklyPlans() {
   };
 
   // Check if a date is within a week
-  const isDateInWeek = (date: string, weekStartDate: string): boolean => {
+  const isDateInWeek = useCallback((date: string, weekStartDate: string): boolean => {
     const checkDate = new Date(date);
     const weekStart = new Date(weekStartDate);
     const weekEnd = getWeekEnd(weekStartDate);
     return checkDate >= weekStart && checkDate <= weekEnd;
-  };
+  }, []);
 
   // Get plan for a specific week
   const getPlanByWeek = useCallback((weekStartDate: string): WeeklyPlan | undefined => {
@@ -50,7 +50,7 @@ export function useWeeklyPlans() {
 
     const habits: Habit[] = formData.habits.map(h => ({
       ...h,
-      id: h.id || `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       completedDates: existingPlan?.habits.find(eh => eh.name === h.name)?.completedDates || []
     }));
 

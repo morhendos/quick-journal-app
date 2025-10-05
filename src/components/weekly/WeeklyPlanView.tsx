@@ -188,7 +188,7 @@ export function WeeklyPlanView() {
               <span className="text-sm text-ink opacity-70">Rating:</span>
               <div className="flex">
                 {Array.from({ length: 5 }, (_, i) => (
-                  <span key={i} className={i < plan.review.rating! ? 'text-yellow-500' : 'text-gray-300'}>
+                  <span key={i} className={i < (plan.review?.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}>
                     ★
                   </span>
                 ))}
@@ -271,14 +271,14 @@ export function WeeklyPlanView() {
                 habits={plan.habits}
                 weekStartDate={selectedWeek}
                 onToggleHabit={handleHabitToggle}
-                calculateProgress={calculateHabitProgress}
+                calculateProgress={(habit) => calculateHabitProgress(habit, selectedWeek)}
                 readonly={new Date(selectedWeek) > new Date()}
               />
             </>
           )}
 
           {/* Plan form */}
-          {(viewMode === 'plan' || (!plan && viewMode === 'plan')) && (
+          {(viewMode === 'plan' || !plan) && (
             <WeeklyPlanForm
               initialData={plan ? {
                 description: plan.description,
