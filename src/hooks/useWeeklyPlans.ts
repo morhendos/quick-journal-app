@@ -148,7 +148,7 @@ export function useWeeklyPlans() {
       isCompleted,
       remainingDays: Math.min(remainingDaysInWeek, remainingDaysNeeded)
     };
-  }, []);
+  }, [isDateInWeek]);
 
   // Get all plans sorted by week
   const getAllPlans = useCallback((): WeeklyPlan[] => {

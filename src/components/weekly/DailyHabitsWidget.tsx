@@ -23,7 +23,7 @@ export function DailyHabitsWidget() {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
           <Target className="w-5 h-5 text-blue-600" />
-          Today's Habits
+          {"Today's Habits"}
         </h3>
         <Link
           href="/weekly"
