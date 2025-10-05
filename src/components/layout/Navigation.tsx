@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, BookOpen } from 'lucide-react';
+import { CalendarDays, BookOpen, Calendar } from 'lucide-react';
 
 export function Navigation() {
   const pathname = usePathname();
@@ -16,6 +16,14 @@ export function Navigation() {
       >
         <BookOpen size={18} strokeWidth={1.5} />
         <span>Daily Journal</span>
+      </Link>
+      <Link
+        href="/weekly"
+        className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-accent
+          ${pathname === '/weekly' ? 'text-accent' : 'text-ink/70'}`}
+      >
+        <Calendar size={18} strokeWidth={1.5} />
+        <span>Weekly Planning</span>
       </Link>
       <Link
         href="/monthly"

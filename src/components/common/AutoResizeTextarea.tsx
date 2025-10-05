@@ -8,6 +8,7 @@ interface AutoResizeTextareaProps extends React.TextareaHTMLAttributes<HTMLTextA
   onSave?: () => void;
   onCancel?: () => void;
   minHeight?: number;
+  minRows?: number;
   className?: string;
 }
 
@@ -16,12 +17,16 @@ export function AutoResizeTextarea({
   onChange,
   onSave,
   onCancel,
-  minHeight = 36,
+  minHeight,
+  minRows = 1,
   className = '',
   onKeyDown,
   ...props
 }: AutoResizeTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Calculate minHeight from minRows if not explicitly provided
+  const calculatedMinHeight = minHeight || minRows * 24; // Approximate line height
 
   const adjustHeight = useCallback(() => {
     const textarea = textareaRef.current;
@@ -30,19 +35,19 @@ export function AutoResizeTextarea({
     const scrollLeft = window.pageXOffset;
     const scrollTop = window.pageYOffset;
 
-    textarea.style.height = `${minHeight}px`;
+    textarea.style.height = `${calculatedMinHeight}px`;
     const contentScrollHeight = textarea.scrollHeight;
 
-    if (contentScrollHeight > minHeight) {
+    if (contentScrollHeight > calculatedMinHeight) {
       textarea.style.height = `${contentScrollHeight}px`;
     }
 
     window.scrollTo(scrollLeft, scrollTop);
-  }, [minHeight]);
+  }, [calculatedMinHeight]);
 
   useEffect(() => {
     adjustHeight();
-  }, [value, minHeight, adjustHeight]);
+  }, [value, calculatedMinHeight, adjustHeight]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && e.metaKey && onSave) {
@@ -70,7 +75,8 @@ export function AutoResizeTextarea({
         placeholder:text-muted/40 text-ink/90
         transition-colors duration-200 resize-none overflow-hidden
         ${className}`}
-      style={{ height: minHeight }}
+      style={{ height: calculatedMinHeight }}
+      rows={minRows}
       {...props}
     />
   );
